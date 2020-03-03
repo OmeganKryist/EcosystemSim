@@ -18,6 +18,8 @@
 #=======================================================================
 # PROGRAM IMPORTS ------------------------------------------------------
 import numpy as nu
+import Fauna as fa
+import Flora as fo
 
 # PROGRAM CONSTANTS ----------------------------------------------------
 # User modifiable
