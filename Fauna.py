@@ -26,12 +26,16 @@ import random as rand
 # energy
 INIT_ENERGY_MIN = 0         # initialization minimum for energy
 INIT_ENERGY_RANGE = 0       # initialization range for energy
+WAIT_ENERGY_COST = 0        # energy cost of not moving
+MOVE_ENERGY_COST = 0        # energy cost of moving
 STARVE = 0                  # value to which an animal dies if it's
                             # energy value is lower than 
 
 # water
 INIT_WATER_MIN = 0          # initialization minimum for water
 INIT_WATER_RANGE = 0        # initialization range for water
+WAIT_WATER_COST = 0         # water cost of not moving
+MOVE_WATER_COST = 0         # water cost of moving
 DESICCATE = 0               # value to which an animal dies if it's
                             # water value is lower than 
 
@@ -96,13 +100,26 @@ class Fauna:
     # MEATHOD: move ----------------------------------------------------
     def move(self, x, y):
         """ Description: updates the fauna's position
+                         deducts the move cost
     
             Variables: 
             -self: instance of class
             -x: x position
             -y: y position
         """
+        self.energy -= MOVE_ENERGY_COST
+        self.water -= MOVE_WATER_COST
         self.position = [x, y]
+
+    # MEATHOD: wait ----------------------------------------------------
+    def wait(self):
+        """ Description: deducts the wait cost
+    
+            Variables: 
+            -self: instance of class
+        """
+        self.energy -= WAIT_ENERGY_COST
+        self.water -= WAIT_WATER_COST
 
     # MEATHOD: randMove ------------------------------------------------
     def randMove(self, xRange, yRange):
