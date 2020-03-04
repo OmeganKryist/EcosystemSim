@@ -39,8 +39,8 @@ GROWTH_WATER_COST = 0       # water cost of one growth unit
 
 # size
 INIT_SIZE_MIN = 0           # initialization minimum for size
-INIT_SIZE_RANGE = 0         # initialization range for size
-GROWTH_UNIT = 0             # growth unit
+INIT_SIZE_RANGE = 0         # initialization range for size (Max patch of grass)
+GROWTH_UNIT = 0             # growth unit (14 days to reach max)
 DECAY_UNIT = 0              # decay unit
 
 # PROGRAM GLOBALS ------------------------------------------------------
@@ -134,6 +134,60 @@ class Flora:
         if(self.size <= 0):
             self.alive = False
         return self.alive
+
+#=======================================================================
+# CLASS: Grass ---------------------------------------------------------
+class Grass(Flora):
+    """
+    Constant definitions are currently based off bluegrass as rabbits primarily eat
+    grass. Bluegrass is common in our state.
+    
+    If we want to consider weeds, weeds in Washington state can be found here: 
+    https://s3.wp.wsu.edu/uploads/sites/2072/2013/10/InvasiveWeedsEastWAEM005Epdf.pdf
+    If we choose to add a weed, meadow hawkweed is a top contender.
+    """
+    #Assuming 1 grid of grass at max growth can feed about 2 rabbits.
+    #An average rabbit needs about 105 calories daily
+    
+    # energy
+    INIT_ENERGY_MIN = 0         # initialization minimum for energy
+    INIT_ENERGY_RANGE = 200     # initialization range for energy
+    ENERGY_CAPACITY = 200       # maximum energy that can be stored
+    GROWTH_ENERGY_COST = 0      # energy cost of one growth unit
+    
+    # water
+    INIT_WATER_MIN = 1          # initialization minimum for water
+    INIT_WATER_RANGE = 1        # initialization range for water
+    WATER_CAPACITY = 17 * 100   # maximum water that can be stored
+    GROWTH_WATER_COST = 0       # water cost of one growth unit
+    
+    # size
+    INIT_SIZE_MIN = 5*100       # initialization minimum for size
+    INIT_SIZE_RANGE = 15 * 100  # initialization range for size
+    GROWTH_UNIT = 1.43 * 100    # growth unit (14 days to reach max)
+    DECAY_UNIT = 0.001          # decay unit (700 days to fully decay)
+    #Max size of grass should be 20 * 100
+    
+    def __init__(self):
+        self.size = rand.random() * INIT_SIZE_RANGE + INIT_SIZE_MIN
+        #Water and energy values should be dependent on size of plant
+        
+        #Grass is 85% water but we may need to recalibrate this value
+        self.water = self.size * 0.85
+        self.energy = self.size * 0.15
+        
+    def consumed(self, amount):
+        #If animal can eat the whole plant, reduce plant size to 0 and return
+        #all the energy it would have given.
+        #variable energy is not plant energy, it is energy for the animal.
+        if amount >= self.size:
+            energy = self.size
+            self.size = 0
+        else:
+            self.size -= amount
+            energy = amount
+        return energy
+    
 
 #=======================================================================
 # END FILE
