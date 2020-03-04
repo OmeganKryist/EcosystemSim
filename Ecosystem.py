@@ -41,6 +41,9 @@ class EcoSystem:
     
         Methods: 
     """
+    
+    
+    
     # MEATHOD: INIT ----------------------------------------------------
     def __init__(self):
         """ Description: Class constructor
@@ -51,6 +54,20 @@ class EcoSystem:
     
             Output: 
         """
+        #Grid Size variables
+        length = 50
+        width = 50
+        #These grids are booleans(0/1) for when animals are at a location
+        plant_grid = nu.zeros(length, width)
+        herbivore_grid = nu.zeros(length, width)
+        carnivore_grid = nu.zeros(length, width)
+        
+        #These lists hold every individual plant and animal
+        plant_list = []
+        herbivore_list = []
+        carnivore_list = []
+        
+        self.initPlants()
         return 1
 
 # FUNCTION: FUNC -------------------------------------------------------
@@ -65,6 +82,31 @@ def func():
     """
     return 2
 
+def initPlants(self):
+    """ Description:
+        
+        Populates the plant list by determining if a plant grows in an area
+        using a random number.
+    
+        Variables: 
+        -plantChance: Chance a plant will grow in a grid space.
+    
+        Output: plant_list and plant_grid is populated with Grass objects.
+    """
+    #For initializing grass
+    plantChance = 0.85
+    
+    #Test every grid space for plant growth
+    for i in range(self.length):
+        for j in range(self.width):
+            #Test for growth
+            if nu.random.uniform(0,1) <= plantChance:
+                #Make a grass plant
+                newPlant = fo.Grass()
+                self.plant_grid[i,j] = 1
+                self.plant_list.append(newPlant)
+    #Grid and list should now be initialized
+    return
 #=======================================================================
 # END FILE
 
