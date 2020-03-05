@@ -18,6 +18,7 @@
 #=======================================================================
 # PROGRAM IMPORTS ------------------------------------------------------
 import numpy as nu
+import matplotlib.pyplot as plt
 import Fauna as fa
 import Flora as fo
 
@@ -43,6 +44,9 @@ class EcoSystem:
         Methods: 
     """
     frame = None
+    lenght = None
+    width = None
+    
     
     
     # MEATHOD: INIT ----------------------------------------------------
@@ -77,8 +81,8 @@ class EcoSystem:
         self.carnivore_list = []
         
         self.initPlants()
-        return
-
+        self.initRabbits()
+        
     # MEATHOD: displayGrid ---------------------------------------------
     def displayFrame(self):
         """ Description: displays a frame from the simulation
@@ -87,7 +91,7 @@ class EcoSystem:
                 -self: the SimGrid object instance
         """
         # get boarder values of rgb grid
-        simFrame = nu.full((GRID_Y, GRID_X, 3), [0.2, 0.2, 0.2])
+        simFrame = nu.full((self.length+2, self.width+2, 3), [0.3, 0.3, 0])
         simFrame[0, :, :] = [0, 0, 0]
         simFrame[-1, :, :] = [0, 0, 0]
         simFrame[:, -1, :] = [0, 0, 0]
@@ -96,12 +100,12 @@ class EcoSystem:
         # get interior values of rgb grid
         shape = nu.shape(simFrame)
         for y in range(1,shape[0]-1):
-            for x in range(shape[1]):
-                if(self.carnivore_grid[y,x] == 1):
+            for x in range(1,shape[1]-1):
+                if(self.carnivore_grid[y-1,x-1] == 1):
                     simFrame[y, x, :] = [0.8, 0.4, 0]
-                elif(self.herbivore_grid == 1):
+                elif(self.herbivore_grid[y-1,x-1] == 1):
                     simFrame[y, x, :] = [1, 1, 1] 
-                elif(self.plant_grid == 1):
+                elif(self.plant_grid[y-1,x-1] == 1):
                     simFrame[y, x, :] = [0, 0.6, 0]
 
         # formatting
@@ -117,30 +121,34 @@ class EcoSystem:
             Variables: 
                 -self: the SimGrid object instance
         """
-        fig, axs = plt.subplots(1, 3)
+        
         cm = ['YlOrBr_r', 'Blues', 'RdBu_r']
-
-        ax = axs[0, 0]
-        pcm = ax.pcolormesh(self.light_grid,
+        
+        fig, axs = plt.subplots(1, 1)
+        pcm = axs.pcolormesh(self.light_grid,
                             cmap=cm[0])
-        fig.colorbar(pcm, ax=ax)
-        ax.title("EcoSystem Light distribution")
-        ax.axis("off")
+        fig.colorbar(pcm, ax=axs)
+        #ax.title("EcoSystem Light distribution")
+        axs.axis("off")
+        plt.title("EcoSystem Temperture Distribution")
+        plt.show()
 
-        ax = axs[0, 1]
-        pcm = ax.pcolormesh(self.water_grid,
+        fig, axs = plt.subplots(1, 1)
+        pcm = axs.pcolormesh(self.water_grid,
                             cmap=cm[1])
-        fig.colorbar(pcm, ax=ax)
-        ax.title("EcoSystem Water distribution")
-        ax.axis("off")
+        fig.colorbar(pcm, ax=axs)
+        #ax.title("EcoSystem Water distribution")
+        axs.axis("off")
+        plt.title("EcoSystem Temperture Distribution")
+        plt.show()
 
-        ax = axs[0, 2]
-        pcm = ax.pcolormesh(self.water_grid,
+        fig, axs = plt.subplots(1, 1)
+        pcm = axs.pcolormesh(self.temp_grid,
                             cmap=cm[2])
-        fig.colorbar(pcm, ax=ax)
-        ax.title("EcoSystem Temperture distribution")
-        ax.axis("off")
-
+        fig.colorbar(pcm, ax=axs)
+        #ax.title("EcoSystem Temperture distribution")
+        axs.axis("off")
+        plt.title("EcoSystem Temperture Distribution")
         plt.show()
 
     # MEATHOD: checkCell -----------------------------------------------
@@ -195,7 +203,7 @@ class EcoSystem:
 
         #Update grid and animal position
         #X and Y may be flipped for grids
-        self.herbivore_grid[Fauna.position[0], Fauna.position[1]]
+        self.herbivore_grid[Fauna.position[0], Fauna.position[1]] = 0
         self.herbivore_grid[moveX[valid[0][0]], moveY[valid[0][0]]] = 1
         Fauna.position = (moveX[valid[0][0]], moveY[valid[0][0]])
     
@@ -238,6 +246,11 @@ class EcoSystem:
             newRab.position = (i*2,i)
             self.herbivore_list.append(newRab)
             self.herbivore_grid[i*2, i] = 1
+            
+    def runAFewFrames(self):
+        for i in range(5):
+            for j in range(len(self.herbivore_list)):
+                self.randomWalk(self.herbivore_list[j])
 
 # FUNCTION: FUNC -------------------------------------------------------
 def func():
@@ -250,6 +263,22 @@ def func():
         Output: 
     """
     return 2
-        
+
+#=======================================================================   
+# PROGRAM SCRIPT ------------------------------------------------------
+# Driver code for program
+
+eco = EcoSystem()
+eco.displayGrid()
+eco.displayFrame()
+eco.runAFewFrames()
+eco.displayFrame()
+eco.runAFewFrames()
+eco.displayFrame()
+eco.runAFewFrames()
+eco.displayFrame()
+eco.runAFewFrames()
+eco.displayFrame()
+
 #=======================================================================
 # END FILE
