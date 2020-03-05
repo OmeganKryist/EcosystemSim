@@ -82,6 +82,48 @@ def func():
     """
     return 2
 
+def randomWalk(self, Fauna):
+    """ Description:
+        Pass an animal and it will walk within the borders of the grid.
+        (Moore's Neighborhood)
+    
+        Variables: 
+        -Fauna.position: current location of fauna
+        -moveX: Array of x positions fauna can move
+        -moveY: Array of y positions fauna can move
+    
+        Output: 
+            Fauna has changed locations
+    """
+    
+    #Moore Neighborhood walk
+    #Directions in x-axis
+    moveX = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
+    #Fauna.position[0] current x location
+    moveX = moveX + Fauna.position[0]
+    
+    #Directions in y-axis
+    moveY = nu.array([1, 0, -1, 1, -1, 1, 0, -1])
+    #Fauna.position[1] current y location
+    moveY = moveY + Fauna.position[1]
+    
+    #Check Borders
+    violation = nu.where(nu.logical_or( \
+    nu.logical_or(moveY >= self.length, moveY < 0),\
+    nu.logical_or(moveX >= self.width, moveX < 0)))
+    
+    #Delete areas that cross borders
+    nu.delete(moveX, violation)
+    nu.delete(moveY, violation)
+    
+    index = nu.arange(len(moveX))
+    nu.shuffle(index)
+    
+    #moveX and moveY may need to switch 
+    Fauna.position(moveX[index[0]], moveY[index[0]])
+    
+    return
+    
 def initPlants(self):
     """ Description:
         
