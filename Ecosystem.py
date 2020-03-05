@@ -59,7 +59,7 @@ class EcoSystem:
     
             Output: 
         """
-        self.frame = 1
+        self.frame = 0
 
         #Grid Size variables
         self.length = 50
@@ -237,9 +237,6 @@ class EcoSystem:
     def initRabbits(self):
         #This rabbit spawn is hardcoded so we could keep them away from
         #their predators
-        newRab = fa.Rabbit()
-        newRab.position = (0,0)
-        self.herbivore_list.append(newRab)
         for i in range(1, 4):
             newRab = fa.Rabbit()
             #Spawns 3 around the top left corner
@@ -273,7 +270,8 @@ eco = EcoSystem()
 eco.displayGrid()
 eco.displayFrame()
 
-for i in range(5):
+for i in range(20):
+    eco.frame += 1
     eco.runAFewFrames()
     eco.displayFrame()
 
