@@ -246,7 +246,8 @@ class EcoSystem:
             newRab.position = (i*2,i)
             self.herbivore_list.append(newRab)
             self.herbivore_grid[i*2, i] = 1
-            
+     
+    # MEATHOD: runAFewFrames -------------------------------------------
     def runAFewFrames(self):
         for i in range(5):
             for j in range(len(self.herbivore_list)):
@@ -271,14 +272,10 @@ def func():
 eco = EcoSystem()
 eco.displayGrid()
 eco.displayFrame()
-eco.runAFewFrames()
-eco.displayFrame()
-eco.runAFewFrames()
-eco.displayFrame()
-eco.runAFewFrames()
-eco.displayFrame()
-eco.runAFewFrames()
-eco.displayFrame()
+
+for i in range(5):
+    eco.runAFewFrames()
+    eco.displayFrame()
 
 #=======================================================================
 # END FILE
