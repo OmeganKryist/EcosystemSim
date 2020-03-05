@@ -37,7 +37,7 @@ INIT_WATER_RANGE = 0        # initialization range for water
 WAIT_WATER_COST = 0         # water cost of not moving
 MOVE_WATER_COST = 0         # water cost of moving
 DESICCATE = 0               # value to which an animal dies if it's
-                            # water value is lower than 
+                            #water value is lower than 
 
 # PROGRAM GLOBALS ------------------------------------------------------
 # Not User Modifiable
@@ -164,7 +164,39 @@ class Herbivore(Fauna):
             Variables: 
             -self: instance of class
         """
+        
+class Rabbit(Herbivore):
     
+    """ Description: Rabbit Class
+        I read that rabbits need to eat 105 calories a day to maintain
+        optimal health so their max energy is 1000 and they die within 6 days
+        of not eating and 3 of not drinking. A rabbit should gain about 105
+        energy when eating every day.
+            
+    
+            Variables: 
+            -self: instance of class
+    """
+    def __init__(self):
+    # energy
+        self.INIT_ENERGY_MIN = 900         # initialization minimum for energy
+        self.INIT_ENERGY_RANGE = 100       # initialization range for energy
+        self.WAIT_ENERGY_COST = 50        # energy cost of not moving
+        self.MOVE_ENERGY_COST = 100        # energy cost of moving
+        self.STARVE = 400                  # value to which an animal dies if it's
+                                    # energy value is lower than 
+        
+        # water
+        self.INIT_WATER_MIN = 900          # initialization minimum for water
+        self.INIT_WATER_RANGE = 100        # initialization range for water
+        self.WAIT_WATER_COST = 50         # water cost of not moving
+        self.MOVE_WATER_COST = 100         # water cost of moving
+        self.DESICCATE = 700               # value to which an animal dies if it's
+                                    # water value is lower than 
+                                    
+        self.energy = rand.random() * self.INIT_ENERGY_RANGE + self.INIT_ENERGY_MIN
+        self.water = rand.random() * self.INIT_WATER_RANGE + self.INIT_WATER_MIN
+
 # CLASS: Carnivore -----------------------------------------------------
 class Carnivore(Fauna):
     """ Description:

@@ -108,19 +108,17 @@ class EcoSystem:
         moveY = moveY + Fauna.position[1]
         
         #Check Borders
-        violation = nu.where(nu.logical_or( \
+        valid = nu.where(nu.logical_not(nu.logical_or( \
         nu.logical_or(moveY >= self.length, moveY < 0),\
-        nu.logical_or(moveX >= self.width, moveX < 0)))
-        
-        #Delete areas that cross borders
-        nu.delete(moveX, violation)
-        nu.delete(moveY, violation)
-        
-        index = nu.arange(len(moveX))
-        nu.shuffle(index)
-        
-        #moveX and moveY may need to switch 
-        Fauna.position(moveX[index[0]], moveY[index[0]])
+        nu.logical_or(moveX >= self.width, moveX < 0))))
+
+        nu.random.shuffle(valid[0])
+
+        #Update grid and animal position
+        #X and Y may be flipped for grids
+        self.herbivore_grid[Fauna.position[0], Fauna.position[1]]
+        self.herbivore_grid[moveX[valid[0][0]], moveY[valid[0][0]]] = 1
+        Fauna.position = (moveX[valid[0][0]], moveY[valid[0][0]])
         
         return
         
@@ -149,5 +147,19 @@ class EcoSystem:
                     self.plant_list.append(newPlant)
         #Grid and list should now be initialized
         return
+        
+    def initRabbits(self):
+        #This rabbit spawn is hardcoded so we could keep them away from
+        #their predators
+        newRab = fa.Rabbit()
+        newRab.position = (0,0)
+        self.herbivore_list.append(newRab)
+        for i in range(1, 4):
+            newRab = fa.Rabbit()
+            #Spawns 3 around the top left corner
+            newRab.position = (i*2,i)
+            self.herbivore_list.append(newRab)
+            self.herbivore_grid[i*2, i] = 1
+        
 #=======================================================================
 # END FILE
