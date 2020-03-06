@@ -71,7 +71,7 @@ class EcoSystem:
         
         # These grids track constant values accross the grid
         self.light_grid = nu.ones((self.length, self.width))
-        self.water_grid = nu.ones((self.length, self.width))/5
+        self.water_grid = nu.ones((self.length, self.width))/4
         self.temp_grid = nu.zeros((self.length+1, self.width+1))
 
         # These grids are booleans(0/1) for when animals are at a location
@@ -100,16 +100,21 @@ class EcoSystem:
         # get boarder values of rgb grid
         simFrame = nu.full((self.length, self.width, 3), [0.2, 0.2, 0])
         
-        # get interior values of rgb grid
+        # get values of rgb grid
         shape = nu.shape(simFrame)
+        
         for y in range(shape[0]):
             for x in range(shape[1]):
                 if(self.carnivore_grid[y,x] == 1):
-                    simFrame[y, x, :] = [1, 0.6, 0]
+                    simFrame[shape[0]-y-1, x, :] = [1, 0.6, 0]
                 elif(self.herbivore_grid[y,x] == 1):
-                    simFrame[y, x, :] = [1, 1, 1] 
+                    simFrame[shape[0]-y-1, x, :] = [1, 1, 1] 
                 elif(self.plant_grid[y,x] == 1):
-                    simFrame[y, x, :] = [0, 0.4, 0]
+                    simFrame[shape[0]-y-1, x, :] = [0, 0.4, 0]
+                elif(self.water_grid[y,x] == 1):
+                    simFrame[shape[0]-y-1, x, :] = [0, 0.3, 0.7]
+                elif(self.water_grid[y,x] == .75):
+                    simFrame[shape[0]-y-1, x, :] = [0.5, 0.7, 0.9]
 
         # formatting
         plt.title("EcoSystem Simulation Frame: " + str(self.frame))
@@ -249,7 +254,7 @@ class EcoSystem:
         x = ax
         y = ay
         while (x < bx or y < by):
-            self.water_grid[y-WATER_SPREAD*3:y+WATER_SPREAD*3, x-WATER_SPREAD*3:x+WATER_SPREAD*3] = 0.25  
+            self.water_grid[y-WATER_SPREAD*3:y+WATER_SPREAD*3, x-WATER_SPREAD*3:x+WATER_SPREAD*3] = 0.5  
             if(x < bx):
                 x += 1
             if(y < by):
@@ -258,7 +263,7 @@ class EcoSystem:
         x = ax
         y = ay
         while (x < bx or y < by):         
-            self.water_grid[y-WATER_SPREAD*2:y+WATER_SPREAD*2, x-WATER_SPREAD*2:x+WATER_SPREAD*2] = 0.5
+            self.water_grid[y-WATER_SPREAD*2:y+WATER_SPREAD*2, x-WATER_SPREAD*2:x+WATER_SPREAD*2] = 0.75
             if(x < bx):
                 x += 1
             if(y < by):
@@ -304,14 +309,15 @@ class EcoSystem:
         plantChance = 0.85
         
         #Test every grid space for plant growth
-        for i in range(self.length):
-            for j in range(self.width):
+        for y in range(self.length):
+            for x in range(self.width):
                 #Test for growth
                 if nu.random.uniform(0,1) <= plantChance:
-                    #Make a grass plant
-                    newPlant = fo.Grass()
-                    self.plant_grid[i,j] = 1
-                    self.plant_list.append(newPlant)
+                    if(self.water_grid[x,y] < 0.75):
+                        #Make a grass plant
+                        newPlant = fo.Grass()
+                        self.plant_grid[x,y] = 1
+                        self.plant_list.append(newPlant)
         #Grid and list should now be initialized
     
     # MEATHOD: checkCell -----------------------------------------------
