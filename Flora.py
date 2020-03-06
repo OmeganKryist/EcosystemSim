@@ -63,13 +63,14 @@ class Flora:
         -position: the flora's physical position in the simulation grid
         -alive: a boolean for checking if the animal is alive
     """
+
     energy = None
     water = None
     size = None
     position = None
     alive = None
     # MEATHOD: INIT ----------------------------------------------------
-    def __init__(self, x, y):
+    def __init__(self, y, x):
         """ Description: Class constructor
     
             Variables: 
@@ -81,7 +82,7 @@ class Flora:
         self.water = rand.random() * INIT_WATER_RANGE + INIT_WATER_MIN
         self.size = rand.random() * INIT_SIZE_RANGE + INIT_SIZE_MIN
         self.size *= GROWTH_UNIT
-        self.position = [x, y]
+        self.position = [y, x]
         self.alive = True
 
     # MEATHOD: photosynth ----------------------------------------------
@@ -168,7 +169,7 @@ class Grass(Flora):
     DECAY_UNIT = 0.001          # decay unit (700 days to fully decay)
     #Max size of grass should be 20 * 100
     
-    def __init__(self):
+    def __init__(self,y,x):
         self.size = rand.random() * INIT_SIZE_RANGE + INIT_SIZE_MIN
         #Water and energy values should be dependent on size of plant
         
@@ -176,10 +177,13 @@ class Grass(Flora):
         self.water = self.size * 0.85
         self.energy = self.size * 0.15
         
+        self.position = [y, x]
+        self.alive = True
+        
     def consumed(self, amount):
-        #If animal can eat the whole plant, reduce plant size to 0 and return
-        #all the energy it would have given.
-        #variable energy is not plant energy, it is energy for the animal.
+        # If animal can eat the whole plant, reduce plant size to 0 and return
+        # all the energy it would have given.
+        # variable energy is not plant energy, it is energy for the animal.
         if amount >= self.size:
             energy = self.size
             self.size = 0
