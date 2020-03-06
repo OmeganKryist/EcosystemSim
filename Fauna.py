@@ -151,6 +151,12 @@ class Fauna:
         if(self.water < DESICCATE):
             self.alive = False
         return self.alive
+      
+    def isHerbivore(self):
+        return False
+    
+    def isCarnivore(self):
+        return False 
     
 # CLASS: Herbivore -----------------------------------------------------
 class Herbivore(Fauna):
@@ -167,6 +173,9 @@ class Herbivore(Fauna):
             Variables: 
             -self: instance of class
         """
+    
+    def isHerbivore(self):
+        return True
         
 class Rabbit(Herbivore):
     
@@ -220,6 +229,9 @@ class Carnivore(Fauna):
             Variables: 
             -self: instance of class  
         """
+        
+    def isCarnivore(self):
+        return True
         
 class Fox(Carnivore, Herbivore):
     """ Description: Modeled after the red fox, a native animal to Washington.
