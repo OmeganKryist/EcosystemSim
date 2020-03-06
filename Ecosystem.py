@@ -213,25 +213,30 @@ class EcoSystem:
         #X and Y may be flipped for grids
         if(Fauna.isCarnivore()):
             self.carnivore_grid[Fauna.position[0], Fauna.position[1]] = 0
-            self.carnivore_grid[moveX[valid[0][0]], moveY[valid[0][0]]] = 1
-            Fauna.move(moveX[valid[0][0]], moveY[valid[0][0]])
+            self.carnivore_grid[moveY[valid[0][0]], moveX[valid[0][0]]] = 1
+            Fauna.move(moveY[valid[0][0]], moveX[valid[0][0]])
         elif(Fauna.isHerbivore()):
             self.herbivore_grid[Fauna.position[0], Fauna.position[1]] = 0
-            self.herbivore_grid[moveX[valid[0][0]], moveY[valid[0][0]]] = 1
-            Fauna.move(moveX[valid[0][0]], moveY[valid[0][0]])
+            self.herbivore_grid[moveY[valid[0][0]], moveX[valid[0][0]]] = 1
+            Fauna.move(moveY[valid[0][0]], moveX[valid[0][0]])
         
     # MEATHOD: checkCell -----------------------------------------------
     def animalsEat(self):
-        for iHerb in self.herbivore_list:
-            for iPlant in self.plant_list:
+        for i in range(len(self.herbivore_list)):
+            j = 0
+            while(j < len(self.plant_list)):
                 #If a plant is found
-                if iPlant.position == iHerb.position:
+                if self.plant_list[j].position[0] == self.herbivore_list[i].position[0] and self.plant_list[j].position[1] == self.herbivore_list[i].position[1]:
                     #Eat the max amount if the herbivore is able
-                    iHerb.eat(iPlant.consumed(iHerb.eatAmt))
+                    self.herbivore_list[i].eat(self.plant_list[j].consumed(self.herbivore_list[i].eatAmt))
                     #If the plant dies, remove from grid and list
-                    if not iPlant.healthCheck():
-                        self.plant_grid(iHerb.position[0], iHerb.position[1]) == 0
-                        self.plant_list.delete(iHerb)
+                    if (not self.plant_list[j].healthCheck()):
+                        self.plant_grid[self.herbivore_list[i].position[0], self.herbivore_list[i].position[1]] == 0
+                        self.plant_list.remove(self.plant_list[j])
+                    j = len(self.plant_list)
+                else:
+                    j += 1
+                        
                         
     # MEATHOD: checkCell -----------------------------------------------
     def initWater(self):
@@ -325,10 +330,10 @@ class EcoSystem:
             for x in range(self.width):
                 #Test for growth
                 if nu.random.uniform(0,1) <= plantChance:
-                    if(self.water_grid[x,y] < 0.75):
+                    if(self.water_grid[y,x] < 0.75):
                         #Make a grass plant
-                        newPlant = fo.Grass()
-                        self.plant_grid[x,y] = 1
+                        newPlant = fo.Grass(y,x)
+                        self.plant_grid[y,x] = 1
                         self.plant_list.append(newPlant)
         #Grid and list should now be initialized
     
@@ -337,19 +342,21 @@ class EcoSystem:
         #This rabbit spawn is hardcoded so we could keep them away from
         #their predators
         for i in range(1, 4):
-            newRab = fa.Rabbit()
+            x = i * 2
+            y = i
+            newRab = fa.Rabbit(y,x)
             #Spawns 3 around the top left corner
-            newRab.position = (i*2,i)
             self.herbivore_list.append(newRab)
-            self.herbivore_grid[i*2, i] = 1
+            self.herbivore_grid[y, x] = 1
             
     def initFoxes(self):
         #This fox spawn is hardcoded so we could keep them away from vulnerable
         #animals
-        newFox = fa.Fox()
-        newFox.position = (35, 30)
+        x = 35
+        y = 30
+        newFox = fa.Fox(y,x)
         self.carnivore_list.append(newFox)
-        self.carnivore_grid[35, 30] = 1
+        self.carnivore_grid[y, x] = 1
      
     # MEATHOD: runAFewFrames -------------------------------------------
     def runAFewFrames(self):
@@ -385,6 +392,7 @@ value = len(eco.plant_list)
 for i in range(10):
     eco.frame += 1
     eco.runAFewFrames()
+    #eco.animalsEat()
     eco.displayFrame()
 
 print("# plants died:")
