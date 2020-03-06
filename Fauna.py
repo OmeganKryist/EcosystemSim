@@ -38,6 +38,9 @@ WAIT_WATER_COST = 0         # water cost of not moving
 MOVE_WATER_COST = 0         # water cost of moving
 DESICCATE = 0               # value to which an animal dies if it's
                             #water value is lower than 
+  
+#Time segments per day                                                      
+dt = 1 / 24
 
 # PROGRAM GLOBALS ------------------------------------------------------
 # Not User Modifiable
@@ -181,21 +184,26 @@ class Rabbit(Herbivore):
     # energy
         self.INIT_ENERGY_MIN = 900         # initialization minimum for energy
         self.INIT_ENERGY_RANGE = 100       # initialization range for energy
-        self.WAIT_ENERGY_COST = 50        # energy cost of not moving
-        self.MOVE_ENERGY_COST = 100        # energy cost of moving
+        self.WAIT_ENERGY_COST = 50 * dt    # energy cost of not moving
+        self.MOVE_ENERGY_COST = 100  * dt   # energy cost of moving
         self.STARVE = 400                  # value to which an animal dies if it's
                                     # energy value is lower than 
         
         # water
         self.INIT_WATER_MIN = 900          # initialization minimum for water
         self.INIT_WATER_RANGE = 100        # initialization range for water
-        self.WAIT_WATER_COST = 50         # water cost of not moving
-        self.MOVE_WATER_COST = 100         # water cost of moving
+        self.WAIT_WATER_COST = 50 * dt     # water cost of not moving
+        self.MOVE_WATER_COST = 100 * dt     # water cost of moving
         self.DESICCATE = 700               # value to which an animal dies if it's
                                     # water value is lower than 
                                     
         self.energy = rand.random() * self.INIT_ENERGY_RANGE + self.INIT_ENERGY_MIN
         self.water = rand.random() * self.INIT_WATER_RANGE + self.INIT_WATER_MIN
+    
+    def consumed(self):
+        #A rabbit provides 200 energy to predators
+        energyValue = 200
+        return energyValue
 
 # CLASS: Carnivore -----------------------------------------------------
 class Carnivore(Fauna):
@@ -212,6 +220,30 @@ class Carnivore(Fauna):
             Variables: 
             -self: instance of class  
         """
+        
+class Fox(Carnivore, Herbivore):
+    """ Description: Modeled after the red fox, a native animal to Washington.
+    
+    """
+    
+    def __init__(self):
+        self.INIT_ENERGY_MIN = 1000         # initialization minimum for energy
+        self.INIT_ENERGY_RANGE = 200       # initialization range for energy
+        self.WAIT_ENERGY_COST = 50 * dt    # energy cost of not moving
+        self.MOVE_ENERGY_COST = 150 * dt   # energy cost of moving
+        self.STARVE = 400                  # value to which an animal dies if it's
+                                    # energy value is lower than 
+        
+        # water
+        self.INIT_WATER_MIN = 900          # initialization minimum for water
+        self.INIT_WATER_RANGE = 100        # initialization range for water
+        self.WAIT_WATER_COST = 50 * dt        # water cost of not moving
+        self.MOVE_WATER_COST = 100 * dt        # water cost of moving
+        self.DESICCATE = 400               # value to which an animal dies if it's
+                                    # water value is lower than 
+                                    
+        self.energy = rand.random() * self.INIT_ENERGY_RANGE + self.INIT_ENERGY_MIN
+        self.water = rand.random() * self.INIT_WATER_RANGE + self.INIT_WATER_MIN
 
 #=======================================================================
 # END FILE

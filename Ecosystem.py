@@ -44,7 +44,7 @@ class EcoSystem:
         Methods: 
     """
     frame = None
-    lenght = None
+    length = None
     width = None
     
     
@@ -243,6 +243,15 @@ class EcoSystem:
             newRab.position = (i*2,i)
             self.herbivore_list.append(newRab)
             self.herbivore_grid[i*2, i] = 1
+            
+    def initFoxes(self):
+        #This fox spawn is hardcoded so we could keep them away from vulnerable
+        #animals
+        newFox = fa.Fox()
+        newFox.position = (35, 30)
+        self.carnivore_list.append(newFox)
+        self.carnivore_grid[35, 30] = 1
+        
      
     # MEATHOD: runAFewFrames -------------------------------------------
     def runAFewFrames(self):
