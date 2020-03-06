@@ -220,7 +220,19 @@ class EcoSystem:
             self.herbivore_grid[moveX[valid[0][0]], moveY[valid[0][0]]] = 1
             Fauna.move(moveX[valid[0][0]], moveY[valid[0][0]])
         
-    
+    # MEATHOD: checkCell -----------------------------------------------
+    def animalsEat(self):
+        for iHerb in self.herbivore_list:
+            for iPlant in self.plant_list:
+                #If a plant is found
+                if iPlant.position == iHerb.position:
+                    #Eat the max amount if the herbivore is able
+                    iHerb.eat(iPlant.consumed(iHerb.eatAmt))
+                    #If the plant dies, remove from grid and list
+                    if not iPlant.healthCheck():
+                        self.plant_grid(iHerb.position[0], iHerb.position[1]) == 0
+                        self.plant_list.delete(iHerb)
+                        
     # MEATHOD: checkCell -----------------------------------------------
     def initWater(self):
         """ Description:
