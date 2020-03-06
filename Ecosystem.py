@@ -358,6 +358,7 @@ class EcoSystem:
                 self.randomWalk(self.herbivore_list[j])
             for j in range(len(self.carnivore_list)):
                 self.randomWalk(self.carnivore_list[j])
+            self.animalsEat()
 
 # FUNCTION: FUNC -------------------------------------------------------
 def func():
@@ -379,10 +380,15 @@ eco = EcoSystem()
 eco.displayGrid()
 eco.displayFrame()
 
-for i in range(2):
+value = len(eco.plant_list)
+
+for i in range(10):
     eco.frame += 1
     eco.runAFewFrames()
     eco.displayFrame()
+
+print("# plants died:")
+print(value - len(eco.plant_list))
 
 #=======================================================================
 # END FILE
