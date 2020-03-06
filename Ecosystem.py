@@ -28,6 +28,10 @@ import Flora as fo
 GRID_X = 50                     # var meaning
 GRID_Y = 50
 
+WATER_SPREAD = 4
+WATER_TEMP = -1
+LIGHT_TEMP = 1
+
 # PROGRAM GLOBALS ------------------------------------------------------
 # Not User Modifiable
 
@@ -44,7 +48,7 @@ class EcoSystem:
         Methods: 
     """
     frame = None
-    length = None
+    lenght = None
     width = None
     
     
@@ -67,8 +71,8 @@ class EcoSystem:
         
         # These grids track constant values accross the grid
         self.light_grid = nu.ones((self.length, self.width))
-        self.water_grid = nu.zeros((self.length, self.width))
-        self.temp_grid = nu.zeros((self.length, self.width))
+        self.water_grid = nu.ones((self.length, self.width))/5
+        self.temp_grid = nu.zeros((self.length+1, self.width+1))
 
         # These grids are booleans(0/1) for when animals are at a location
         self.plant_grid = nu.zeros((self.length, self.width))
@@ -80,8 +84,11 @@ class EcoSystem:
         self.herbivore_list = []
         self.carnivore_list = []
         
+        self.initWater()
+        self.updateTemp()
         self.initPlants()
         self.initRabbits()
+        self.initFoxes()
         
     # MEATHOD: displayGrid ---------------------------------------------
     def displayFrame(self):
@@ -91,22 +98,18 @@ class EcoSystem:
                 -self: the SimGrid object instance
         """
         # get boarder values of rgb grid
-        simFrame = nu.full((self.length+2, self.width+2, 3), [0.3, 0.3, 0])
-        simFrame[0, :, :] = [0, 0, 0]
-        simFrame[-1, :, :] = [0, 0, 0]
-        simFrame[:, -1, :] = [0, 0, 0]
-        simFrame[:, 0, :] = [0, 0, 0]
+        simFrame = nu.full((self.length, self.width, 3), [0.2, 0.2, 0])
         
         # get interior values of rgb grid
         shape = nu.shape(simFrame)
-        for y in range(1,shape[0]-1):
-            for x in range(1,shape[1]-1):
-                if(self.carnivore_grid[y-1,x-1] == 1):
-                    simFrame[y, x, :] = [0.8, 0.4, 0]
-                elif(self.herbivore_grid[y-1,x-1] == 1):
+        for y in range(shape[0]):
+            for x in range(shape[1]):
+                if(self.carnivore_grid[y,x] == 1):
+                    simFrame[y, x, :] = [1, 0.6, 0]
+                elif(self.herbivore_grid[y,x] == 1):
                     simFrame[y, x, :] = [1, 1, 1] 
-                elif(self.plant_grid[y-1,x-1] == 1):
-                    simFrame[y, x, :] = [0, 0.6, 0]
+                elif(self.plant_grid[y,x] == 1):
+                    simFrame[y, x, :] = [0, 0.4, 0]
 
         # formatting
         plt.title("EcoSystem Simulation Frame: " + str(self.frame))
@@ -128,25 +131,22 @@ class EcoSystem:
         pcm = axs.pcolormesh(self.light_grid,
                             cmap=cm[0])
         fig.colorbar(pcm, ax=axs)
-        #ax.title("EcoSystem Light distribution")
         axs.axis("off")
-        plt.title("EcoSystem Temperture Distribution")
+        plt.title("EcoSystem Light Distribution")
         plt.show()
 
         fig, axs = plt.subplots(1, 1)
         pcm = axs.pcolormesh(self.water_grid,
                             cmap=cm[1])
         fig.colorbar(pcm, ax=axs)
-        #ax.title("EcoSystem Water distribution")
         axs.axis("off")
-        plt.title("EcoSystem Temperture Distribution")
+        plt.title("EcoSystem Water Distribution")
         plt.show()
 
         fig, axs = plt.subplots(1, 1)
         pcm = axs.pcolormesh(self.temp_grid,
                             cmap=cm[2])
         fig.colorbar(pcm, ax=axs)
-        #ax.title("EcoSystem Temperture distribution")
         axs.axis("off")
         plt.title("EcoSystem Temperture Distribution")
         plt.show()
@@ -161,10 +161,13 @@ class EcoSystem:
                 
             Output: returns a list of values from each grid
         """
-        check = [0, 0, 0]
-        check[0] = self.plant_grid[y,x]
-        check[1] = self.herbivore_grid[y,x]
-        check[2] = self.carnivore_grid[y,x]
+        check = [0, 0, 0, 0, 0, 0]
+        check[0] = self.light_grid[y,x]
+        check[1] = self.water_grid[y,x]
+        check[2] = self.temp_grid[y,x]
+        check[3] = self.plant_grid[y,x]
+        check[4] = self.herbivore_grid[y,x]
+        check[5] = self.carnivore_grid[y,x]
         
         return check
     
@@ -203,9 +206,87 @@ class EcoSystem:
 
         #Update grid and animal position
         #X and Y may be flipped for grids
-        self.herbivore_grid[Fauna.position[0], Fauna.position[1]] = 0
-        self.herbivore_grid[moveX[valid[0][0]], moveY[valid[0][0]]] = 1
-        Fauna.position = (moveX[valid[0][0]], moveY[valid[0][0]])
+        if(Fauna.isCarnivore()):
+            self.carnivore_grid[Fauna.position[0], Fauna.position[1]] = 0
+            self.carnivore_grid[moveX[valid[0][0]], moveY[valid[0][0]]] = 1
+            Fauna.move(moveX[valid[0][0]], moveY[valid[0][0]])
+        elif(Fauna.isHerbivore()):
+            self.herbivore_grid[Fauna.position[0], Fauna.position[1]] = 0
+            self.herbivore_grid[moveX[valid[0][0]], moveY[valid[0][0]]] = 1
+            Fauna.move(moveX[valid[0][0]], moveY[valid[0][0]])
+        
+    
+    # MEATHOD: checkCell -----------------------------------------------
+    def initWater(self):
+        """ Description:
+            
+            Populates the plant list by determining if a plant grows in an area
+            using a random number.
+        
+            Variables: 
+            -plantChance: Chance a plant will grow in a grid space.
+        
+            Output: plant_list and plant_grid is populated with Grass objects.
+        """
+        self.makeWaterBody(20,10,30,30)
+        
+    def makeWaterBody(self, x1, y1, x2, y2):
+        """ Description:
+            
+            Populates the plant list by determining if a plant grows in an area
+            using a random number.
+        
+            Variables: 
+            -plantChance: Chance a plant will grow in a grid space.
+        
+            Output: plant_list and plant_grid is populated with Grass objects.
+        """
+        ax = min(x1,x2)
+        bx = max(x1,x2)
+        ay = min(y1,y2)
+        by = max(y1,y2)
+        
+        x = ax
+        y = ay
+        while (x < bx or y < by):
+            self.water_grid[y-WATER_SPREAD*3:y+WATER_SPREAD*3, x-WATER_SPREAD*3:x+WATER_SPREAD*3] = 0.25  
+            if(x < bx):
+                x += 1
+            if(y < by):
+                y += 1
+       
+        x = ax
+        y = ay
+        while (x < bx or y < by):         
+            self.water_grid[y-WATER_SPREAD*2:y+WATER_SPREAD*2, x-WATER_SPREAD*2:x+WATER_SPREAD*2] = 0.5
+            if(x < bx):
+                x += 1
+            if(y < by):
+                y += 1
+            
+        x = ax
+        y = ay
+        while (x < bx or y < by):
+            self.water_grid[y-WATER_SPREAD:y+WATER_SPREAD, x-WATER_SPREAD:x+WATER_SPREAD] = 1
+            if(x < bx):
+                x += 1
+            if(y < by):
+                y += 1
+                
+    # MEATHOD: checkCell -----------------------------------------------
+    def updateTemp(self):
+        """ Description:
+            
+            Populates the plant list by determining if a plant grows in an area
+            using a random number.
+        
+            Variables: 
+            -plantChance: Chance a plant will grow in a grid space.
+        
+            Output: plant_list and plant_grid is populated with Grass objects.
+        """
+        self.temp_grid = self.water_grid * WATER_TEMP
+        self.temp_grid += self.light_grid * LIGHT_TEMP
     
     # MEATHOD: checkCell -----------------------------------------------
     def initPlants(self):
@@ -251,13 +332,14 @@ class EcoSystem:
         newFox.position = (35, 30)
         self.carnivore_list.append(newFox)
         self.carnivore_grid[35, 30] = 1
-        
      
     # MEATHOD: runAFewFrames -------------------------------------------
     def runAFewFrames(self):
         for i in range(5):
             for j in range(len(self.herbivore_list)):
                 self.randomWalk(self.herbivore_list[j])
+            for j in range(len(self.carnivore_list)):
+                self.randomWalk(self.carnivore_list[j])
 
 # FUNCTION: FUNC -------------------------------------------------------
 def func():
@@ -279,7 +361,7 @@ eco = EcoSystem()
 eco.displayGrid()
 eco.displayFrame()
 
-for i in range(20):
+for i in range(2):
     eco.frame += 1
     eco.runAFewFrames()
     eco.displayFrame()
