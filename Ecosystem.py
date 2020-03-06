@@ -29,8 +29,8 @@ GRID_X = 50                     # var meaning
 GRID_Y = 50
 
 WATER_SPREAD = 4
-WATER_TEMP = -1
-LIGHT_TEMP = 1
+WATER_TEMP = -4
+LIGHT_TEMP = 2
 
 # PROGRAM GLOBALS ------------------------------------------------------
 # Not User Modifiable
@@ -72,7 +72,7 @@ class EcoSystem:
         # These grids track constant values accross the grid
         self.light_grid = nu.ones((self.length, self.width))
         self.water_grid = nu.ones((self.length, self.width))/4
-        self.temp_grid = nu.zeros((self.length+1, self.width+1))
+        self.temp_grid = nu.zeros((self.length+1, self.width))
 
         # These grids are booleans(0/1) for when animals are at a location
         self.plant_grid = nu.zeros((self.length, self.width))
@@ -133,7 +133,7 @@ class EcoSystem:
         cm = ['YlOrBr_r', 'Blues', 'RdBu_r']
         
         fig, axs = plt.subplots(1, 1)
-        pcm = axs.pcolormesh(self.light_grid,
+        pcm = axs.pcolormesh(self.plant_grid,
                             cmap=cm[0])
         fig.colorbar(pcm, ax=axs)
         axs.axis("off")
@@ -307,8 +307,10 @@ class EcoSystem:
         
             Output: plant_list and plant_grid is populated with Grass objects.
         """
-        self.temp_grid = self.water_grid * WATER_TEMP
-        self.temp_grid += self.light_grid * LIGHT_TEMP
+        self.temp_grid[:-1,:] = self.water_grid * WATER_TEMP
+        self.temp_grid[:-1,:] += self.light_grid * LIGHT_TEMP
+        self.temp_grid[-1,0] = -5
+        self.temp_grid[-1,-1] = 5
     
     # MEATHOD: checkCell -----------------------------------------------
     def initPlants(self):
@@ -397,6 +399,8 @@ for i in range(10):
 
 print("# plants died:")
 print(value - len(eco.plant_list))
+
+eco.displayGrid()
 
 #=======================================================================
 # END FILE
