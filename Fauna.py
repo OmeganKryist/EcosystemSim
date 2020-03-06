@@ -64,7 +64,7 @@ class Fauna:
     position = None
     alive = None
     # MEATHOD: INIT ----------------------------------------------------
-    def __init__(self, x, y):
+    def __init__(self, y, x):
         """ Description: Class constructor
     
             Variables: 
@@ -74,7 +74,7 @@ class Fauna:
         """
         self.energy = rand.random() * INIT_ENERGY_RANGE + INIT_ENERGY_MIN
         self.water = rand.random() * INIT_WATER_RANGE + INIT_WATER_MIN
-        self.position = [x, y]
+        self.position = [y, x]
         self.alive = True
 
     # MEATHOD: eat -----------------------------------------------------
@@ -101,7 +101,7 @@ class Fauna:
         self.water += amount
 
     # MEATHOD: move ----------------------------------------------------
-    def move(self, x, y):
+    def move(self, y, x):
         """ Description: updates the fauna's position
                          deducts the move cost
     
@@ -112,7 +112,7 @@ class Fauna:
         """
         self.energy -= MOVE_ENERGY_COST
         self.water -= MOVE_WATER_COST
-        self.position = [x, y]
+        self.position = [y, x]
 
     # MEATHOD: wait ----------------------------------------------------
     def wait(self):
@@ -123,19 +123,6 @@ class Fauna:
         """
         self.energy -= WAIT_ENERGY_COST
         self.water -= WAIT_WATER_COST
-
-    # MEATHOD: randMove ------------------------------------------------
-    def randMove(self, xRange, yRange):
-        """ Description: provides a new possible location for the animal
-    
-            Variables: 
-            -self: instance of class
-            -xRange: x position
-            -yRange: y position
-        """
-        x = xRange * (rand.random() * 2 - 1)
-        y = yRange * (rand.random() * 2 - 1)
-        return [x, y]
 
     # MEATHOD: healthCheck ---------------------------------------------
     def healthCheck(self):
@@ -189,7 +176,7 @@ class Rabbit(Herbivore):
             Variables: 
             -self: instance of class
     """
-    def __init__(self):
+    def __init__(self, y, x):
     # energy
         self.INIT_ENERGY_MIN = 900         # initialization minimum for energy
         self.INIT_ENERGY_RANGE = 100       # initialization range for energy
@@ -209,6 +196,10 @@ class Rabbit(Herbivore):
                                     
         self.energy = rand.random() * self.INIT_ENERGY_RANGE + self.INIT_ENERGY_MIN
         self.water = rand.random() * self.INIT_WATER_RANGE + self.INIT_WATER_MIN
+        
+        self.position = [y, x]
+        self.alive = True
+        
     
     def consumed(self):
         #A rabbit provides 200 energy to predators
@@ -239,7 +230,7 @@ class Fox(Carnivore, Herbivore):
     
     """
     
-    def __init__(self):
+    def __init__(self, y, x):
         self.INIT_ENERGY_MIN = 1000         # initialization minimum for energy
         self.INIT_ENERGY_RANGE = 200       # initialization range for energy
         self.WAIT_ENERGY_COST = 50 * dt    # energy cost of not moving
@@ -259,6 +250,9 @@ class Fox(Carnivore, Herbivore):
                                     
         self.energy = rand.random() * self.INIT_ENERGY_RANGE + self.INIT_ENERGY_MIN
         self.water = rand.random() * self.INIT_WATER_RANGE + self.INIT_WATER_MIN
+        
+        self.position = [y, x]
+        self.alive = True
 
 #=======================================================================
 # END FILE
