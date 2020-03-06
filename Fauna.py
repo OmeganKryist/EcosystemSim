@@ -205,6 +205,7 @@ class Rabbit(Herbivore):
         self.MOVE_WATER_COST = 100 * dt     # water cost of moving
         self.DESICCATE = 700               # value to which an animal dies if it's
                                     # water value is lower than 
+        self.eatAmt = 105                   #Max amount that rabbit will eat at once
                                     
         self.energy = rand.random() * self.INIT_ENERGY_RANGE + self.INIT_ENERGY_MIN
         self.water = rand.random() * self.INIT_WATER_RANGE + self.INIT_WATER_MIN
@@ -253,6 +254,8 @@ class Fox(Carnivore, Herbivore):
         self.MOVE_WATER_COST = 100 * dt        # water cost of moving
         self.DESICCATE = 400               # value to which an animal dies if it's
                                     # water value is lower than 
+          
+        self.eatAmt = 200                   #Max amount that fox will eat at once
                                     
         self.energy = rand.random() * self.INIT_ENERGY_RANGE + self.INIT_ENERGY_MIN
         self.water = rand.random() * self.INIT_WATER_RANGE + self.INIT_WATER_MIN
