@@ -32,6 +32,14 @@ WATER_SPREAD = 4
 WATER_TEMP = -4
 LIGHT_TEMP = 2
 
+DISSIPATION_RATE = 0.8
+
+PLANT_CHANCE = 0.9
+NUM_RABBITS = 5
+NUM_BURROWS = 3
+NUM_FOXES = 1
+
+
 # PROGRAM GLOBALS ------------------------------------------------------
 # Not User Modifiable
 
@@ -73,6 +81,7 @@ class EcoSystem:
         self.light_grid = nu.ones((self.length, self.width))
         self.water_grid = nu.ones((self.length, self.width))/4
         self.temp_grid = nu.zeros((self.length+1, self.width))
+        self.scent_grid = nu.zeros((self.length, self.width))
 
         # These grids are booleans(0/1) for when animals are at a location
         self.plant_grid = nu.zeros((self.length, self.width))
@@ -130,7 +139,7 @@ class EcoSystem:
                 -self: the SimGrid object instance
         """
         
-        cm = ['YlOrBr_r', 'Blues', 'RdBu_r']
+        cm = ['YlOrBr_r', 'Blues', 'coolwarm', 'PRGn']
         
         fig, axs = plt.subplots(1, 1)
         pcm = axs.pcolormesh(self.plant_grid,
@@ -154,6 +163,14 @@ class EcoSystem:
         fig.colorbar(pcm, ax=axs)
         axs.axis("off")
         plt.title("EcoSystem Temperture Distribution")
+        plt.show()
+        
+        fig, axs = plt.subplots(1, 1)
+        pcm = axs.pcolormesh(self.scent_grid,
+                            cmap=cm[3])
+        fig.colorbar(pcm, ax=axs)
+        axs.axis("off")
+        plt.title("EcoSystem Scent Distribution")
         plt.show()
 
     # MEATHOD: checkCell -----------------------------------------------
@@ -195,12 +212,12 @@ class EcoSystem:
         #Directions in x-axis
         moveX = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
         #Fauna.position[0] current x location
-        moveX = moveX + Fauna.position[0]
+        moveX = moveX + Fauna.position[1]
         
         #Directions in y-axis
         moveY = nu.array([1, 0, -1, 1, -1, 1, 0, -1])
         #Fauna.position[1] current y location
-        moveY = moveY + Fauna.position[1]
+        moveY = moveY + Fauna.position[0]
         
         #Check Borders
         valid = nu.where(nu.logical_not(nu.logical_or( \
@@ -237,7 +254,11 @@ class EcoSystem:
                 else:
                     j += 1
                         
-                        
+    def updateScent(self):
+        herb_scent = nu.fmax(self.herbivore_grid, self.scent_grid * DISSIPATION_RATE)
+        carn_scent = nu.fmax(self.carnivore_grid, self.scent_grid * DISSIPATION_RATE * -1)
+        self.scent_grid = herb_scent - carn_scent
+                   
     # MEATHOD: checkCell -----------------------------------------------
     def initWater(self):
         """ Description:
@@ -324,14 +345,12 @@ class EcoSystem:
         
             Output: plant_list and plant_grid is populated with Grass objects.
         """
-        #For initializing grass
-        plantChance = 0.85
         
         #Test every grid space for plant growth
         for y in range(self.length):
             for x in range(self.width):
                 #Test for growth
-                if nu.random.uniform(0,1) <= plantChance:
+                if nu.random.uniform(0,1) <= PLANT_CHANCE:
                     if(self.water_grid[y,x] < 0.75):
                         #Make a grass plant
                         newPlant = fo.Grass(y,x)
@@ -343,7 +362,18 @@ class EcoSystem:
     def initRabbits(self):
         #This rabbit spawn is hardcoded so we could keep them away from
         #their predators
-        for i in range(1, 4):
+        
+        for i in range(NUM_BURROWS):
+            x = 3 * i
+            y = 5 * i
+            
+        self.spawnRabbits()
+    
+    # MEATHOD: checkCell -----------------------------------------------
+    def spawnRabbits(self):
+        #This rabbit spawn is hardcoded so we could keep them away from
+        #their predators
+        for i in range(NUM_RABBITS):
             x = i * 2
             y = i
             newRab = fa.Rabbit(y,x)
@@ -354,11 +384,13 @@ class EcoSystem:
     def initFoxes(self):
         #This fox spawn is hardcoded so we could keep them away from vulnerable
         #animals
-        x = 35
-        y = 30
-        newFox = fa.Fox(y,x)
-        self.carnivore_list.append(newFox)
-        self.carnivore_grid[y, x] = 1
+        
+        for i in range(NUM_FOXES):
+            x = 35
+            y = 30
+            newFox = fa.Fox(y,x)
+            self.carnivore_list.append(newFox)
+            self.carnivore_grid[y, x] = 1
      
     # MEATHOD: runAFewFrames -------------------------------------------
     def runAFewFrames(self):
@@ -368,7 +400,8 @@ class EcoSystem:
             for j in range(len(self.carnivore_list)):
                 self.randomWalk(self.carnivore_list[j])
             self.animalsEat()
-
+            self.updateScent()
+        
 # FUNCTION: FUNC -------------------------------------------------------
 def func():
     """ Description:
@@ -404,3 +437,4 @@ eco.displayGrid()
 
 #=======================================================================
 # END FILE
+
