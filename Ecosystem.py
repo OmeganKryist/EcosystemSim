@@ -207,7 +207,8 @@ class EcoSystem:
             Output: 
                 Fauna has changed locations
         """
-        
+        if Fauna.THIRSTY >= Fauna.water:
+            self.goWater(Fauna)
         #Moore Neighborhood walk
         #Directions in x-axis
         moveX = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
@@ -237,6 +238,34 @@ class EcoSystem:
             self.herbivore_grid[moveY[valid[0][0]], moveX[valid[0][0]]] = 1
             Fauna.move(moveY[valid[0][0]], moveX[valid[0][0]])
         
+    def goWater(self, Fauna):
+        #I do not know how to implement this function (See walk section)
+        
+        #Init Moore Neighborhood arrays (same as randomWalk)
+        moveX = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
+        moveY = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
+        
+        moveX = Fauna.position[1] + moveX
+        moveY = Fauna.position[0] + moveY
+        
+        #Check Borders
+        valid = nu.where(nu.logical_not(nu.logical_or( \
+        nu.logical_or(moveY >= self.length, moveY < 0),\
+        nu.logical_or(moveX >= self.width, moveX < 0))))
+        
+        
+        #Checks nearby spaces within border and drinks if there is water
+        for i in range(len(valid[0])):
+            if (self.water_grid[moveY[valid[0][i]],moveX[valid[0][i]]] > 0):
+                Fauna.drink()
+                return
+        
+        #Walk Section: Choose to walk instead
+        #I do not know how to implement this part
+        return
+    
+        
+        return
     # MEATHOD: checkCell -----------------------------------------------
     def animalsEat(self):
         for i in range(len(self.herbivore_list)):
@@ -419,8 +448,8 @@ def func():
 # Driver code for program
 
 eco = EcoSystem()
-eco.displayGrid()
-eco.displayFrame()
+#eco.displayGrid()
+#eco.displayFrame()
 
 value = len(eco.plant_list)
 
@@ -433,7 +462,7 @@ for i in range(10):
 print("# plants died:")
 print(value - len(eco.plant_list))
 
-eco.displayGrid()
+#eco.displayGrid()
 
 #=======================================================================
 # END FILE

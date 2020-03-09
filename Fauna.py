@@ -184,6 +184,7 @@ class Rabbit(Herbivore):
         self.MOVE_ENERGY_COST = 100  * dt   # energy cost of moving
         self.STARVE = 400                  # value to which an animal dies if it's
                                     # energy value is lower than 
+        self.HUNGRY = 900                   #Threshold for when animal is hungry
         
         # water
         self.INIT_WATER_MIN = 900          # initialization minimum for water
@@ -193,6 +194,8 @@ class Rabbit(Herbivore):
         self.DESICCATE = 700               # value to which an animal dies if it's
                                     # water value is lower than 
         self.eatAmt = 105                   #Max amount that rabbit will eat at once
+        
+        self.THIRSTY = 900                  # Threshold for when animal is thirsty
                                     
         self.energy = rand.random() * self.INIT_ENERGY_RANGE + self.INIT_ENERGY_MIN
         self.water = rand.random() * self.INIT_WATER_RANGE + self.INIT_WATER_MIN
