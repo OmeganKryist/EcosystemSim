@@ -240,6 +240,7 @@ class Fox(Carnivore, Herbivore):
         self.MOVE_ENERGY_COST = 150 * dt   # energy cost of moving
         self.STARVE = 400                  # value to which an animal dies if it's
                                     # energy value is lower than 
+        self.HUNGRY = 900                   #Threshold for when animal is hungry
         
         # water
         self.INIT_WATER_MIN = 900          # initialization minimum for water
@@ -248,6 +249,7 @@ class Fox(Carnivore, Herbivore):
         self.MOVE_WATER_COST = 100 * dt        # water cost of moving
         self.DESICCATE = 400               # value to which an animal dies if it's
                                     # water value is lower than 
+        self.THIRSTY = 900                  # Threshold for when animal is thirsty
           
         self.eatAmt = 200                   #Max amount that fox will eat at once
                                     

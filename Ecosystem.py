@@ -92,6 +92,9 @@ class EcoSystem:
         self.plant_list = []
         self.herbivore_list = []
         self.carnivore_list = []
+        #Counting variables
+        self.animalsEaten = 0
+        self.plantsDied = 0
         
         self.initWater()
         self.updateTemp()
@@ -207,8 +210,9 @@ class EcoSystem:
             Output: 
                 Fauna has changed locations
         """
-        if Fauna.THIRSTY >= Fauna.water:
-            self.goWater(Fauna)
+        #Use function for when goWater works
+        #if Fauna.THIRSTY >= Fauna.water:
+        #    self.goWater(Fauna)
         #Moore Neighborhood walk
         #Directions in x-axis
         moveX = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
@@ -264,12 +268,13 @@ class EcoSystem:
         #I do not know how to implement this part
         return
     
-        
-        return
-    # MEATHOD: checkCell -----------------------------------------------
+    # METHOD: animalsEat -----------------------------------------------
     def animalsEat(self):
         for i in range(len(self.herbivore_list)):
             j = 0
+            #Skip animal if not hungry
+            #if self.herbivore_list[i].energy > self.herbivore_list[i].HUNGRY:
+                #continue
             while(j < len(self.plant_list)):
                 #If a plant is found
                 if self.plant_list[j].position[0] == self.herbivore_list[i].position[0] and self.plant_list[j].position[1] == self.herbivore_list[i].position[1]:
@@ -277,12 +282,55 @@ class EcoSystem:
                     self.herbivore_list[i].eat(self.plant_list[j].consumed(self.herbivore_list[i].eatAmt))
                     #If the plant dies, remove from grid and list
                     if (not self.plant_list[j].healthCheck()):
-                        self.plant_grid[self.herbivore_list[i].position[0], self.herbivore_list[i].position[1]] == 0
+                        self.plant_grid[self.herbivore_list[i].position[0], self.herbivore_list[i].position[1]] = 0
                         self.plant_list.remove(self.plant_list[j])
+                        self.plantsDied += 1
                     j = len(self.plant_list)
                 else:
                     j += 1
-                        
+        #iCarn will be every carnivore object in the carnivore_list
+        for iCarn in self.carnivore_list:
+            if iCarn.HUNGRY > iCarn.energy:
+                self.carnivoreEat(iCarn)
+            
+    # METHOD: carnivoreEat -----------------------------------------------
+    def carnivoreEat(self, Fauna):
+        #MoveY and moveX renamed to locY and locX - short for location
+        locX = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
+        locY = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
+        
+        locX = Fauna.position[1] + locX
+        locY = Fauna.position[0] + locY
+        
+        #Check Borders
+        valid = nu.where(nu.logical_not(nu.logical_or( \
+        nu.logical_or(locY >= self.length, locY < 0),\
+        nu.logical_or(locX >= self.width, locY < 0))))
+        
+        #Boolean flag to let us know if the carnivore has eaten
+        eatCheck = False
+        #Check if there is a neighboring herbivore
+        for i in range(len(valid)):
+            #For readability-currentX and currentY are locations we are checking
+            curX = valid[0][i]
+            curY = valid[0][i]
+            #If a herbivore is spotted
+            if self.herbivore_grid[curY, curX] == 1:
+                #Search for herbivore object in list
+                for iHerb in self.herbivore_list:
+                    #Location match found
+                    if iHerb.position[0] == curY and iHerb.position[1] == curX:
+                        #Trade energy values
+                        Fauna.eat(iHerb.consumed())
+                        #Remove herbivore and record its death
+                        self.herbivore_list.remove(iHerb)
+                        self.animalsEaten += 1
+                        eatCheck = True
+        #return a true or false depending on action - can do something about it
+        #later                
+        return eatCheck
+            
+    
     def updateScent(self):
         herb_scent = nu.fmax(self.herbivore_grid, self.scent_grid * DISSIPATION_RATE)
         carn_scent = nu.fmax(self.carnivore_grid, self.scent_grid * DISSIPATION_RATE * -1)
