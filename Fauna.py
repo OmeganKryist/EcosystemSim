@@ -18,34 +18,12 @@
 #=======================================================================
 # PROGRAM IMPORTS ------------------------------------------------------
 import numpy as nu
-import random as rand
-
-# PROGRAM CONSTANTS ----------------------------------------------------
-# User modifiable
-
-# energy
-INIT_ENERGY_MIN = 0         # initialization minimum for energy
-INIT_ENERGY_RANGE = 0       # initialization range for energy
-WAIT_ENERGY_COST = 0        # energy cost of not moving
-MOVE_ENERGY_COST = 0        # energy cost of moving
-STARVE = 0                  # value to which an animal dies if it's
-                            # energy value is lower than 
-
-# water
-INIT_WATER_MIN = 0          # initialization minimum for water
-INIT_WATER_RANGE = 0        # initialization range for water
-WAIT_WATER_COST = 0         # water cost of not moving
-MOVE_WATER_COST = 0         # water cost of moving
-DESICCATE = 0               # value to which an animal dies if it's
-                            #water value is lower than 
-  
-#Time segments per day                                                      
-dt = 1 / 24
 
 # PROGRAM GLOBALS ------------------------------------------------------
 # Not User Modifiable
 
-var = 0                     # var meaning
+#Time segments per day                                                      
+dt = 24
 
 #=======================================================================
 # CLASS: Fauna ---------------------------------------------------------
@@ -59,11 +37,34 @@ class Fauna:
         -position: the fauna's physical position in the simulation grid
         -alive: a boolean for checking if the animal is alive
     """
+    
+    INIT_ENERGY_MIN = None         # initialization minimum for energy
+    INIT_ENERGY_MAX = None       # initialization range for energy
+    INIT_WATER_MIN = None          # initialization minimum for water
+    INIT_WATER_MAX = None        # initialization range for water
+    
     energy = None
+    max_energy = None
+    move_energy_cost = None
+    wait_energy_cost = None
+    energy_value = None
+    hungry = None
+    eat_amount = None
+    starve = None
+    
     water = None
+    max_water = None
+    move_water_cost = None
+    wait_water_cost = None
+    water_value = None
+    thirsty = None
+    drink_amount = None
+    desiccate = None
+    
     position = None
     alive = None
-    # MEATHOD: INIT ----------------------------------------------------
+
+    # MEATHOD: init ----------------------------------------------------
     def __init__(self, y, x):
         """ Description: Class constructor
     
@@ -72,8 +73,10 @@ class Fauna:
             -x: x position
             -y: y position
         """
-        self.energy = rand.random() * INIT_ENERGY_RANGE + INIT_ENERGY_MIN
-        self.water = rand.random() * INIT_WATER_RANGE + INIT_WATER_MIN
+        
+        self.energy = nu.random.uniform(self.INIT_ENERGY_MIN, self.INIT_ENERGY_MAX)
+        self.water = nu.random.uniform(self.INIT_WATER_MIN, self.INIT_WATER_MAX)
+        
         self.position = [y, x]
         self.alive = True
 
@@ -87,7 +90,7 @@ class Fauna:
             -amount: variable change to energy level
                      assumed to be positive
         """
-        self.energy += amount
+        self.energy += min(amount, self.eat_amount)
 
     # MEATHOD: drink ---------------------------------------------------
     def drink(self, amount):
@@ -98,7 +101,7 @@ class Fauna:
             -amount: variable change to water level
                      assumed to be positive
         """
-        self.water += amount
+        self.water += min(amount, self.drink_amount)
 
     # MEATHOD: move ----------------------------------------------------
     def move(self, y, x):
@@ -110,8 +113,8 @@ class Fauna:
             -x: x position
             -y: y position
         """
-        self.energy -= self.MOVE_ENERGY_COST
-        self.water -= self.MOVE_WATER_COST
+        self.energy -= self.move_energy_cost
+        self.water -= self.move_water_cost
         self.position = [y, x]
 
     # MEATHOD: wait ----------------------------------------------------
@@ -121,8 +124,13 @@ class Fauna:
             Variables: 
             -self: instance of class
         """
-        self.energy -= self.WAIT_ENERGY_COST
-        self.water -= self.WAIT_WATER_COST
+        self.energy -= self.wait_energy_cost
+        self.water -= self.wait_water_cost
+        
+    def consumed(self):
+        self.alive = False # it's been eaten
+        # return array of energy and water values to add to predators
+        return [self.energyValue, self.waterValue]
 
     # MEATHOD: healthCheck ---------------------------------------------
     def healthCheck(self):
@@ -133,10 +141,11 @@ class Fauna:
 
             Output: a boolean value indicating the life of the fauna
         """
-        if(self.energy < self.STARVE):
-            self.alive = False
-        if(self.water < self.DESICCATE):
-            self.alive = False
+        if(self.alive):
+            if(self.energy < self.starve):
+                self.alive = False
+            if(self.water < self.desiccate):
+                self.alive = False
         return self.alive
       
     def isHerbivore(self):
@@ -152,14 +161,6 @@ class Herbivore(Fauna):
         Variables: 
         -var: 
     """
-    # MEATHOD: INIT ----------------------------------------------------
-    def __init__(self):
-        """ Description: Class constructor
-            
-    
-            Variables: 
-            -self: instance of class
-        """
     
     def isHerbivore(self):
         return True
@@ -176,38 +177,26 @@ class Rabbit(Herbivore):
             Variables: 
             -self: instance of class
     """
-    def __init__(self, y, x):
-    # energy
-        self.INIT_ENERGY_MIN = 900         # initialization minimum for energy
-        self.INIT_ENERGY_RANGE = 100       # initialization range for energy
-        self.WAIT_ENERGY_COST = 25 * dt    # energy cost of not moving
-        self.MOVE_ENERGY_COST = 50  * dt   # energy cost of moving
-        self.STARVE = 400                  # value to which an animal dies if it's
-                                    # energy value is lower than 
-        self.HUNGRY = 900                   #Threshold for when animal is hungry
-        
-        # water
-        self.INIT_WATER_MIN = 900          # initialization minimum for water
-        self.INIT_WATER_RANGE = 100        # initialization range for water
-        self.WAIT_WATER_COST = 25 * dt     # water cost of not moving
-        self.MOVE_WATER_COST = 50 * dt     # water cost of moving
-        self.DESICCATE = 700               # value to which an animal dies if it's
-                                    # water value is lower than 
-        self.eatAmt = 105                   #Max amount that rabbit will eat at once
-        
-        self.THIRSTY = 900                  # Threshold for when animal is thirsty
-                                    
-        self.energy = rand.random() * self.INIT_ENERGY_RANGE + self.INIT_ENERGY_MIN
-        self.water = rand.random() * self.INIT_WATER_RANGE + self.INIT_WATER_MIN
-        
-        self.position = [y, x]
-        self.alive = True
-        
+    INIT_ENERGY_MIN = 900         # initialization minimum for energy
+    INIT_ENERGY_MAX = 1000       # initialization range for energy
+    INIT_WATER_MIN = 900          # initialization minimum for water
+    INIT_WATER_MAX = 1000        # initialization range for water
     
-    def consumed(self):
-        #A rabbit provides 200 energy to predators
-        energyValue = 200
-        return energyValue
+    max_energy = 1000
+    move_energy_cost = 50 * dt
+    wait_energy_cost = 25 * dt 
+    energy_value = 200
+    hungry = 900
+    eat_amount = 105
+    starve = 400
+    
+    max_water = 1000
+    move_water_cost = 50 * dt
+    wait_water_cost = 25 * dt
+    water_value = 100
+    thirsty = 900
+    drink_amount = 100
+    desiccate = 700
 
 # CLASS: Carnivore -----------------------------------------------------
 class Carnivore(Fauna):
@@ -216,14 +205,6 @@ class Carnivore(Fauna):
         Variables: 
         -var:  
     """
-    # MEATHOD: INIT ----------------------------------------------------
-    def __init__(self):
-        """ Description: Class constructor
-            
-    
-            Variables: 
-            -self: instance of class  
-        """
         
     def isCarnivore(self):
         return True
@@ -233,31 +214,26 @@ class Fox(Carnivore, Herbivore):
     
     """
     
-    def __init__(self, y, x):
-        self.INIT_ENERGY_MIN = 1000         # initialization minimum for energy
-        self.INIT_ENERGY_RANGE = 200       # initialization range for energy
-        self.WAIT_ENERGY_COST = 40 * dt    # energy cost of not moving
-        self.MOVE_ENERGY_COST = 60 * dt   # energy cost of moving
-        self.STARVE = 400                  # value to which an animal dies if it's
-                                    # energy value is lower than 
-        self.HUNGRY = 900                   #Threshold for when animal is hungry
-        
-        # water
-        self.INIT_WATER_MIN = 900          # initialization minimum for water
-        self.INIT_WATER_RANGE = 100        # initialization range for water
-        self.WAIT_WATER_COST = 25 * dt        # water cost of not moving
-        self.MOVE_WATER_COST = 50 * dt        # water cost of moving
-        self.DESICCATE = 400               # value to which an animal dies if it's
-                                    # water value is lower than 
-        self.THIRSTY = 900                  # Threshold for when animal is thirsty
-          
-        self.eatAmt = 200                   #Max amount that fox will eat at once
-                                    
-        self.energy = rand.random() * self.INIT_ENERGY_RANGE + self.INIT_ENERGY_MIN
-        self.water = rand.random() * self.INIT_WATER_RANGE + self.INIT_WATER_MIN
-        
-        self.position = [y, x]
-        self.alive = True
+    INIT_ENERGY_MIN = 1000       # initialization minimum for energy
+    INIT_ENERGY_MAX = 1200       # initialization range for energy
+    INIT_WATER_MIN = 900         # initialization minimum for water
+    INIT_WATER_MAX = 1000        # initialization range for water
+    
+    max_energy = 1200
+    move_energy_cost = 60 / dt
+    wait_energy_cost = 40 / dt 
+    energy_value = 200
+    hungry = 900
+    eat_amount = 200
+    starve = 400
+    
+    max_water = 1000
+    move_water_cost = 50 / dt
+    wait_water_cost = 25 / dt
+    water_value = 100
+    thirsty = 900
+    drink_amount = 150
+    desiccate = 400
 
 #=======================================================================
 # END FILE
