@@ -630,15 +630,21 @@ def func():
 
 eco = EcoSystem()
 
-value = len(eco.plant_list)
+initPlants = len(eco.plant_list)
+initRabs = len(eco.herbivore_list)
+initFoxes = len(eco.carnivore_list)
 
 for i in range(10):
     eco.frame += 1
     eco.runADay()
     eco.displayFrame()
 
-print("# plants died:")
-print(value - len(eco.plant_list))
+print("Plant difference:")
+print(len(eco.plant_list) - initPlants)
+print("Rabbit difference:")
+print(len(eco.herbivore_list) - initPlants)
+print("Fox difference:")
+print(len(eco.carnivore_list) - initPlants)
 
 #=======================================================================
 # END FILE
