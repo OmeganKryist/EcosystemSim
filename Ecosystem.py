@@ -668,8 +668,8 @@ class EcoSystem:
         
         i = 0
         while(i < NUM_BURROWS):
-            x = int(nu.random.uniform(0,1) * (self.width - 2) + 2)
-            y = int(nu.random.uniform(0,1) * (self.length - 2) + 2)
+            x = int(nu.random.uniform(2,self.width - 2))
+            y = int(nu.random.uniform(2,self.length - 2))
             if(self.water_grid[y,x] < 0.75 and self.burrow_grid[y,x] < 1):
                 self.burrow_grid[y,x] = 1
                 i += 1
@@ -696,6 +696,7 @@ class EcoSystem:
                         
                         locX = x + placeX[j]
                         locY = y + placeY[j]
+                        
                         newRab = fa.Rabbit(locY,locX)
                         #Spawns around the burrow
                         self.herbivore_list.append(newRab)
