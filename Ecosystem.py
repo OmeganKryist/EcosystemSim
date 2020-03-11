@@ -389,28 +389,38 @@ class EcoSystem:
     # METHOD: animalsEat -----------------------------------------------
     def animalsEat(self):
         for i in range(len(self.herbivore_list)):
-            j = 0
             #Skip animal if not hungry
-            #if self.herbivore_list[i].energy > self.herbivore_list[i].HUNGRY:
-                #continue
-            while(j < len(self.plant_list)):
+            if self.herbivore_list[i].energy > self.herbivore_list[i].HUNGRY:
+                continue
+                
+            else:
+                self.eatPlant(self.herbivore_list[i])       
+        #iCarn will be every carnivore object in the carnivore_list
+        for iCarn in self.carnivore_list:
+            if iCarn.HUNGRY > iCarn.energy:
+                if self.carnivoreEat(iCarn):
+                    continue
+                else:
+                    #Carnivores do not seem to eat plants when this is used
+                    self.eatPlant(iCarn)
+                    
+    def eatPlant(self, Fauna):
+        j = 0
+        while(j < len(self.plant_list)):
                 #If a plant is found
-                if self.plant_list[j].position[0] == self.herbivore_list[i].position[0] and self.plant_list[j].position[1] == self.herbivore_list[i].position[1]:
+                if self.plant_list[j].position[0] == Fauna.position[0] and self.plant_list[j].position[1] == Fauna.position[1]:
                     #Eat the max amount if the herbivore is able
-                    self.herbivore_list[i].eat(self.plant_list[j].consumed(self.herbivore_list[i].eatAmt))
+                    Fauna.eat(self.plant_list[j].consumed(Fauna.eatAmt))
                     #If the plant dies, remove from grid and list
                     if (not self.plant_list[j].healthCheck()):
-                        self.plant_grid[self.herbivore_list[i].position[0], self.herbivore_list[i].position[1]] = 0
+                        self.plant_grid[Fauna.position[0], Fauna.position[1]] = 0
                         self.plant_list.remove(self.plant_list[j])
                         self.plantsDied += 1
                     j = len(self.plant_list)
                 else:
                     j += 1
-        #iCarn will be every carnivore object in the carnivore_list
-        for iCarn in self.carnivore_list:
-            if iCarn.HUNGRY > iCarn.energy:
-                self.carnivoreEat(iCarn)
-            
+        return
+    
     # METHOD: carnivoreEat -----------------------------------------------
     def carnivoreEat(self, Fauna):
         #MoveY and moveX renamed to locY and locX - short for location
