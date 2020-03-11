@@ -578,8 +578,7 @@ class EcoSystem:
         if(self.rained):
             self.water_grid -= 0.2
             self.rained = False
-        
-        if(nu.random.uniform(0,1) < OVERCAST_CHANCE):
+        elif(nu.random.uniform(0,1) < OVERCAST_CHANCE):
             self.light_grid *= 0.3
             if(nu.random.uniform(0,1) < RAIN_CHANCE):
                 self.water_grid += 0.2
