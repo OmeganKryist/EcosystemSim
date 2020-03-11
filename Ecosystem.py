@@ -21,6 +21,7 @@ import numpy as nu
 import matplotlib.pyplot as plt
 import Fauna as fa
 import Flora as fo
+import random
 
 # PROGRAM CONSTANTS ----------------------------------------------------
 # User modifiable
@@ -105,7 +106,7 @@ class EcoSystem:
         self.initFoxes()
         self.updateScent()
         
-        self.displayGrid()
+        #self.displayGrid()
         self.displayFrame()
         
     # MEATHOD: displayGrid ---------------------------------------------
@@ -249,6 +250,56 @@ class EcoSystem:
             self.herbivore_grid[Fauna.position[0], Fauna.position[1]] = 0
             self.herbivore_grid[moveY[valid[0][0]], moveX[valid[0][0]]] = 1
             Fauna.move(moveY[valid[0][0]], moveX[valid[0][0]])
+        
+    # METHOD: track ----------------------------------------------------
+    def track(self, Fauna):
+        #Checks to see if Carnivore should look for food
+        if (Fauna.energy > Fauna.HUNGRY):
+            return 1
+             
+        #Looks around itself in a moore neighborhood to find scent
+        #Init Moore Neighborhood arrays (same as randomWalk)
+        moveX = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
+        moveY = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
+        
+        moveX = Fauna.position[1] + moveX
+        moveY = Fauna.position[0] + moveY
+        
+        #Check Borders
+        valid = nu.where(nu.logical_not(nu.logical_or(nu.logical_or(moveY >= self.length, moveY < 0),nu.logical_or(moveX >= self.width, moveX < 0))))
+        
+        scent = nu.zeros(nu.size(valid[0]))
+        
+        for i in range(len(valid[0])):
+            scent[i] = self.scent_grid[moveY[valid[0][i]]][moveX[valid[0][i]]]
+            
+        strongest_scent = scent.argmax()
+        
+        duplicates = -1
+        for i in range(len(scent)):
+            if (scent[strongest_scent] == scent[i]):
+                duplicates += 1
+        print(duplicates)      
+        print(scent)
+            
+        if (duplicates > 0):
+            indexToUse = strongest_scent
+            currentIndex = 0
+            randomNum = random.randint(0, 10)
+            while(randomNum > 0):
+                if(scent[currentIndex] == scent[strongest_scent]):
+                    indexToUse = currentIndex
+                    randomNum -= 1
+                currentIndex += 1
+                if(currentIndex == nu.size(scent)):
+                    currentIndex = 0
+        
+        self.carnivore_grid[Fauna.position[0], Fauna.position[1]] = 0
+        self.carnivore_grid[moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]]] = 1
+        Fauna.move(moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]])
+        print(Fauna.position)
+        
+        return 0
         
     def goWater(self, Fauna):
         #I do not know how to implement this function (See walk section)
@@ -496,7 +547,8 @@ class EcoSystem:
             for j in range(len(self.herbivore_list)):
                 self.randomWalk(self.herbivore_list[j])
             for j in range(len(self.carnivore_list)):
-                self.randomWalk(self.carnivore_list[j])
+                if(self.track(self.carnivore_list[j])):
+                    self.randomWalk(self.carnivore_list[j])
             self.animalsEat()
             self.updateScent()
         self.makePlants(PLANT_REPOP_CHANCE)
