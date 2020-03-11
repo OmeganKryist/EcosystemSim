@@ -41,7 +41,8 @@ RAIN_CHANCE = 0.8
 LAKE_SPREAD = 4
 HAS_LAKE = True # bool
 POND_SPREAD = 1
-NUM_PONDS = 2
+NUM_PONDS = 4
+
 
 # effects temp
 WATER_TEMP = -10
@@ -57,7 +58,7 @@ PLANT_REPOP_CHANCE = 0.3
 RABBITS_PER_BURROW = 5 # must be less than 9
 MAX_RABBITS = 100
 NUM_BURROWS = 3
-NUM_FOXES = 2
+NUM_FOXES = 3
 
 
 # PROGRAM GLOBALS ------------------------------------------------------
@@ -153,9 +154,9 @@ class EcoSystem:
                     simFrame[shape[0]-y-1, x, :] = [0.7, 0.7, 0.7]
                 elif(self.plant_grid[y,x] == 1):
                     simFrame[shape[0]-y-1, x, :] = [0, 0.4, 0]
-                elif(self.water_grid[y,x] == 1):
+                elif(self.water_grid[y,x] >= 1):
                     simFrame[shape[0]-y-1, x, :] = [0, 0.3, 0.7]
-                elif(self.water_grid[y,x] == .75):
+                elif(self.water_grid[y,x] >= .75):
                     simFrame[shape[0]-y-1, x, :] = [0.5, 0.7, 0.9]
 
         # formatting
@@ -226,12 +227,12 @@ class EcoSystem:
         #Moore Neighborhood walk
         #Directions in x-axis
         moveX = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
-        #Fauna.position[0] current x location
+        #Fauna.position[1] current x location
         moveX = moveX + Fauna.position[1]
         
         #Directions in y-axis
         moveY = nu.array([1, 0, -1, 1, -1, 1, 0, -1])
-        #Fauna.position[1] current y location
+        #Fauna.position[0] current y location
         moveY = moveY + Fauna.position[0]
         
         #Check Borders
@@ -280,8 +281,8 @@ class EcoSystem:
         for i in range(len(scent)):
             if (scent[strongest_scent] == scent[i]):
                 duplicates += 1
-        print(duplicates)      
-        print(scent)
+        #print(duplicates)      
+        #print(scent)
             
         indexToUse = strongest_scent
             
@@ -322,7 +323,7 @@ class EcoSystem:
         
         possibleFood = nu.zeros(nu.size(valid[0]))
         
-        print(valid)
+        #print(valid)
         
         for i in range(len(valid[0])):
             possibleFood[i] = self.plant_grid[moveY[valid[0][i]]][moveX[valid[0][i]]]
@@ -340,7 +341,7 @@ class EcoSystem:
         if (duplicates == -1):
             return 1
         
-        print(duplicates)
+        #print(duplicates)
         indexToUse = foundFood
         
         if (duplicates > 0):
@@ -707,11 +708,11 @@ initPlants = len(eco.plant_list)
 initRabs = len(eco.herbivore_list)
 initFoxes = len(eco.carnivore_list)
 
-for i in range(1):
+for i in range(NUM_DAYS):
     eco.frame += 1
     eco.runADay()
     eco.displayFrame()
-    eco.displayGrid()
+    #eco.displayGrid()
 
 print("Plant difference:")
 print(len(eco.plant_list) - initPlants)
