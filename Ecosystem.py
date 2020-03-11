@@ -43,7 +43,6 @@ HAS_LAKE = True # bool
 POND_SPREAD = 1
 NUM_PONDS = 4
 
-
 # effects temp
 WATER_TEMP = -10
 LIGHT_TEMP = 6
@@ -59,7 +58,7 @@ RABBITS_PER_BURROW = 5 # must be less than 9
 MAX_RABBITS = 100
 NUM_BURROWS = 3
 NUM_FOXES = 3
-
+MOVE_CHANCE = 0.5
 
 # PROGRAM GLOBALS ------------------------------------------------------
 # Not User Modifiable
@@ -228,34 +227,37 @@ class EcoSystem:
         #Use function for when goWater works
         #if Fauna.THIRSTY >= Fauna.water:
         #    self.goWater(Fauna)
-        #Moore Neighborhood walk
-        #Directions in x-axis
-        moveX = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
-        #Fauna.position[1] current x location
-        moveX = moveX + Fauna.position[1]
-        
-        #Directions in y-axis
-        moveY = nu.array([1, 0, -1, 1, -1, 1, 0, -1])
-        #Fauna.position[0] current y location
-        moveY = moveY + Fauna.position[0]
-        
-        #Check Borders
-        valid = nu.where(nu.logical_not(nu.logical_or( \
-        nu.logical_or(moveY >= self.length, moveY < 0),\
-        nu.logical_or(moveX >= self.width, moveX < 0))))
-
-        nu.random.shuffle(valid[0])
-
-        #Update grid and animal position
-        #X and Y may be flipped for grids
-        if(Fauna.isCarnivore()):
-            self.carnivore_grid[Fauna.position[0], Fauna.position[1]] = 0
-            self.carnivore_grid[moveY[valid[0][0]], moveX[valid[0][0]]] = 1
-            Fauna.move(moveY[valid[0][0]], moveX[valid[0][0]])
-        elif(Fauna.isHerbivore()):
-            self.herbivore_grid[Fauna.position[0], Fauna.position[1]] = 0
-            self.herbivore_grid[moveY[valid[0][0]], moveX[valid[0][0]]] = 1
-            Fauna.move(moveY[valid[0][0]], moveX[valid[0][0]])
+        if(nu.random.uniform(0,1) > MOVE_CHANCE):
+            #Moore Neighborhood walk
+            #Directions in x-axis
+            moveX = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
+            #Fauna.position[1] current x location
+            moveX = moveX + Fauna.position[1]
+            
+            #Directions in y-axis
+            moveY = nu.array([1, 0, -1, 1, -1, 1, 0, -1])
+            #Fauna.position[0] current y location
+            moveY = moveY + Fauna.position[0]
+            
+            #Check Borders
+            valid = nu.where(nu.logical_not(nu.logical_or( \
+            nu.logical_or(moveY >= self.length, moveY < 0),\
+            nu.logical_or(moveX >= self.width, moveX < 0))))
+    
+            nu.random.shuffle(valid[0])
+    
+            #Update grid and animal position
+            #X and Y may be flipped for grids
+            if(Fauna.isCarnivore()):
+                self.carnivore_grid[Fauna.position[0], Fauna.position[1]] = 0
+                self.carnivore_grid[moveY[valid[0][0]], moveX[valid[0][0]]] = 1
+                Fauna.move(moveY[valid[0][0]], moveX[valid[0][0]])
+            elif(Fauna.isHerbivore()):
+                self.herbivore_grid[Fauna.position[0], Fauna.position[1]] = 0
+                self.herbivore_grid[moveY[valid[0][0]], moveX[valid[0][0]]] = 1
+                Fauna.move(moveY[valid[0][0]], moveX[valid[0][0]])
+        else:
+            Fauna.wait()
         
     # METHOD: track ----------------------------------------------------
     def track(self, Fauna):
@@ -285,8 +287,6 @@ class EcoSystem:
         for i in range(len(scent)):
             if (scent[strongest_scent] == scent[i]):
                 duplicates += 1
-        #print(duplicates)      
-        #print(scent)
             
         indexToUse = strongest_scent
             
@@ -327,8 +327,6 @@ class EcoSystem:
         
         possibleFood = nu.zeros(nu.size(valid[0]))
         
-        #print(valid)
-        
         for i in range(len(valid[0])):
             possibleFood[i] = self.plant_grid[moveY[valid[0][i]]][moveX[valid[0][i]]]
         
@@ -345,7 +343,6 @@ class EcoSystem:
         if (duplicates == -1):
             return 1
         
-        #print(duplicates)
         indexToUse = foundFood
         
         if (duplicates > 0):
