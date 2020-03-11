@@ -133,9 +133,9 @@ class Fauna:
 
             Output: a boolean value indicating the life of the fauna
         """
-        if(self.energy < STARVE):
+        if(self.energy < self.STARVE):
             self.alive = False
-        if(self.water < DESICCATE):
+        if(self.water < self.DESICCATE):
             self.alive = False
         return self.alive
       
@@ -180,8 +180,8 @@ class Rabbit(Herbivore):
     # energy
         self.INIT_ENERGY_MIN = 900         # initialization minimum for energy
         self.INIT_ENERGY_RANGE = 100       # initialization range for energy
-        self.WAIT_ENERGY_COST = 50 * dt    # energy cost of not moving
-        self.MOVE_ENERGY_COST = 100  * dt   # energy cost of moving
+        self.WAIT_ENERGY_COST = 25 * dt    # energy cost of not moving
+        self.MOVE_ENERGY_COST = 50  * dt   # energy cost of moving
         self.STARVE = 400                  # value to which an animal dies if it's
                                     # energy value is lower than 
         self.HUNGRY = 900                   #Threshold for when animal is hungry
@@ -189,8 +189,8 @@ class Rabbit(Herbivore):
         # water
         self.INIT_WATER_MIN = 900          # initialization minimum for water
         self.INIT_WATER_RANGE = 100        # initialization range for water
-        self.WAIT_WATER_COST = 50 * dt     # water cost of not moving
-        self.MOVE_WATER_COST = 100 * dt     # water cost of moving
+        self.WAIT_WATER_COST = 25 * dt     # water cost of not moving
+        self.MOVE_WATER_COST = 50 * dt     # water cost of moving
         self.DESICCATE = 700               # value to which an animal dies if it's
                                     # water value is lower than 
         self.eatAmt = 105                   #Max amount that rabbit will eat at once
@@ -237,7 +237,7 @@ class Fox(Carnivore, Herbivore):
         self.INIT_ENERGY_MIN = 1000         # initialization minimum for energy
         self.INIT_ENERGY_RANGE = 200       # initialization range for energy
         self.WAIT_ENERGY_COST = 40 * dt    # energy cost of not moving
-        self.MOVE_ENERGY_COST = 100 * dt   # energy cost of moving
+        self.MOVE_ENERGY_COST = 60 * dt   # energy cost of moving
         self.STARVE = 400                  # value to which an animal dies if it's
                                     # energy value is lower than 
         self.HUNGRY = 900                   #Threshold for when animal is hungry
@@ -245,8 +245,8 @@ class Fox(Carnivore, Herbivore):
         # water
         self.INIT_WATER_MIN = 900          # initialization minimum for water
         self.INIT_WATER_RANGE = 100        # initialization range for water
-        self.WAIT_WATER_COST = 50 * dt        # water cost of not moving
-        self.MOVE_WATER_COST = 100 * dt        # water cost of moving
+        self.WAIT_WATER_COST = 25 * dt        # water cost of not moving
+        self.MOVE_WATER_COST = 50 * dt        # water cost of moving
         self.DESICCATE = 400               # value to which an animal dies if it's
                                     # water value is lower than 
         self.THIRSTY = 900                  # Threshold for when animal is thirsty
