@@ -21,7 +21,6 @@ import numpy as nu
 import matplotlib.pyplot as plt
 import Fauna as fa
 import Flora as fo
-import random
 
 # PROGRAM CONSTANTS ----------------------------------------------------
 # User modifiable
@@ -54,11 +53,17 @@ DISSIPATION_RATE = 0.8
 
 PLANT_CHANCE = 0.9
 PLANT_REPOP_CHANCE = 0.1
+WATER_ABSORB_FACTOR = 10
+ENERGY_ABSORB_FACTOR = 10
+
 PLANT_UNITS_TO_EAT = 1
+
 RABBITS_PER_BURROW = 5 # must be less than 9
 MAX_RABBITS = 100
 NUM_BURROWS = 3
+
 NUM_FOXES = 3
+
 MOVE_CHANCE = 0.5
 
 # PROGRAM GLOBALS ------------------------------------------------------
@@ -468,9 +473,9 @@ class EcoSystem:
     def plantsAbsorb(self):
         for iPlant in self.plant_list:
             lighting = self.light_grid[iPlant.position[0], iPlant.position[1]]
-            iPlant.photosynth(lighting)
+            iPlant.photosynth(lighting * ENERGY_ABSORB_FACTOR)
             water = self.water_grid[iPlant.position[0], iPlant.position[1]]
-            iPlant.drink(water)
+            iPlant.drink(water * WATER_ABSORB_FACTOR)
             
     def checkPlantGrowth(self):
         for iPlant in self.plant_list:
@@ -760,6 +765,8 @@ for i in range(NUM_DAYS):
 
 print("--Simulation Config--")
 print("")
+print("Grid Length:", eco.lenght)
+print("Grid Width:", eco.width)
 print("Number of Days:", NUM_DAYS)
 print("Time Units Per Day:", 24)
 print("Total Time Units:", 24 * NUM_DAYS)
