@@ -110,8 +110,8 @@ class Fauna:
             -x: x position
             -y: y position
         """
-        self.energy -= MOVE_ENERGY_COST
-        self.water -= MOVE_WATER_COST
+        self.energy -= self.MOVE_ENERGY_COST
+        self.water -= self.MOVE_WATER_COST
         self.position = [y, x]
 
     # MEATHOD: wait ----------------------------------------------------
@@ -121,8 +121,8 @@ class Fauna:
             Variables: 
             -self: instance of class
         """
-        self.energy -= WAIT_ENERGY_COST
-        self.water -= WAIT_WATER_COST
+        self.energy -= self.WAIT_ENERGY_COST
+        self.water -= self.WAIT_WATER_COST
 
     # MEATHOD: healthCheck ---------------------------------------------
     def healthCheck(self):
@@ -236,8 +236,8 @@ class Fox(Carnivore, Herbivore):
     def __init__(self, y, x):
         self.INIT_ENERGY_MIN = 1000         # initialization minimum for energy
         self.INIT_ENERGY_RANGE = 200       # initialization range for energy
-        self.WAIT_ENERGY_COST = 50 * dt    # energy cost of not moving
-        self.MOVE_ENERGY_COST = 150 * dt   # energy cost of moving
+        self.WAIT_ENERGY_COST = 40 * dt    # energy cost of not moving
+        self.MOVE_ENERGY_COST = 100 * dt   # energy cost of moving
         self.STARVE = 400                  # value to which an animal dies if it's
                                     # energy value is lower than 
         self.HUNGRY = 900                   #Threshold for when animal is hungry
@@ -261,4 +261,3 @@ class Fox(Carnivore, Herbivore):
 
 #=======================================================================
 # END FILE
-
