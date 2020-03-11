@@ -54,7 +54,7 @@ MIN_TEMP = -32
 DISSIPATION_RATE = 0.8
 
 PLANT_CHANCE = 0.9
-PLANT_REPOP_CHANCE = 0.3
+PLANT_REPOP_CHANCE = 0.1
 RABBITS_PER_BURROW = 5 # must be less than 9
 MAX_RABBITS = 100
 NUM_BURROWS = 3
@@ -116,9 +116,13 @@ class EcoSystem:
         self.plant_list = []
         self.herbivore_list = []
         self.carnivore_list = []
+        
         #Counting variables
         self.animalsEaten = 0
+        self.plantsEaten = 0
         self.plantsDied = 0
+        self.carniDied = 0
+        self.herbiDied = 0
         
         self.wheatherCheck()
         self.initWater()
@@ -256,7 +260,7 @@ class EcoSystem:
     # METHOD: track ----------------------------------------------------
     def track(self, Fauna):
         #Checks to see if Carnivore should look for food
-        if (Fauna.energy > Fauna.HUNGRY):
+        if (Fauna.energy > Fauna.hungry):
             return 1
              
         #Looks around itself in a moore neighborhood to find scent
@@ -307,7 +311,7 @@ class EcoSystem:
     # METHOD: forage ----------------------------------------------------
     def forage(self, Fauna):
         #Checks to see if Herbivore should look for food
-        if (Fauna.energy > Fauna.HUNGRY):
+        if (Fauna.energy > Fauna.hungry):
             return 1
              
         #Looks around itself in a moore neighborhood to find Flora
@@ -391,14 +395,14 @@ class EcoSystem:
     def animalsEat(self):
         for i in range(len(self.herbivore_list)):
             #Skip animal if not hungry
-            if self.herbivore_list[i].energy > self.herbivore_list[i].HUNGRY:
+            if self.herbivore_list[i].energy > self.herbivore_list[i].hungry:
                 continue
                 
             else:
                 self.eatPlant(self.herbivore_list[i])       
         #iCarn will be every carnivore object in the carnivore_list
         for iCarn in self.carnivore_list:
-            if iCarn.HUNGRY > iCarn.energy:
+            if iCarn.hungry > iCarn.energy:
                 if self.carnivoreEat(iCarn):
                     continue
                 else:
@@ -411,12 +415,15 @@ class EcoSystem:
                 #If a plant is found
                 if self.plant_list[j].position[0] == Fauna.position[0] and self.plant_list[j].position[1] == Fauna.position[1]:
                     #Eat the max amount if the herbivore is able
-                    Fauna.eat(self.plant_list[j].consumed(Fauna.eatAmt))
+                    units = 1
+                    nutrition = self.plant_list[j].consumed(units)
+                    Fauna.eat(nutrition[0])
+                    Fauna.drink(nutrition[1])
                     #If the plant dies, remove from grid and list
                     if (not self.plant_list[j].healthCheck()):
                         self.plant_grid[Fauna.position[0], Fauna.position[1]] = 0
                         self.plant_list.remove(self.plant_list[j])
-                        self.plantsDied += 1
+                        self.plantsEaten += 1
                     j = len(self.plant_list)
                 else:
                     j += 1
@@ -450,7 +457,9 @@ class EcoSystem:
                     #Location match found
                     if iHerb.position[0] == curY and iHerb.position[1] == curX:
                         #Trade energy values
-                        Fauna.eat(iHerb.consumed())
+                        nutrition = iHerb.consumed()
+                        Fauna.eat(nutrition[0])
+                        Fauna.drink(nutrition[1])
                         #Remove herbivore and record its death
                         self.herbivore_list.remove(iHerb)
                         self.animalsEaten += 1
@@ -459,6 +468,17 @@ class EcoSystem:
         #later                
         return eatCheck
     
+    def plantsAbsorb(self):
+        for iPlant in self.plant_list:
+            lighting = self.light_grid[iPlant.position[0], iPlant.position[1]]
+            iPlant.photosynth(lighting)
+            water = self.water_grid[iPlant.position[0], iPlant.position[1]]
+            iPlant.drink(water)
+            
+    def checkPlantGrowth(self):
+        for iPlant in self.plant_list:
+            iPlant.growth()
+    
     def checkStarved(self):
         """Removes animals and plants that are no longer alive
         """
@@ -466,19 +486,19 @@ class EcoSystem:
             if not iHerb.healthCheck():
                 self.herbivore_grid[iHerb.position[0], iHerb.position[1]] = 0
                 self.herbivore_list.remove(iHerb)
-                print("Rabbit Died")
+                self.herbiDied += 1
             
         for iCarn in self.carnivore_list:
             if not iCarn.healthCheck():
                 self.carnivore_grid[iCarn.position[0], iCarn.position[1]] = 0
                 self.carnivore_list.remove(iCarn)
-                print("Fox Died")
+                self.carniDied += 1
                 
-        #for iPlant in self.plant_list:
-        #    if not iPlant.healthCheck():
-        #        self.plant_grid[iPlant.position[0], iPlant.position[1]] = 0
-        #        self.plant_list.remove(iPlant)
-        #        self.plantsDied += 1
+        for iPlant in self.plant_list:
+            if not iPlant.healthCheck():
+                self.plant_grid[iPlant.position[0], iPlant.position[1]] = 0
+                self.plant_list.remove(iPlant)
+                self.plantsDied += 1
         return
     
     def updateScent(self):
@@ -703,9 +723,14 @@ class EcoSystem:
                     self.randomWalk(self.carnivore_list[j])
             self.animalsEat()
             self.updateScent()
+            self.plantsAbsorb()
+        
+        # do at the end of each day
         self.makePlants(PLANT_REPOP_CHANCE)
         self.wheatherCheck()
         self.updateTemp()
+        self.checkPlantGrowth()
+        self.checkStarved()
         
 # FUNCTION: FUNC -------------------------------------------------------
 def func():
@@ -735,12 +760,24 @@ for i in range(NUM_DAYS):
     eco.displayFrame()
     #eco.displayGrid()
 
-print("Plant difference:")
-print(len(eco.plant_list) - initPlants)
-print("Rabbit difference:")
-print(len(eco.herbivore_list) - initRabs)
-print("Fox difference:")
-print(len(eco.carnivore_list) - initFoxes)
+print("--Simulation Config--")
+print("")
+print("Number of Days:", NUM_DAYS)
+print("Time Units Per Day:", 24)
+print("Total Time Units:", 24 * NUM_DAYS)
+# todo add in some values from eco for displaying
+print("")
+print("--Simulation Results--")
+print("")
+print("Natrual Deaths:")
+print("   -Plants:", eco.plantsDied)
+print("   -Herbivores:", eco.herbiDied)
+print("   -Carnivores:", eco.carniDied)
+print("")
+print("Eaten:")
+print("   -Plants:", eco.plantsEaten)
+print("   -Animals:", eco.animalsEaten)
+print("")
 
 #=======================================================================
 # END FILE
