@@ -31,12 +31,24 @@ GRID_Y = 50
 
 NUM_DAYS = 10
 
+# effects lighting
+MAX_CLOUDS = 10
+CLOUD_CHANCE = 0.6
+OVERCAST_CHANCE = 0.2
+RAIN_CHANCE = 0.8
+
+# effects water
 LAKE_SPREAD = 4
 HAS_LAKE = True # bool
 POND_SPREAD = 1
 NUM_PONDS = 2
-WATER_TEMP = -4
-LIGHT_TEMP = 2
+
+# effects temp
+WATER_TEMP = -10
+LIGHT_TEMP = 6
+NATRUAL_TEMP = 4
+MAX_TEMP = 32
+MIN_TEMP = -32
 
 DISSIPATION_RATE = 0.8
 
@@ -68,7 +80,6 @@ class EcoSystem:
     width = None
     
     
-    
     # MEATHOD: INIT ----------------------------------------------------
     def __init__(self):
         """ Description: Class constructor
@@ -80,6 +91,7 @@ class EcoSystem:
             Output: 
         """
         self.frame = 0
+        self.rained = False
 
         #Grid Size variables
         self.length = 50
@@ -88,8 +100,10 @@ class EcoSystem:
         # These grids track constant values accross the grid
         self.light_grid = nu.ones((self.length, self.width))
         self.water_grid = nu.ones((self.length, self.width))/4
-        self.temp_grid = nu.zeros((self.length+1, self.width))
         self.scent_grid = nu.zeros((self.length, self.width))
+        self.temp_grid = nu.zeros((self.length+1, self.width))
+        self.temp_grid[-1,0] = MIN_TEMP
+        self.temp_grid[-1,-1] = MAX_TEMP
 
         # These grids are booleans(0/1) for when animals are at a location
         self.plant_grid = nu.zeros((self.length, self.width))
@@ -105,6 +119,7 @@ class EcoSystem:
         self.animalsEaten = 0
         self.plantsDied = 0
         
+        self.wheatherCheck()
         self.initWater()
         self.updateTemp()
         self.initRabbits()
@@ -190,26 +205,6 @@ class EcoSystem:
         axs.axis("off")
         plt.title("EcoSystem Scent Distribution")
         plt.show()
-
-    # MEATHOD: checkCell -----------------------------------------------
-    def checkCell(self, x, y):
-        """ Description: Gets the cell values at a position from each
-                         Graph
-            
-            Variables: 
-                -self: the SimGrid object instance
-                
-            Output: returns a list of values from each grid
-        """
-        check = [0, 0, 0, 0, 0, 0]
-        check[0] = self.light_grid[y,x]
-        check[1] = self.water_grid[y,x]
-        check[2] = self.temp_grid[y,x]
-        check[3] = self.plant_grid[y,x]
-        check[4] = self.herbivore_grid[y,x]
-        check[5] = self.carnivore_grid[y,x]
-        
-        return check
     
     # MEATHOD: checkCell -----------------------------------------------
     def randomWalk(self, Fauna):
@@ -534,7 +529,45 @@ class EcoSystem:
                 x += 1
             if(y < by):
                 y += 1
-                
+    
+    # MEATHOD: checkCell -----------------------------------------------
+    def wheatherCheck(self):
+        """ Description:
+            
+            Populates the plant list by determining if a plant grows in an area
+            using a random number.
+        
+            Variables: 
+            -plantChance: Chance a plant will grow in a grid space.
+        
+            Output: plant_list and plant_grid is populated with Grass objects.
+        """
+        if(self.rained):
+            self.water_grid -= 0.2
+            self.rained = False
+        
+        if(nu.random.uniform(0,1) < OVERCAST_CHANCE):
+            self.light_grid *= 0.3
+            if(nu.random.uniform(0,1) < RAIN_CHANCE):
+                self.water_grid += 0.2
+                self.rained = True
+        else:
+            self.light_grid = nu.ones((self.length, self.width))
+            for i in range(MAX_CLOUDS):
+                if(nu.random.uniform(0,1) < CLOUD_CHANCE):
+                    self.makeCloud()
+    
+    # MEATHOD: checkCell -----------------------------------------------
+    def makeCloud(self):
+        x = int(nu.random.uniform(0,1) * 50)
+        y = int(nu.random.uniform(0,1) * 50)
+        
+        thickness = nu.random.uniform(0.3,0.7)
+        spreadX = int(nu.random.uniform(3,15))
+        spreadY = int(nu.random.uniform(3,15))
+        
+        self.light_grid[y-spreadY:y+spreadY, x-spreadX:x+spreadX] *= 1-thickness
+        
     # MEATHOD: checkCell -----------------------------------------------
     def updateTemp(self):
         """ Description:
@@ -547,10 +580,9 @@ class EcoSystem:
         
             Output: plant_list and plant_grid is populated with Grass objects.
         """
-        self.temp_grid[:-1,:] = self.water_grid * WATER_TEMP
+        self.temp_grid[:-1,:] = NATRUAL_TEMP
+        self.temp_grid[:-1,:] += self.water_grid * WATER_TEMP
         self.temp_grid[:-1,:] += self.light_grid * LIGHT_TEMP
-        self.temp_grid[-1,0] = -5
-        self.temp_grid[-1,-1] = 5
     
     # MEATHOD: checkCell -----------------------------------------------
     def makePlants(self, chance):
@@ -640,6 +672,8 @@ class EcoSystem:
             self.animalsEat()
             self.updateScent()
         self.makePlants(PLANT_REPOP_CHANCE)
+        self.wheatherCheck()
+        self.updateTemp()
         
 # FUNCTION: FUNC -------------------------------------------------------
 def func():
@@ -663,10 +697,11 @@ initPlants = len(eco.plant_list)
 initRabs = len(eco.herbivore_list)
 initFoxes = len(eco.carnivore_list)
 
-for i in range(NUM_DAYS):
+for i in range(1):
     eco.frame += 1
     eco.runADay()
     eco.displayFrame()
+    eco.displayGrid()
 
 print("Plant difference:")
 print(len(eco.plant_list) - initPlants)
