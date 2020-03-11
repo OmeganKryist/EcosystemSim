@@ -54,6 +54,7 @@ DISSIPATION_RATE = 0.8
 
 PLANT_CHANCE = 0.9
 PLANT_REPOP_CHANCE = 0.1
+PLANT_UNITS_TO_EAT = 1
 RABBITS_PER_BURROW = 5 # must be less than 9
 MAX_RABBITS = 100
 NUM_BURROWS = 3
@@ -412,8 +413,7 @@ class EcoSystem:
                 #If a plant is found
                 if self.plant_list[j].position[0] == Fauna.position[0] and self.plant_list[j].position[1] == Fauna.position[1]:
                     #Eat the max amount if the herbivore is able
-                    units = 1
-                    nutrition = self.plant_list[j].consumed(units)
+                    nutrition = self.plant_list[j].consumed(PLANT_UNITS_TO_EAT)
                     Fauna.eat(nutrition[0])
                     Fauna.drink(nutrition[1])
                     #If the plant dies, remove from grid and list
