@@ -464,19 +464,19 @@ class EcoSystem:
         """
         for iHerb in self.herbivore_list:
             if not iHerb.healthCheck():
-                self.herbivore_grid[iHerb.position[0], iHerb.position[1]] == 0
+                self.herbivore_grid[iHerb.position[0], iHerb.position[1]] = 0
                 self.herbivore_list.remove(iHerb)
                 print("Rabbit Died")
             
         for iCarn in self.carnivore_list:
             if not iCarn.healthCheck():
-                self.carnivore_grid[iCarn.position[0], iCarn.position[1]] == 0
+                self.carnivore_grid[iCarn.position[0], iCarn.position[1]] = 0
                 self.carnivore_list.remove(iCarn)
                 print("Fox Died")
                 
         #for iPlant in self.plant_list:
         #    if not iPlant.healthCheck():
-        #        self.plant_grid[iPlant.position[0], iPlant.position[1]] == 0
+        #        self.plant_grid[iPlant.position[0], iPlant.position[1]] = 0
         #        self.plant_list.remove(iPlant)
         #        self.plantsDied += 1
         return
