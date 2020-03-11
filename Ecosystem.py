@@ -29,7 +29,10 @@ import random
 GRID_X = 50                     # var meaning
 GRID_Y = 50
 
-WATER_SPREAD = 4
+LAKE_SPREAD = 4
+HAS_LAKE = True # bool
+POND_SPREAD = 1
+NUM_PONDS = 2
 WATER_TEMP = -4
 LIGHT_TEMP = 2
 
@@ -40,7 +43,6 @@ PLANT_REPOP_CHANCE = 0.3
 RABBITS_PER_BURROW = 5 # must be less than 9
 NUM_BURROWS = 3
 NUM_FOXES = 1
-
 
 # PROGRAM GLOBALS ------------------------------------------------------
 # Not User Modifiable
@@ -464,9 +466,29 @@ class EcoSystem:
         
             Output: plant_list and plant_grid is populated with Grass objects.
         """
-        self.makeWaterBody(20,10,30,30)
         
-    def makeWaterBody(self, x1, y1, x2, y2):
+        x = [5, 10, 15, 35, 40, 45]
+        y = [5, 10, 15, 35, 40, 45]
+        nu.random.shuffle(x)
+        nu.random.shuffle(y)
+        
+        ponds = NUM_PONDS
+        
+        if(ponds > len(x)):
+            ponds = len(x)  # ensures that we don't try to make more
+                            # than we have available positions for
+                                
+        for i in range(ponds):
+            x1 = int(nu.random.uniform(-2,0)) + x[i]
+            x2 = int(nu.random.uniform(0,2)) + x[i]
+            y1 = int(nu.random.uniform(-2,0)) + y[i]
+            y2 = int(nu.random.uniform(0,2)) + y[i]
+            self.makeWaterBody(x1, y1, x2, y2, POND_SPREAD)
+            
+        if(HAS_LAKE):
+            self.makeWaterBody(24, 24, 26, 26, LAKE_SPREAD)
+        
+    def makeWaterBody(self, x1, y1, x2, y2, spread):
         """ Description:
             
             Populates the plant list by determining if a plant grows in an area
@@ -485,7 +507,7 @@ class EcoSystem:
         x = ax
         y = ay
         while (x < bx or y < by):
-            self.water_grid[y-WATER_SPREAD*3:y+WATER_SPREAD*3, x-WATER_SPREAD*3:x+WATER_SPREAD*3] = 0.5  
+            self.water_grid[y-spread*3:y+spread*3, x-spread*3:x+spread*3] = 0.5  
             if(x < bx):
                 x += 1
             if(y < by):
@@ -494,7 +516,7 @@ class EcoSystem:
         x = ax
         y = ay
         while (x < bx or y < by):         
-            self.water_grid[y-WATER_SPREAD*2:y+WATER_SPREAD*2, x-WATER_SPREAD*2:x+WATER_SPREAD*2] = 0.75
+            self.water_grid[y-spread*2:y+spread*2, x-spread*2:x+spread*2] = 0.75
             if(x < bx):
                 x += 1
             if(y < by):
@@ -503,7 +525,7 @@ class EcoSystem:
         x = ax
         y = ay
         while (x < bx or y < by):
-            self.water_grid[y-WATER_SPREAD:y+WATER_SPREAD, x-WATER_SPREAD:x+WATER_SPREAD] = 1
+            self.water_grid[y-spread:y+spread, x-spread:x+spread] = 1
             if(x < bx):
                 x += 1
             if(y < by):
