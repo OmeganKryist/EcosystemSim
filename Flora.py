@@ -20,33 +20,12 @@
 #=======================================================================
 # PROGRAM IMPORTS ------------------------------------------------------
 import numpy as nu
-import random as rand
-
-# PROGRAM CONSTANTS ----------------------------------------------------
-# User modifiable
-
-# energy
-INIT_ENERGY_MIN = 0         # initialization minimum for energy
-INIT_ENERGY_RANGE = 0       # initialization range for energy
-ENERGY_CAPACITY = 0         # maximum energy that can be stored
-GROWTH_ENERGY_COST = 0      # energy cost of one growth unit
-
-# water
-INIT_WATER_MIN = 0          # initialization minimum for water
-INIT_WATER_RANGE = 0        # initialization range for water
-WATER_CAPACITY = 0          # maximum water that can be stored
-GROWTH_WATER_COST = 0       # water cost of one growth unit
-
-# size
-INIT_SIZE_MIN = 0           # initialization minimum for size
-INIT_SIZE_RANGE = 0         # initialization range for size (Max patch of grass)
-GROWTH_UNIT = 0             # growth unit (14 days to reach max)
-DECAY_UNIT = 0              # decay unit
 
 # PROGRAM GLOBALS ------------------------------------------------------
 # Not User Modifiable
 
-var = 0                     # var meaning
+#Time segments per day                                                      
+dt = 24
 
 # PROGRAM SCRIPT -------------------------------------------------------
 # Driver code for program
@@ -64,12 +43,32 @@ class Flora:
         -alive: a boolean for checking if the animal is alive
     """
 
+    INIT_ENERGY_MIN = None         # initialization minimum for energy
+    INIT_ENERGY_MAX = None       # initialization range for energy
+    INIT_WATER_MIN = None          # initialization minimum for water
+    INIT_WATER_MAX = None        # initialization range for water
+    INIT_SIZE_MIN = None
+    INIT_SIZE_MAX = None
+    
     energy = None
+    unit_extra_energy = None
+    unit_energy_cost = None
+    energy_per_unit = None
+    photo_amount = None
+    
     water = None
+    unit_extra_water = None
+    unit_water_cost = None
+    water_per_unit = None
+    drink_amount = None
+    
     size = None
+    max_units = None
+    
     position = None
     alive = None
-    # MEATHOD: INIT ----------------------------------------------------
+    
+    # MEATHOD: init ----------------------------------------------------
     def __init__(self, y, x):
         """ Description: Class constructor
     
@@ -78,10 +77,11 @@ class Flora:
             -x: x position
             -y: y position
         """
-        self.energy = rand.random() * INIT_ENERGY_RANGE + INIT_ENERGY_MIN
-        self.water = rand.random() * INIT_WATER_RANGE + INIT_WATER_MIN
-        self.size = rand.random() * INIT_SIZE_RANGE + INIT_SIZE_MIN
-        self.size *= GROWTH_UNIT
+        
+        self.energy = nu.random.uniform(self.INIT_ENERGY_MIN, self.INIT_ENERGY_MAX)
+        self.water = nu.random.uniform(self.INIT_WATER_MIN, self.INIT_WATER_MAX)
+        self.size = nu.random.uniform(self.INIT_SIZE_MIN, self.INIT_SIZE_MAX)
+        
         self.position = [y, x]
         self.alive = True
 
@@ -94,7 +94,9 @@ class Flora:
             -amount: variable change to water value
                      assumed to be positive
         """
-        self.energy += amount
+        self.energy += max(amount, self.photo_amount)
+        maxEnergy = (self.unit_extra_energy + self.unit_energy_cost) * self.size
+        self.energy = min(self.energy, maxEnergy)
 
     # MEATHOD: drink ---------------------------------------------------
     def drink(self, amount):
@@ -105,7 +107,9 @@ class Flora:
             -amount: variable change to water value
                      assumed to be positive
         """
-        self.water += amount
+        self.water = max(amount, self.drink_amount)
+        maxWater = (self.unit_extra_water + self.unit_water_cost) * self.size
+        self.water = min(self.water, maxWater)
 
     # MEATHOD: growth --------------------------------------------------
     def growth(self):
@@ -114,14 +118,17 @@ class Flora:
             Variables: 
             -self: instance of class
         """
-        self.energy = max(self.energy - GROWTH_ENERGY_COST, 0)
-        self.water = max(self.water - GROWTH_WATER_COST, 0)
+        for i in range(int(self.size)):
+        
+            if(self.energy >= self.unit_energy_cost and self.water >= self.unit_water_cost):
+                self.energy = max(self.energy - self.unit_energy_cost, 0)
+                self.water = max(self.water - self.unit_water_cost, 0)
+            elif():
+                self.size -= max(0, self.size - 1)
         
         # if both energy and water are positive
-        if(self.energy * self.water > 0):
-            self.size += GROWTH_UNIT
-        else:
-            self.size -= DECAY_UNIT
+        if(self.energy >= self.unit_energy_cost and self.water >= self.unit_water_cost):
+            self.size = min(self.max_units, self.size + 1)
 
     # MEATHOD: healthCheck ---------------------------------------------
     def healthCheck(self):
@@ -132,9 +139,31 @@ class Flora:
 
             Output: a boolean value indicating the life of the fauna
         """
-        if(self.size <= 0):
-            self.alive = False
+        if(self.alive):
+            if(self.size <= 0):
+                self.alive = False
         return self.alive
+    
+    def consumed(self, units):
+        # If animal can eat the whole plant, reduce plant size to 0 and return
+        # all the energy it would have given.
+        # variable energy is not plant energy, it is energy for the animal.
+        energyValue = 0
+        waterValue = 0
+        
+        if units >= self.size:
+            energyValue = self.size * self.energy_per_unit
+            waterValue = self.size * self.energy_per_unit
+            self.size = 0
+            self.alive = False
+        else:
+            self.size -= units
+            energyValue = units * self.energy_per_unit
+            waterValue = units * self.energy_per_unit
+            self.energy = min(self.energy, (self.unit_extra_energy + self.unit_energy_cost) * self.size)
+            self.water = min(self.water, (self.unit_extra_water + self.unit_water_cost) * self.size)
+            
+        return [energyValue, waterValue]
 
 #=======================================================================
 # CLASS: Grass ---------------------------------------------------------
@@ -149,49 +178,25 @@ class Grass(Flora):
     """
     #Assuming 1 grid of grass at max growth can feed about 2 rabbits.
     #An average rabbit needs about 105 calories daily
+
+    INIT_ENERGY_MIN = 10         # initialization minimum for energy
+    INIT_ENERGY_MAX = 50       # initialization range for energy
+    INIT_WATER_MIN = 10          # initialization minimum for water
+    INIT_WATER_MAX = 50        # initialization range for water
+    INIT_SIZE_MIN = 1
+    INIT_SIZE_MAX = 3
     
-    # energy
-    INIT_ENERGY_MIN = 0         # initialization minimum for energy
-    INIT_ENERGY_RANGE = 200     # initialization range for energy
-    ENERGY_CAPACITY = 200       # maximum energy that can be stored
-    GROWTH_ENERGY_COST = 0      # energy cost of one growth unit
+    unit_extra_energy = 20
+    unit_energy_cost = 10
+    energy_per_unit = 105
+    photo_amount = 20
     
-    # water
-    INIT_WATER_MIN = 1          # initialization minimum for water
-    INIT_WATER_RANGE = 1        # initialization range for water
-    WATER_CAPACITY = 17 * 100   # maximum water that can be stored
-    GROWTH_WATER_COST = 0       # water cost of one growth unit
+    unit_extra_water = 20
+    unit_water_cost = 10
+    water_per_unit = 20
+    drink_amount = 10
     
-    # size
-    INIT_SIZE_MIN = 5*100       # initialization minimum for size
-    INIT_SIZE_RANGE = 15 * 100  # initialization range for size
-    GROWTH_UNIT = 1.43 * 100    # growth unit (14 days to reach max)
-    DECAY_UNIT = 0.001          # decay unit (700 days to fully decay)
-    #Max size of grass should be 20 * 100
-    
-    def __init__(self,y,x):
-        self.size = rand.random() * INIT_SIZE_RANGE + INIT_SIZE_MIN
-        #Water and energy values should be dependent on size of plant
-        
-        #Grass is 85% water but we may need to recalibrate this value
-        self.water = self.size * 0.85
-        self.energy = self.size * 0.15
-        
-        self.position = [y, x]
-        self.alive = True
-        
-    def consumed(self, amount):
-        # If animal can eat the whole plant, reduce plant size to 0 and return
-        # all the energy it would have given.
-        # variable energy is not plant energy, it is energy for the animal.
-        if amount >= self.size:
-            energy = self.size
-            self.size = 0
-        else:
-            self.size -= amount
-            energy = amount
-        return energy
-    
+    max_units = 5
 
 #=======================================================================
 # END FILE
