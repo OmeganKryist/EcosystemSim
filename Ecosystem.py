@@ -642,9 +642,9 @@ for i in range(10):
 print("Plant difference:")
 print(len(eco.plant_list) - initPlants)
 print("Rabbit difference:")
-print(len(eco.herbivore_list) - initPlants)
+print(len(eco.herbivore_list) - initRabs)
 print("Fox difference:")
-print(len(eco.carnivore_list) - initPlants)
+print(len(eco.carnivore_list) - initFoxes)
 
 #=======================================================================
 # END FILE
