@@ -29,6 +29,8 @@ import random
 GRID_X = 50                     # var meaning
 GRID_Y = 50
 
+NUM_DAYS = 10
+
 LAKE_SPREAD = 4
 HAS_LAKE = True # bool
 POND_SPREAD = 1
@@ -41,8 +43,10 @@ DISSIPATION_RATE = 0.8
 PLANT_CHANCE = 0.9
 PLANT_REPOP_CHANCE = 0.3
 RABBITS_PER_BURROW = 5 # must be less than 9
+MAX_RABBITS = 100
 NUM_BURROWS = 3
-NUM_FOXES = 1
+NUM_FOXES = 2
+
 
 # PROGRAM GLOBALS ------------------------------------------------------
 # Not User Modifiable
@@ -603,6 +607,9 @@ class EcoSystem:
                     nu.random.shuffle(placeY)
                     
                     for j in range(RABBITS_PER_BURROW):
+                        if(len(self.herbivore_list) >= MAX_RABBITS):
+                            return
+                        
                         locX = x + placeX[j]
                         locY = y + placeY[j]
                         newRab = fa.Rabbit(locY,locX)
@@ -656,7 +663,7 @@ initPlants = len(eco.plant_list)
 initRabs = len(eco.herbivore_list)
 initFoxes = len(eco.carnivore_list)
 
-for i in range(10):
+for i in range(NUM_DAYS):
     eco.frame += 1
     eco.runADay()
     eco.displayFrame()
@@ -670,4 +677,3 @@ print(len(eco.carnivore_list) - initFoxes)
 
 #=======================================================================
 # END FILE
-
