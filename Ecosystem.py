@@ -282,6 +282,8 @@ class EcoSystem:
         print(duplicates)      
         print(scent)
             
+        indexToUse = strongest_scent
+            
         if (duplicates > 0):
             indexToUse = strongest_scent
             currentIndex = 0
@@ -297,7 +299,63 @@ class EcoSystem:
         self.carnivore_grid[Fauna.position[0], Fauna.position[1]] = 0
         self.carnivore_grid[moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]]] = 1
         Fauna.move(moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]])
-        print(Fauna.position)
+        
+        return 0
+        
+    # METHOD: forage ----------------------------------------------------
+    def forage(self, Fauna):
+        #Checks to see if Herbivore should look for food
+        if (Fauna.energy > Fauna.HUNGRY):
+            return 1
+             
+        #Looks around itself in a moore neighborhood to find Flora
+        #Init Moore Neighborhood arrays (same as randomWalk)
+        moveX = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
+        moveY = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
+        
+        moveX = Fauna.position[1] + moveX
+        moveY = Fauna.position[0] + moveY
+        
+        #Check Borders
+        valid = nu.where(nu.logical_not(nu.logical_or(nu.logical_or(moveY >= self.length, moveY < 0),nu.logical_or(moveX >= self.width, moveX < 0))))
+        
+        possibleFood = nu.zeros(nu.size(valid[0]))
+        
+        print(valid)
+        
+        for i in range(len(valid[0])):
+            possibleFood[i] = self.plant_grid[moveY[valid[0][i]]][moveX[valid[0][i]]]
+        
+        foundFood = -1
+        for i in range(len(possibleFood)):
+            if (possibleFood[i] == 1):
+                foundFood = i
+        
+        duplicates = -1
+        for i in range(len(possibleFood)):
+            if (1 == possibleFood[i]):
+                duplicates += 1
+        
+        if (duplicates == -1):
+            return 1
+        
+        print(duplicates)
+        indexToUse = foundFood
+        
+        if (duplicates > 0):
+            currentIndex = indexToUse
+            randomNum = random.randint(0, 20)
+            while(randomNum > 0):
+                if(possibleFood[currentIndex] == 1):
+                    indexToUse = currentIndex
+                    randomNum -= 1
+                currentIndex += 1
+                if(currentIndex == nu.size(possibleFood)):
+                    currentIndex = 0
+        
+        self.herbivore_grid[Fauna.position[0], Fauna.position[1]] = 0
+        self.herbivore_grid[moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]]] = 1
+        Fauna.move(moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]])
         
         return 0
         
@@ -545,7 +603,8 @@ class EcoSystem:
     def runADay(self):
         for i in range(24):
             for j in range(len(self.herbivore_list)):
-                self.randomWalk(self.herbivore_list[j])
+                if(self.forage(self.herbivore_list[j])):
+                    self.randomWalk(self.herbivore_list[j])
             for j in range(len(self.carnivore_list)):
                 if(self.track(self.carnivore_list[j])):
                     self.randomWalk(self.carnivore_list[j])
