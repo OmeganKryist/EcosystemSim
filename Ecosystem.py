@@ -196,7 +196,7 @@ class EcoSystem:
         
         return check
     
-    # MEATHOD: checkCell -----------------------------------------------
+    # MEATHOD: randomWalk -----------------------------------------------
     def randomWalk(self, Fauna):
         """ Description:
             Pass an animal and it will walk within the borders of the grid.
@@ -241,6 +241,36 @@ class EcoSystem:
             self.herbivore_grid[Fauna.position[0], Fauna.position[1]] = 0
             self.herbivore_grid[moveY[valid[0][0]], moveX[valid[0][0]]] = 1
             Fauna.move(moveY[valid[0][0]], moveX[valid[0][0]])
+            
+    # METHOD: track ----------------------------------------------------
+    def track(self, Fauna):
+        #Checks to see if Carnivore should look for food
+        if (Fauna.energy < Fauna.HUNGRY):
+            return 0
+        #Looks around itself in a moore neighborhood to find scent
+        
+        #Init Moore Neighborhood arrays (same as randomWalk)
+        moveX = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
+        moveY = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
+        
+        moveX = Fauna.position[1] + moveX
+        moveY = Fauna.position[0] + moveY
+        
+        #Check Borders
+        valid = nu.where(nu.logical_not(nu.logical_or(nu.logical_or(moveY >= self.length, moveY < 0),nu.logical_or(moveX >= self.width, moveX < 0))))
+        
+        scent = nu.zeros(nu.size(valid[0]))
+        
+        for i in range(len(valid[0])):
+            scent[i] = self.scent_grid[moveY[valid[0][i]]][moveX[valid[0][i]]]
+            
+        strongest_scent = scent.argmax()
+        
+        self.carnivore_grid[Fauna.position[0], Fauna.position[1]] = 0
+        self.carnivore_grid[moveY[valid[0][strongest_scent]], moveX[valid[0][strongest_scent]]] = 1
+        Fauna.move(moveY[valid[0][strongest_scent]], moveX[valid[0][strongest_scent]])
+        
+        return 1
         
     def goWater(self, Fauna):
         #I do not know how to implement this function (See walk section)
@@ -336,7 +366,7 @@ class EcoSystem:
         carn_scent = nu.fmax(self.carnivore_grid, self.scent_grid * DISSIPATION_RATE * -1)
         self.scent_grid = herb_scent - carn_scent
                    
-    # MEATHOD: checkCell -----------------------------------------------
+    # METHOD: checkCell -----------------------------------------------
     def initWater(self):
         """ Description:
             
@@ -393,7 +423,7 @@ class EcoSystem:
             if(y < by):
                 y += 1
                 
-    # MEATHOD: checkCell -----------------------------------------------
+    # METHOD: checkCell -----------------------------------------------
     def updateTemp(self):
         """ Description:
             
@@ -410,7 +440,7 @@ class EcoSystem:
         self.temp_grid[-1,0] = -5
         self.temp_grid[-1,-1] = 5
     
-    # MEATHOD: checkCell -----------------------------------------------
+    # METHOD: checkCell -----------------------------------------------
     def initPlants(self):
         """ Description:
             
@@ -435,7 +465,7 @@ class EcoSystem:
                         self.plant_list.append(newPlant)
         #Grid and list should now be initialized
     
-    # MEATHOD: checkCell -----------------------------------------------
+    # METHOD: checkCell -----------------------------------------------
     def initRabbits(self):
         #This rabbit spawn is hardcoded so we could keep them away from
         #their predators
@@ -446,7 +476,7 @@ class EcoSystem:
             
         self.spawnRabbits()
     
-    # MEATHOD: checkCell -----------------------------------------------
+    # METHOD: checkCell -----------------------------------------------
     def spawnRabbits(self):
         #This rabbit spawn is hardcoded so we could keep them away from
         #their predators
@@ -469,13 +499,14 @@ class EcoSystem:
             self.carnivore_list.append(newFox)
             self.carnivore_grid[y, x] = 1
      
-    # MEATHOD: runAFewFrames -------------------------------------------
+    # METHOD: runAFewFrames -------------------------------------------
     def runAFewFrames(self):
         for i in range(5):
             for j in range(len(self.herbivore_list)):
                 self.randomWalk(self.herbivore_list[j])
             for j in range(len(self.carnivore_list)):
-                self.randomWalk(self.carnivore_list[j])
+                if (not self.track(self.carnivore_list[j])):
+                    self.randomWalk(self.carnivore_list[j])
             self.animalsEat()
             self.updateScent()
         
