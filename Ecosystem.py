@@ -459,6 +459,28 @@ class EcoSystem:
         #later                
         return eatCheck
     
+    def checkStarved(self):
+        """Removes animals and plants that are no longer alive
+        """
+        for iHerb in self.herbivore_list:
+            if not iHerb.healthCheck():
+                self.herbivore_grid[iHerb.position[0], iHerb.position[1]] == 0
+                self.herbivore_list.remove(iHerb)
+                print("Rabbit Died")
+            
+        for iCarn in self.carnivore_list:
+            if not iCarn.healthCheck():
+                self.carnivore_grid[iCarn.position[0], iCarn.position[1]] == 0
+                self.carnivore_list.remove(iCarn)
+                print("Fox Died")
+                
+        #for iPlant in self.plant_list:
+        #    if not iPlant.healthCheck():
+        #        self.plant_grid[iPlant.position[0], iPlant.position[1]] == 0
+        #        self.plant_list.remove(iPlant)
+        #        self.plantsDied += 1
+        return
+    
     def updateScent(self):
         herb_scent = nu.fmax(self.herbivore_grid, self.scent_grid * DISSIPATION_RATE)
         carn_scent = nu.fmax(self.carnivore_grid, self.scent_grid * DISSIPATION_RATE * -1)
