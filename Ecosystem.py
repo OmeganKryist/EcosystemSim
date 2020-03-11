@@ -35,7 +35,8 @@ LIGHT_TEMP = 2
 DISSIPATION_RATE = 0.8
 
 PLANT_CHANCE = 0.9
-NUM_RABBITS = 5
+PLANT_REPOP_CHANCE = 0.3
+RABBITS_PER_BURROW = 5 # must be less than 9
 NUM_BURROWS = 3
 NUM_FOXES = 1
 
@@ -86,6 +87,7 @@ class EcoSystem:
         # These grids are booleans(0/1) for when animals are at a location
         self.plant_grid = nu.zeros((self.length, self.width))
         self.herbivore_grid = nu.zeros((self.length, self.width))
+        self.burrow_grid = nu.zeros((self.length, self.width))
         self.carnivore_grid = nu.zeros((self.length, self.width))
         
         # These lists hold every individual plant and animal
@@ -98,9 +100,13 @@ class EcoSystem:
         
         self.initWater()
         self.updateTemp()
-        self.initPlants()
         self.initRabbits()
+        self.makePlants(PLANT_CHANCE)
         self.initFoxes()
+        self.updateScent()
+        
+        self.displayGrid()
+        self.displayFrame()
         
     # MEATHOD: displayGrid ---------------------------------------------
     def displayFrame(self):
@@ -121,6 +127,8 @@ class EcoSystem:
                     simFrame[shape[0]-y-1, x, :] = [1, 0.6, 0]
                 elif(self.herbivore_grid[y,x] == 1):
                     simFrame[shape[0]-y-1, x, :] = [1, 1, 1] 
+                elif(self.burrow_grid[y,x] == 1):
+                    simFrame[shape[0]-y-1, x, :] = [0.7, 0.7, 0.7]
                 elif(self.plant_grid[y,x] == 1):
                     simFrame[shape[0]-y-1, x, :] = [0, 0.4, 0]
                 elif(self.water_grid[y,x] == 1):
@@ -145,7 +153,7 @@ class EcoSystem:
         cm = ['YlOrBr_r', 'Blues', 'coolwarm', 'PRGn']
         
         fig, axs = plt.subplots(1, 1)
-        pcm = axs.pcolormesh(self.plant_grid,
+        pcm = axs.pcolormesh(self.light_grid,
                             cmap=cm[0])
         fig.colorbar(pcm, ax=axs)
         axs.axis("off")
@@ -196,7 +204,7 @@ class EcoSystem:
         
         return check
     
-    # MEATHOD: randomWalk -----------------------------------------------
+    # MEATHOD: checkCell -----------------------------------------------
     def randomWalk(self, Fauna):
         """ Description:
             Pass an animal and it will walk within the borders of the grid.
@@ -241,36 +249,6 @@ class EcoSystem:
             self.herbivore_grid[Fauna.position[0], Fauna.position[1]] = 0
             self.herbivore_grid[moveY[valid[0][0]], moveX[valid[0][0]]] = 1
             Fauna.move(moveY[valid[0][0]], moveX[valid[0][0]])
-            
-    # METHOD: track ----------------------------------------------------
-    def track(self, Fauna):
-        #Checks to see if Carnivore should look for food
-        if (Fauna.energy < Fauna.HUNGRY):
-            return 0
-        #Looks around itself in a moore neighborhood to find scent
-        
-        #Init Moore Neighborhood arrays (same as randomWalk)
-        moveX = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
-        moveY = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
-        
-        moveX = Fauna.position[1] + moveX
-        moveY = Fauna.position[0] + moveY
-        
-        #Check Borders
-        valid = nu.where(nu.logical_not(nu.logical_or(nu.logical_or(moveY >= self.length, moveY < 0),nu.logical_or(moveX >= self.width, moveX < 0))))
-        
-        scent = nu.zeros(nu.size(valid[0]))
-        
-        for i in range(len(valid[0])):
-            scent[i] = self.scent_grid[moveY[valid[0][i]]][moveX[valid[0][i]]]
-            
-        strongest_scent = scent.argmax()
-        
-        self.carnivore_grid[Fauna.position[0], Fauna.position[1]] = 0
-        self.carnivore_grid[moveY[valid[0][strongest_scent]], moveX[valid[0][strongest_scent]]] = 1
-        Fauna.move(moveY[valid[0][strongest_scent]], moveX[valid[0][strongest_scent]])
-        
-        return 1
         
     def goWater(self, Fauna):
         #I do not know how to implement this function (See walk section)
@@ -291,7 +269,7 @@ class EcoSystem:
         #Checks nearby spaces within border and drinks if there is water
         for i in range(len(valid[0])):
             if (self.water_grid[moveY[valid[0][i]],moveX[valid[0][i]]] > 0):
-                Fauna.drink()
+                Fauna.drink(2)
                 return
         
         #Walk Section: Choose to walk instead
@@ -359,14 +337,13 @@ class EcoSystem:
         #return a true or false depending on action - can do something about it
         #later                
         return eatCheck
-            
     
     def updateScent(self):
         herb_scent = nu.fmax(self.herbivore_grid, self.scent_grid * DISSIPATION_RATE)
         carn_scent = nu.fmax(self.carnivore_grid, self.scent_grid * DISSIPATION_RATE * -1)
         self.scent_grid = herb_scent - carn_scent
                    
-    # METHOD: checkCell -----------------------------------------------
+    # MEATHOD: checkCell -----------------------------------------------
     def initWater(self):
         """ Description:
             
@@ -423,7 +400,7 @@ class EcoSystem:
             if(y < by):
                 y += 1
                 
-    # METHOD: checkCell -----------------------------------------------
+    # MEATHOD: checkCell -----------------------------------------------
     def updateTemp(self):
         """ Description:
             
@@ -440,8 +417,8 @@ class EcoSystem:
         self.temp_grid[-1,0] = -5
         self.temp_grid[-1,-1] = 5
     
-    # METHOD: checkCell -----------------------------------------------
-    def initPlants(self):
+    # MEATHOD: checkCell -----------------------------------------------
+    def makePlants(self, chance):
         """ Description:
             
             Populates the plant list by determining if a plant grows in an area
@@ -457,36 +434,50 @@ class EcoSystem:
         for y in range(self.length):
             for x in range(self.width):
                 #Test for growth
-                if nu.random.uniform(0,1) <= PLANT_CHANCE:
-                    if(self.water_grid[y,x] < 0.75):
+                if nu.random.uniform(0,1) <= chance:
+                    if(self.water_grid[y,x] < 0.75 and self.plant_grid[y,x] < 1 and self.burrow_grid[y,x] < 1):
                         #Make a grass plant
                         newPlant = fo.Grass(y,x)
                         self.plant_grid[y,x] = 1
                         self.plant_list.append(newPlant)
         #Grid and list should now be initialized
-    
-    # METHOD: checkCell -----------------------------------------------
+        
+    # MEATHOD: checkCell -----------------------------------------------
     def initRabbits(self):
         #This rabbit spawn is hardcoded so we could keep them away from
         #their predators
         
-        for i in range(NUM_BURROWS):
-            x = 3 * i
-            y = 5 * i
+        i = 0
+        while(i < NUM_BURROWS):
+            x = int(nu.random.uniform(0,1) * (self.width - 2) + 2)
+            y = int(nu.random.uniform(0,1) * (self.length - 2) + 2)
+            if(self.water_grid[y,x] < 0.75 and self.burrow_grid[y,x] < 1):
+                self.burrow_grid[y,x] = 1
+                i += 1
             
         self.spawnRabbits()
     
-    # METHOD: checkCell -----------------------------------------------
+    # MEATHOD: checkCell -----------------------------------------------
     def spawnRabbits(self):
         #This rabbit spawn is hardcoded so we could keep them away from
         #their predators
-        for i in range(NUM_RABBITS):
-            x = i * 2
-            y = i
-            newRab = fa.Rabbit(y,x)
-            #Spawns 3 around the top left corner
-            self.herbivore_list.append(newRab)
-            self.herbivore_grid[y, x] = 1
+        
+        for y in range(self.length):
+            for x in range(self.width):
+                if(self.burrow_grid[y,x] == 1):
+                    placeX = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
+                    placeY = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
+            
+                    nu.random.shuffle(placeX)
+                    nu.random.shuffle(placeY)
+                    
+                    for j in range(RABBITS_PER_BURROW):
+                        locX = x + placeX[j]
+                        locY = y + placeY[j]
+                        newRab = fa.Rabbit(locY,locX)
+                        #Spawns around the burrow
+                        self.herbivore_list.append(newRab)
+                        self.herbivore_grid[locY, locX] = 1
             
     def initFoxes(self):
         #This fox spawn is hardcoded so we could keep them away from vulnerable
@@ -499,16 +490,16 @@ class EcoSystem:
             self.carnivore_list.append(newFox)
             self.carnivore_grid[y, x] = 1
      
-    # METHOD: runAFewFrames -------------------------------------------
-    def runAFewFrames(self):
-        for i in range(5):
+    # MEATHOD: runAFewFrames -------------------------------------------
+    def runADay(self):
+        for i in range(24):
             for j in range(len(self.herbivore_list)):
                 self.randomWalk(self.herbivore_list[j])
             for j in range(len(self.carnivore_list)):
-                if (not self.track(self.carnivore_list[j])):
-                    self.randomWalk(self.carnivore_list[j])
+                self.randomWalk(self.carnivore_list[j])
             self.animalsEat()
             self.updateScent()
+        self.makePlants(PLANT_REPOP_CHANCE)
         
 # FUNCTION: FUNC -------------------------------------------------------
 def func():
@@ -527,21 +518,16 @@ def func():
 # Driver code for program
 
 eco = EcoSystem()
-#eco.displayGrid()
-#eco.displayFrame()
 
 value = len(eco.plant_list)
 
 for i in range(10):
     eco.frame += 1
-    eco.runAFewFrames()
-    #eco.animalsEat()
+    eco.runADay()
     eco.displayFrame()
 
 print("# plants died:")
 print(value - len(eco.plant_list))
-
-#eco.displayGrid()
 
 #=======================================================================
 # END FILE
