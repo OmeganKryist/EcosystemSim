@@ -35,9 +35,6 @@ class EcoSystem:
     
         Methods: 
     """
-    frame = None
-    lenght = None
-    width = None
     
     
     # MEATHOD: INIT -----------------------------------------------------------
@@ -51,11 +48,12 @@ class EcoSystem:
             Output: 
         """
         self.frame = 0
+        self.iterations = 0
         self.rained = False
 
         #Grid Size variables
-        self.length = 50
-        self.width = 50
+        self.length = const.GRID_Y
+        self.width = const.GRID_X
         
         # These grids track constant values accross the grid
         self.light_grid = nu.ones((self.length, self.width))
@@ -77,12 +75,17 @@ class EcoSystem:
         self.carnivore_list = []
         
         #Counting variables
-        self.animalsEaten = 0
         self.plantsEaten = 0
         self.plantsDied = 0
         self.carniDied = 0
         self.herbiDied = 0
+        self.animalsDeath = [0, 0, 0, 0, 0]
+        self.timesDrunk = 0
+        self.timesRained = 0
+        self.carniMove = [0, 0, 0, 0]
+        self.herbiMove = [0, 0, 0, 0]
         
+        # initalization functions
         self.wheatherCheck()
         self.initWater()
         self.updateTemp()
@@ -91,6 +94,7 @@ class EcoSystem:
         self.initFoxes()
         self.updateScent()
         
+        # inital display
         self.displayGrids()
         
     # MEATHOD: displayGrid ----------------------------------------------------
@@ -223,20 +227,38 @@ class EcoSystem:
         print("")
         print("Grid Length:", self.length)
         print("Grid Width:", self.width)
-        print("Number of Days:", 0)
-        print("Time Units Per Day:", 0)
-        print("Total Time Units:", 0)
+        print("Itterations:", self.iterations)
         print("")
         print("--Simulation Results--")
         print("")
-        print("Natrual Deaths:")
-        print("   -Plants:", self.plantsDied)
+        print("Plant Deaths:")
+        print("   -Decay:", self.plantsDied)
+        print("   -Eaten:", self.plantsEaten)
+        print("")
+        print("Animal Deaths:")
+        print("   -Starved:", self.animalsDeath[0])
+        print("   -Desiccated:", self.animalsDeath[1])
+        print("   -Frozen:", self.animalsDeath[2])
+        print("   -Boiled:", self.animalsDeath[3])
+        print("   -Eaten:", self.animalsDeath[4])
         print("   -Herbivores:", self.herbiDied)
         print("   -Carnivores:", self.carniDied)
         print("")
-        print("Eaten:")
-        print("   -Plants:", self.plantsEaten)
-        print("   -Animals:", self.animalsEaten)
+        print("Water:")
+        print("   -Times Drunk:", self.timesDrunk)
+        print("   -Times Rained:", self.timesRained)
+        print("")
+        print("Herbivore Movement:")
+        print("   -Times Looking For Water:", self.herbiMove[2])
+        print("   -Times Looking For Energy:", self.herbiMove[1])
+        print("   -Times Randomly walked:", self.herbiMove[0])
+        print("   -Times Waited:", self.herbiMove[3])
+        print("")
+        print("Carnivore Movement:")
+        print("   -Times Looking For Water:", self.carniMove[2])
+        print("   -Times Looking For Energy:", self.carniMove[1])
+        print("   -Times Randomly walked:", self.carniMove[0])
+        print("   -Times Waited:", self.carniMove[3])
         print("")
     
     # MEATHOD: checkCell ------------------------------------------------------
@@ -283,14 +305,20 @@ class EcoSystem:
                 Fauna.move(moveY[valid[0][0]], moveX[valid[0][0]],\
                            self.temp_grid[moveY[valid[0][0]],\
                                           moveX[valid[0][0]]])
+                self.carniMove[0] += 1
             elif(Fauna.isHerbivore()):
                 self.herbivore_grid[Fauna.position[0], Fauna.position[1]] = 0
                 self.herbivore_grid[moveY[valid[0][0]], moveX[valid[0][0]]] = 1
                 Fauna.move(moveY[valid[0][0]], moveX[valid[0][0]],\
                            self.temp_grid[moveY[valid[0][0]],\
                                           moveX[valid[0][0]]])
+                self.herbiMove[0] += 1
         else:
             Fauna.wait()
+            if(Fauna.isCarnivore()):
+                self.carniMove[3]
+            elif(Fauna.isHerbivore()):
+                self.herbiMove[3] += 1
         
     # METHOD: track -----------------------------------------------------------
     def track(self, Fauna):
@@ -343,7 +371,7 @@ class EcoSystem:
         Fauna.move(moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]],\
                    self.temp_grid[moveY[valid[0][indexToUse]],\
                                   moveX[valid[0][indexToUse]]])
-        
+        self.carniMove[1] += 1
         return 0
         
     # METHOD: forage ----------------------------------------------------------
@@ -403,7 +431,7 @@ class EcoSystem:
         Fauna.move(moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]],\
                    self.temp_grid[moveY[valid[0][indexToUse]],\
                                   moveX[valid[0][indexToUse]]])
-        
+        self.herbiMove[1] += 1
         return 0
     
     # METHOD: findWater -------------------------------------------------------
@@ -447,7 +475,7 @@ class EcoSystem:
             Fauna.move(Fauna.position[0] + addY, Fauna.position[1] + addX,\
                        self.temp_grid[Fauna.position[0] + addY,\
                                       Fauna.position[1] + addX])
-        
+            self.carniMove[2] += 1
         elif(Fauna.isHerbivore()):
             self.herbivore_grid[Fauna.position[0], Fauna.position[1]] = 0
             self.herbivore_grid[Fauna.position[0] + addY,\
@@ -455,9 +483,10 @@ class EcoSystem:
             Fauna.move(Fauna.position[0] + addY, Fauna.position[1] + addX,\
                        self.temp_grid[Fauna.position[0] + addY,\
                                       Fauna.position[1] + addX])
+            self.herbiMove[2] += 1
         
         Fauna.drink(Fauna.drink_amount)
-        
+        self.timesDrink += 1
         return 0
     
     # METHOD: animalsEat ------------------------------------------------------
@@ -466,7 +495,6 @@ class EcoSystem:
             #Skip animal if not hungry
             if self.herbivore_list[i].energy > self.herbivore_list[i].hungry:
                 continue
-                
             else:
                 self.eatPlant(self.herbivore_list[i])       
         #iCarn will be every carnivore object in the carnivore_list
@@ -521,7 +549,7 @@ class EcoSystem:
                     Fauna.drink(nutrition[1])
                     #Remove herbivore and record its death
                     self.herbivore_list.remove(iHerb)
-                    self.animalsEaten += 1
+                    self.animalsDeath[4] += 1
                     eatCheck = True
         
         if(not eatCheck):
@@ -556,7 +584,7 @@ class EcoSystem:
                             Fauna.drink(nutrition[1])
                             #Remove herbivore and record its death
                             self.herbivore_list.remove(iHerb)
-                            self.animalsEaten += 1
+                            self.animalsDeath[4] += 1
                             eatCheck = True
             #return a true or false depending on action - can do something 
             # about it later
@@ -580,16 +608,22 @@ class EcoSystem:
         """Removes animals and plants that are no longer alive
         """
         for iHerb in self.herbivore_list:
-            if not iHerb.healthCheck():
+            checks = iHerb.healthCheck()
+            if not checks[0]:
                 self.herbivore_grid[iHerb.position[0], iHerb.position[1]] = 0
                 self.herbivore_list.remove(iHerb)
                 self.herbiDied += 1
+                if(not (checks[1] == -1)):
+                    self.animalsDeath[checks[1]] += 1 
             
         for iCarn in self.carnivore_list:
-            if not iCarn.healthCheck():
+            checks = iCarn.healthCheck()
+            if not checks[0]:
                 self.carnivore_grid[iCarn.position[0], iCarn.position[1]] = 0
                 self.carnivore_list.remove(iCarn)
                 self.carniDied += 1
+                if(not (checks[1] == -1)):
+                    self.animalsDeath[checks[1]] += 1 
                 
         for iPlant in self.plant_list:
             if not iPlant.healthCheck():
@@ -854,6 +888,7 @@ class EcoSystem:
     # MEATHOD: runAFewFrames --------------------------------------------------
     def runADay(self):
         for i in range(const.HOURS_PER_DAY):
+            self.iterations += 1
             for j in range(len(self.herbivore_list)):
                 if(self.findWater(self.herbivore_list[j])):
                     if(self.forage(self.herbivore_list[j])):
