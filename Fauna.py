@@ -1,11 +1,17 @@
 # START FILE
 #==============================================================================
 # GENERAL DOCUMENTATION -------------------------------------------------------
-""" 
+""" This file contains animal objects used in the ecosystem simulation.
+    The simulation of these animals are done in the ecosystem file. Here, the
+    animal-related variables are stored and modified.
+    Animals in the herbivore class eat plants.
+    Animals in the carnivore class eat other animals.
+    Some animals can be both herbivores and carnivores.
+    Current Animals: Rabbit, Fox
 """
 
 # ADDITIONAL DOCUMENTATION ----------------------------------------------------
-
+#Authors: Christian Rahmel, William Taing, Morgan Du Bois
 # Modification History:
 # - 3 Mar 2020: File Created
 
