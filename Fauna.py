@@ -1,10 +1,10 @@
 # START FILE
-#=======================================================================
-# GENERAL DOCUMENTATION ------------------------------------------------
+#==============================================================================
+# GENERAL DOCUMENTATION -------------------------------------------------------
 """ 
 """
 
-# ADDITIONAL DOCUMENTATION ---------------------------------------------
+# ADDITIONAL DOCUMENTATION ----------------------------------------------------
 
 # Modification History:
 # - 3 Mar 2020: File Created
@@ -15,13 +15,13 @@
 #  or through some other IDE like visual studio or spyder
 # - Documentation style inspired by CSS 458 professor Johnny Lin
 
-#=======================================================================
-# PROGRAM IMPORTS ------------------------------------------------------
+#==============================================================================
+# PROGRAM IMPORTS _____________________________________________________________
 import Variables as const
 import numpy as nu
 
-#=======================================================================
-# CLASS: Fauna ---------------------------------------------------------
+#==============================================================================
+# CLASS: Fauna ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 class Fauna:
     """ Description: Parent class for all fauna, provides very basic
                      functions and status
@@ -65,7 +65,7 @@ class Fauna:
     position = None
     alive = None
 
-    # MEATHOD: init ----------------------------------------------------
+    # MEATHOD: init -----------------------------------------------------------
     def __init__(self, y, x):
         """ Description: Class constructor
     
@@ -75,8 +75,10 @@ class Fauna:
             -y: y position
         """
         
-        self.energy = nu.random.uniform(self.INIT_ENERGY_MIN, self.INIT_ENERGY_MAX)
-        self.water = nu.random.uniform(self.INIT_WATER_MIN, self.INIT_WATER_MAX)
+        self.energy = nu.random.uniform(self.INIT_ENERGY_MIN,\
+                                        self.INIT_ENERGY_MAX)
+        self.water = nu.random.uniform(self.INIT_WATER_MIN,\
+                                       self.INIT_WATER_MAX)
         
         self.temp = self.natural_temp
         self.cold = self.natural_temp + const.COLD_OFFSET
@@ -93,15 +95,18 @@ class Fauna:
         self.starve = self.max_energy * const.STARVE_PERCENT
         self.desiccate = self.max_water * const.DESICCATE_PERCENT
         
-        self.move_energy_cost = ((self.max_energy / const.ENERGY_MOVE_FACTOR) / const.HOURS_PER_DAY)
-        self.wait_energy_cost = self.move_energy_cost / const.ENERGY_WAIT_REDUCE 
-        self.move_water_cost = ((self.max_water / const.WATER_MOVE_FACTOR) / const.HOURS_PER_DAY)
+        self.move_energy_cost = ((self.max_energy / const.ENERGY_MOVE_FACTOR)\
+                                 / const.HOURS_PER_DAY)
+        self.wait_energy_cost = self.move_energy_cost\
+                                / const.ENERGY_WAIT_REDUCE 
+        self.move_water_cost = ((self.max_water / const.WATER_MOVE_FACTOR)\
+                                / const.HOURS_PER_DAY)
         self.wait_water_cost = self.move_water_cost / const.WATER_WAIT_REDUCE 
         
         self.position = [y, x]
         self.alive = True
 
-    # MEATHOD: eat -----------------------------------------------------
+    # MEATHOD: eat ------------------------------------------------------------
     def eat(self, amount):
         """ Description: updates the fauna's energy based on a given 
                          amount
@@ -113,7 +118,7 @@ class Fauna:
         """
         self.energy += min(amount, self.eat_amount)
 
-    # MEATHOD: drink ---------------------------------------------------
+    # MEATHOD: drink ----------------------------------------------------------
     def drink(self, amount):
         """ Description: updates the fauna's position
     
@@ -124,7 +129,7 @@ class Fauna:
         """
         self.water += min(amount, self.drink_amount)
 
-    # MEATHOD: move ----------------------------------------------------
+    # MEATHOD: move -----------------------------------------------------------
     def move(self, y, x, tempValue):
         """ Description: updates the fauna's position
                          deducts the move cost
@@ -135,15 +140,17 @@ class Fauna:
             -y: y position
         """
         if(tempValue < self.temp):
-            self.temp = max(self.temp - (abs(tempValue) * const.TEMP_TRANSFER), tempValue)
+            self.temp = max(self.temp -\
+                            (abs(tempValue) * const.TEMP_TRANSFER), tempValue)
         elif(tempValue > self.temp):
-            self.temp = min(self.temp + (abs(tempValue) * const.TEMP_TRANSFER), tempValue)
+            self.temp = min(self.temp +\
+                            (abs(tempValue) * const.TEMP_TRANSFER), tempValue)
         
         self.energy -= self.move_energy_cost
         self.water -= self.move_water_cost
         self.position = [y, x]
 
-    # MEATHOD: wait ----------------------------------------------------
+    # MEATHOD: wait -----------------------------------------------------------
     def wait(self):
         """ Description: deducts the wait cost
     
@@ -152,13 +159,14 @@ class Fauna:
         """
         self.energy -= self.wait_energy_cost
         self.water -= self.wait_water_cost
-        
+    
+    # MEATHOD: consumed -------------------------------------------------------    
     def consumed(self):
         self.alive = False # it's been eaten
         # return array of energy and water values to add to predators
         return [self.energy_value, self.water_value]
 
-    # MEATHOD: healthCheck ---------------------------------------------
+    # MEATHOD: healthCheck ----------------------------------------------------
     def healthCheck(self):
         """ Description: updates the alive status if needed
     
@@ -177,14 +185,16 @@ class Fauna:
             elif(self.temp >= self.boiled):
                 self.alive = False
         return self.alive
-      
+    
+    # MEATHOD: isHerbivore ----------------------------------------------------
     def isHerbivore(self):
         return False
     
+    # MEATHOD: isCarnivore ----------------------------------------------------
     def isCarnivore(self):
         return False 
     
-# CLASS: Herbivore -----------------------------------------------------
+# CLASS: Herbivore ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 class Herbivore(Fauna):
     """ Description:
     
@@ -192,9 +202,23 @@ class Herbivore(Fauna):
         -var: 
     """
     
+    # MEATHOD: isHerbivore ----------------------------------------------------
     def isHerbivore(self):
         return True
-        
+
+# CLASS: Carnivore ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+class Carnivore(Fauna):
+    """ Description:
+    
+        Variables: 
+        -var:  
+    """
+    
+    # MEATHOD: isCarnivore ----------------------------------------------------    
+    def isCarnivore(self):
+        return True
+    
+# CLASS: Rabbit +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++        
 class Rabbit(Herbivore):
     
     """ Description: Rabbit Class
@@ -219,18 +243,8 @@ class Rabbit(Herbivore):
     drink_amount = 500
     
     natural_temp = 5
-
-# CLASS: Carnivore -----------------------------------------------------
-class Carnivore(Fauna):
-    """ Description:
     
-        Variables: 
-        -var:  
-    """
-        
-    def isCarnivore(self):
-        return True
-        
+# CLASS: Fox ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++        
 class Fox(Carnivore, Herbivore):
     """ Description: Modeled after the red fox, a native animal to Washington.
     
@@ -249,7 +263,7 @@ class Fox(Carnivore, Herbivore):
     
     natural_temp = 10
 
-    # MEATHOD: init ----------------------------------------------------
+    # MEATHOD: init -----------------------------------------------------------
     def __init__(self, y, x):
         """ Description: Class constructor
     
@@ -259,8 +273,10 @@ class Fox(Carnivore, Herbivore):
             -y: y position
         """
         
-        self.energy = nu.random.uniform(self.INIT_ENERGY_MIN, self.INIT_ENERGY_MAX)
-        self.water = nu.random.uniform(self.INIT_WATER_MIN, self.INIT_WATER_MAX)
+        self.energy = nu.random.uniform(self.INIT_ENERGY_MIN,\
+                                        self.INIT_ENERGY_MAX)
+        self.water = nu.random.uniform(self.INIT_WATER_MIN,\
+                                       self.INIT_WATER_MAX)
         
         self.temp = self.natural_temp
         self.cold = self.natural_temp + const.COLD_OFFSET
@@ -277,12 +293,15 @@ class Fox(Carnivore, Herbivore):
         self.starve = self.max_energy * const.STARVE_PERCENT
         self.desiccate = self.max_water * const.DESICCATE_PERCENT
         
-        self.move_energy_cost = ((self.max_energy / const.ENERGY_MOVE_FACTOR) / const.HOURS_PER_DAY) / const.EXTRA_FOX_STEPS
-        self.wait_energy_cost = self.move_energy_cost / const.ENERGY_WAIT_REDUCE 
-        self.move_water_cost = ((self.max_water / const.WATER_MOVE_FACTOR) / const.HOURS_PER_DAY) / const.EXTRA_FOX_STEPS
+        self.move_energy_cost = ((self.max_energy / const.ENERGY_MOVE_FACTOR)\
+                                 / const.HOURS_PER_DAY) / const.EXTRA_FOX_STEPS
+        self.wait_energy_cost = self.move_energy_cost\
+                                / const.ENERGY_WAIT_REDUCE 
+        self.move_water_cost = ((self.max_water / const.WATER_MOVE_FACTOR)\
+                                / const.HOURS_PER_DAY) / const.EXTRA_FOX_STEPS
         self.wait_water_cost = self.move_water_cost / const.WATER_WAIT_REDUCE 
         
         self.position = [y, x]
         self.alive = True
-#=======================================================================
+#==============================================================================
 # END FILE
