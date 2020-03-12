@@ -22,7 +22,7 @@ import numpy as nu
 # PROGRAM CONSTANTS ------------------------------------------------------
 # User Modifiable
 
-ENERGY_LOSS = 0.8
+ENERGY_LOSS = 0.3
 WATER_LOSS = 0.1
 
 HUNGRY_PERCENT = 0.9
@@ -272,8 +272,8 @@ class Fox(Carnivore, Herbivore):
     INIT_WATER_MIN = 1250         # initialization minimum for water
     INIT_WATER_MAX = 1500       # initialization range for water
     
-    max_energy = 4000
-    eat_amount = 800
+    max_energy = 5000
+    eat_amount = 1000
     
     max_water = 1500
     drink_amount = 750
