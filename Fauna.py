@@ -19,11 +19,26 @@
 # PROGRAM IMPORTS ------------------------------------------------------
 import numpy as nu
 
-# PROGRAM GLOBALS ------------------------------------------------------
-# Not User Modifiable
+# PROGRAM CONSTANTS ------------------------------------------------------
+# User Modifiable
+
+ENERGY_LOSS = 0.1
+WATER_LOSS = 0.05
+
+HUNGRY_PERCENT = 0.8
+STARVE_PERCENT = 0.4
+THIRSTY_PERCENT = 0.6
+DESICCATE_PERCENT = 0.2
+
+ENERGY_MOVE_FACTOR = 8
+ENERGY_WAIT_REDUCE = 2
+WATER_MOVE_FACTOR = 2
+WATER_WAIT_REDUCE = 4
 
 #Time segments per day                                                      
-dt = 24
+DT = 24
+
+
 
 #=======================================================================
 # CLASS: Fauna ---------------------------------------------------------
@@ -76,6 +91,20 @@ class Fauna:
         
         self.energy = nu.random.uniform(self.INIT_ENERGY_MIN, self.INIT_ENERGY_MAX)
         self.water = nu.random.uniform(self.INIT_WATER_MIN, self.INIT_WATER_MAX)
+        
+        self.energy_value = self.max_energy * ENERGY_LOSS
+        self.water_value = self.max_water * WATER_LOSS
+        
+        self.hungry = self.max_energy * HUNGRY_PERCENT
+        self.thirsty = self.max_water * THIRSTY_PERCENT
+        
+        self.starve = self.max_energy * STARVE_PERCENT
+        self.desiccate = self.max_water * DESICCATE_PERCENT
+        
+        self.move_energy_cost = (self.max_energy / ENERGY_MOVE_FACTOR) / DT
+        self.wait_energy_cost = self.move_energy_cost / ENERGY_WAIT_REDUCE 
+        self.move_water_cost = (self.max_water / WATER_MOVE_FACTOR) / DT
+        self.wait_water_cost = self.move_water_cost / WATER_WAIT_REDUCE 
         
         self.position = [y, x]
         self.alive = True
@@ -183,20 +212,10 @@ class Rabbit(Herbivore):
     INIT_WATER_MAX = 1000        # initialization range for water
     
     max_energy = 1000
-    move_energy_cost = 50 * dt
-    wait_energy_cost = 25 * dt 
-    energy_value = 200
-    hungry = 900
-    eat_amount = 105
-    starve = 400
+    eat_amount = 100
     
     max_water = 1000
-    move_water_cost = 50 * dt
-    wait_water_cost = 25 * dt
-    water_value = 100
-    thirsty = 900
-    drink_amount = 100
-    desiccate = 700
+    drink_amount = 500
 
 # CLASS: Carnivore -----------------------------------------------------
 class Carnivore(Fauna):
@@ -215,25 +234,15 @@ class Fox(Carnivore, Herbivore):
     """
     
     INIT_ENERGY_MIN = 1000       # initialization minimum for energy
-    INIT_ENERGY_MAX = 1200       # initialization range for energy
+    INIT_ENERGY_MAX = 1500       # initialization range for energy
     INIT_WATER_MIN = 900         # initialization minimum for water
-    INIT_WATER_MAX = 1000        # initialization range for water
+    INIT_WATER_MAX = 1000       # initialization range for water
     
-    max_energy = 1200
-    move_energy_cost = 60 / dt
-    wait_energy_cost = 40 / dt 
-    energy_value = 200
-    hungry = 900
+    max_energy = 2000
     eat_amount = 200
-    starve = 400
     
     max_water = 1000
-    move_water_cost = 50 / dt
-    wait_water_cost = 25 / dt
-    water_value = 100
-    thirsty = 900
-    drink_amount = 150
-    desiccate = 400
+    drink_amount = 500
 
 #=======================================================================
 # END FILE
