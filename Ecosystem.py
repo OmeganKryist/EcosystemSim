@@ -1,10 +1,10 @@
 # START FILE
 #==============================================================================
-# GENERAL DOCUMENTATION -------------------------------------------------------
+# GENERAL DOCUMENTATION _______________________________________________________
 """ 
 """
 
-# ADDITIONAL DOCUMENTATION ----------------------------------------------------
+# ADDITIONAL DOCUMENTATION ____________________________________________________
 
 # Modification History:
 # - 3 Mar 2020: File Created
@@ -97,7 +97,7 @@ class EcoSystem:
         # inital display
         self.displayGrids()
         
-    # MEATHOD: displayGrid ----------------------------------------------------
+    # MEATHOD: displayFrame ---------------------------------------------------
     def displayFrame(self):
         """ Description: displays a frame from the simulation
             
@@ -132,7 +132,7 @@ class EcoSystem:
         axs.imshow(simFrame)
         plt.pause(0.5)
 
-    # MEATHOD: displayGrid ----------------------------------------------------
+    # MEATHOD: displayScent ---------------------------------------------------
     def displayScent(self):
         """ Description: displays constant grid color maps
             
@@ -149,7 +149,7 @@ class EcoSystem:
         plt.title("EcoSystem Scent Distribution")
         plt.show()
         
-    # MEATHOD: displayGrid ----------------------------------------------------
+    # MEATHOD: displayTemp ----------------------------------------------------
     def displayTemp(self):
         """ Description: displays constant grid color maps
             
@@ -166,7 +166,7 @@ class EcoSystem:
         plt.title("EcoSystem Temperture Distribution")
         plt.show()
         
-    # MEATHOD: displayGrid ----------------------------------------------------
+    # MEATHOD: displayLight ---------------------------------------------------
     def displayLight(self):
         """ Description: displays constant grid color maps
             
@@ -184,7 +184,7 @@ class EcoSystem:
         plt.show()
 
     
-    # MEATHOD: displayGrid ----------------------------------------------------
+    # MEATHOD: displayWater ---------------------------------------------------
     def displayWater(self):
         """ Description: displays constant grid color maps
             
@@ -201,7 +201,7 @@ class EcoSystem:
         plt.title("EcoSystem Water Distribution")
         plt.show()
     
-    # MEATHOD: displayGrid ----------------------------------------------------
+    # MEATHOD: displayGrids ---------------------------------------------------
     def displayGrids(self):
         """ Description: displays constant grid color maps
             
@@ -215,7 +215,7 @@ class EcoSystem:
         self.displayFrame()
         
     
-    # MEATHOD: checkCell ------------------------------------------------------  
+    # MEATHOD: displayResults ------------------------------------------------- 
     def displayResults(self):
         """ Description: displays constant grid color maps
             
@@ -261,7 +261,7 @@ class EcoSystem:
         print("   -Times Waited:", self.carniMove[3])
         print("")
     
-    # MEATHOD: checkCell ------------------------------------------------------
+    # MEATHOD: randomWalk -----------------------------------------------------
     def randomWalk(self, Fauna):
         """ Description:
             Pass an animal and it will walk within the borders of the grid.
@@ -506,7 +506,7 @@ class EcoSystem:
                     #Carnivores do not seem to eat plants when this is used
                     self.eatPlant(iCarn)
              
-    # MEATHOD: checkCell ------------------------------------------------------
+    # MEATHOD: eatPlant -------------------------------------------------------
     def eatPlant(self, Fauna):
         j = 0
         while(j < len(self.plant_list)):
@@ -590,7 +590,7 @@ class EcoSystem:
             # about it later
         return eatCheck
     
-    # MEATHOD: checkCell ------------------------------------------------------
+    # MEATHOD: plantsAbsorb ---------------------------------------------------
     def plantsAbsorb(self):
         for iPlant in self.plant_list:
             lighting = self.light_grid[iPlant.position[0], iPlant.position[1]]
@@ -598,14 +598,14 @@ class EcoSystem:
             water = self.water_grid[iPlant.position[0], iPlant.position[1]]
             iPlant.drink(water * const.WATER_ABSORB_FACTOR)
     
-    # MEATHOD: checkCell ------------------------------------------------------        
+    # MEATHOD: checkPlantGrowth -----------------------------------------------      
     def checkPlantGrowth(self):
         for iPlant in self.plant_list:
             iPlant.growth()
     
-    # MEATHOD: checkCell ------------------------------------------------------
+    # MEATHOD: checkStarved ---------------------------------------------------
     def checkStarved(self):
-        """Removes animals and plants that are no longer alive
+        """ Removes animals and plants that are no longer alive
         """
         for iHerb in self.herbivore_list:
             checks = iHerb.healthCheck()
@@ -632,7 +632,7 @@ class EcoSystem:
                 self.plantsDied += 1
         return
     
-    # MEATHOD: checkCell ------------------------------------------------------
+    # MEATHOD: updateScent ----------------------------------------------------
     def updateScent(self):
         spreadScent = nu.zeros((self.length + (const.SCENT_SPREAD * 2),\
                                 self.width + (const.SCENT_SPREAD * 2)))
@@ -666,19 +666,8 @@ class EcoSystem:
                                          -(const.SCENT_SPREAD)]*-1)
         self.scent_grid = herb_scent - carn_scent
                    
-    # MEATHOD: checkCell ------------------------------------------------------
+    # MEATHOD: initWater ------------------------------------------------------
     def initWater(self):
-        """ Description:
-            
-            Populates the plant list by determining if a plant grows in an area
-            using a random number.
-        
-            Variables: 
-            -plantChance: Chance a plant will grow in a grid space.
-        
-            Output: plant_list and plant_grid is populated with Grass objects.
-        """
-        
         x = [5, 10, 15, 35, 40, 45]
         y = [5, 10, 15, 35, 40, 45]
         nu.random.shuffle(x)
@@ -700,18 +689,8 @@ class EcoSystem:
         if(const.HAS_LAKE):
             self.makeWaterBody(24, 24, 26, 26, const.LAKE_SPREAD)
     
-    # MEATHOD: checkCell ------------------------------------------------------    
+    # MEATHOD: makeWaterBody --------------------------------------------------  
     def makeWaterBody(self, x1, y1, x2, y2, spread):
-        """ Description:
-            
-            Populates the plant list by determining if a plant grows in an area
-            using a random number.
-        
-            Variables: 
-            -plantChance: Chance a plant will grow in a grid space.
-        
-            Output: plant_list and plant_grid is populated with Grass objects.
-        """
         ax = min(x1,x2)
         bx = max(x1,x2)
         ay = min(y1,y2)
@@ -746,18 +725,8 @@ class EcoSystem:
             if(y < by):
                 y += 1
     
-    # MEATHOD: checkCell ------------------------------------------------------
+    # MEATHOD: wheatherCheck --------------------------------------------------
     def wheatherCheck(self):
-        """ Description:
-            
-            Populates the plant list by determining if a plant grows in an area
-            using a random number.
-        
-            Variables: 
-            -plantChance: Chance a plant will grow in a grid space.
-        
-            Output: plant_list and plant_grid is populated with Grass objects.
-        """
         check = False
         if(self.rained):
             check = True
@@ -778,7 +747,7 @@ class EcoSystem:
             self.water_grid -= 0.2
             self.rained = False
     
-    # MEATHOD: checkCell ------------------------------------------------------
+    # MEATHOD: makeCloud ------------------------------------------------------
     def makeCloud(self):
         x = int(nu.random.uniform(0,1) * 50)
         y = int(nu.random.uniform(0,1) * 50)
@@ -790,35 +759,14 @@ class EcoSystem:
         self.light_grid[y-spreadY:y+spreadY, x-spreadX:x+spreadX] *=\
             1-thickness
         
-    # MEATHOD: checkCell ------------------------------------------------------
+    # MEATHOD: updateTemp -----------------------------------------------------
     def updateTemp(self):
-        """ Description:
-            
-            Populates the plant list by determining if a plant grows in an area
-            using a random number.
-        
-            Variables: 
-            -plantChance: Chance a plant will grow in a grid space.
-        
-            Output: plant_list and plant_grid is populated with Grass objects.
-        """
         self.temp_grid[:-1,:] = const.NATRUAL_TEMP
         self.temp_grid[:-1,:] += self.water_grid * const.WATER_TEMP
         self.temp_grid[:-1,:] += self.light_grid * const.LIGHT_TEMP
     
-    # MEATHOD: checkCell ------------------------------------------------------
+    # MEATHOD: makePlants -----------------------------------------------------
     def makePlants(self, chance):
-        """ Description:
-            
-            Populates the plant list by determining if a plant grows in an area
-            using a random number.
-        
-            Variables: 
-            -plantChance: Chance a plant will grow in a grid space.
-        
-            Output: plant_list and plant_grid is populated with Grass objects.
-        """
-        
         #Test every grid space for plant growth
         for y in range(self.length):
             for x in range(self.width):
@@ -832,11 +780,10 @@ class EcoSystem:
                         self.plant_list.append(newPlant)
         #Grid and list should now be initialized
         
-    # MEATHOD: checkCell ------------------------------------------------------
+    # MEATHOD: initRabbits ----------------------------------------------------
     def initRabbits(self):
         #This rabbit spawn is hardcoded so we could keep them away from
         #their predators
-        
         i = 0
         while(i < const.NUM_BURROWS):
             x = int(nu.random.uniform(2,self.width - 2))
@@ -847,7 +794,7 @@ class EcoSystem:
             
         self.spawnRabbits()
     
-    # MEATHOD: checkCell ------------------------------------------------------
+    # MEATHOD: spawnRabbits ---------------------------------------------------
     def spawnRabbits(self):
         #This rabbit spawn is hardcoded so we could keep them away from
         #their predators
@@ -873,7 +820,7 @@ class EcoSystem:
                         self.herbivore_list.append(newRab)
                         self.herbivore_grid[locY, locX] = 1
     
-    # MEATHOD: checkCell ------------------------------------------------------        
+    # MEATHOD: initFoxes ------------------------------------------------------        
     def initFoxes(self):
         #This fox spawn is hardcoded so we could keep them away from vulnerable
         #animals
@@ -885,7 +832,7 @@ class EcoSystem:
             self.carnivore_list.append(newFox)
             self.carnivore_grid[y, x] = 1
      
-    # MEATHOD: runAFewFrames --------------------------------------------------
+    # MEATHOD: runADay --------------------------------------------------------
     def runADay(self):
         for i in range(const.HOURS_PER_DAY):
             self.iterations += 1
@@ -908,13 +855,13 @@ class EcoSystem:
         self.checkPlantGrowth()
         self.checkStarved()
         
-    # MEATHOD: runAFewFrames --------------------------------------------------
+    # MEATHOD: runAWeek -------------------------------------------------------
     def runAWeek(self):
         for i in range(const.DAYS_PER_WEEK):
             self.runADay()
         self.makePlants(const.PLANT_REPOP_CHANCE)
     
-    # MEATHOD: checkCell ------------------------------------------------------
+    # MEATHOD: runAMonth ------------------------------------------------------
     def runAMonth(self):
         for i in range(const.WEEKS_PER_MONTH):
             self.runAWeek()
