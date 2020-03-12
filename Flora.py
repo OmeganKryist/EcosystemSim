@@ -99,7 +99,7 @@ class Flora:
             -amount: variable change to water value
                      assumed to be positive
         """
-        self.energy += max(amount, self.photo_amount * self.size)
+        self.energy += max(amount * self.size, self.photo_amount * self.size)
         maxEnergy = (self.unit_extra_energy + self.unit_energy_cost) * self.size
         self.energy = min(self.energy, maxEnergy)
 
@@ -112,7 +112,7 @@ class Flora:
             -amount: variable change to water value
                      assumed to be positive
         """
-        self.water = max(amount, self.drink_amount * self.size)
+        self.water = max(amount * self.size, self.drink_amount * self.size)
         maxWater = (self.unit_extra_water + self.unit_water_cost) * self.size
         self.water = min(self.water, maxWater)
 
