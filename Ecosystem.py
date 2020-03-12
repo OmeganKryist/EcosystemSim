@@ -141,8 +141,7 @@ class EcoSystem:
         self.initFoxes()
         self.updateScent()
         
-        #self.displayGrid()
-        self.displayFrame()
+        self.displayGrids()
         
     # MEATHOD: displayGrid ---------------------------------------------
     def displayFrame(self):
@@ -173,52 +172,121 @@ class EcoSystem:
                     simFrame[shape[0]-y-1, x, :] = [0.5, 0.7, 0.9]
 
         # formatting
+        fig, axs = plt.subplots(1, 1)
         plt.title("EcoSystem Simulation Frame: " + str(self.frame))
-        plt.axis("off")
-        plt.imshow(simFrame)
+        axs.axis("off")
+        axs.imshow(simFrame)
         plt.pause(0.5)
 
     # MEATHOD: displayGrid ---------------------------------------------
-    def displayGrid(self):
+    def displayScent(self):
         """ Description: displays constant grid color maps
             
             Variables: 
                 -self: the SimGrid object instance
         """
         
-        cm = ['YlOrBr_r', 'Blues', 'coolwarm', 'PRGn']
+        cm = 'PRGn'
+        fig, axs = plt.subplots(1, 1)
+        pcm = axs.pcolormesh(self.scent_grid,
+                            cmap=cm)
+        fig.colorbar(pcm, ax=axs)
+        axs.axis("off")
+        plt.title("EcoSystem Scent Distribution")
+        plt.show()
         
-        fig, axs = plt.subplots(1, 1)
-        pcm = axs.pcolormesh(self.light_grid,
-                            cmap=cm[0])
-        fig.colorbar(pcm, ax=axs)
-        axs.axis("off")
-        plt.title("EcoSystem Light Distribution")
-        plt.show()
-
-        fig, axs = plt.subplots(1, 1)
-        pcm = axs.pcolormesh(self.water_grid,
-                            cmap=cm[1])
-        fig.colorbar(pcm, ax=axs)
-        axs.axis("off")
-        plt.title("EcoSystem Water Distribution")
-        plt.show()
-
+    # MEATHOD: displayGrid ---------------------------------------------
+    def displayTemp(self):
+        """ Description: displays constant grid color maps
+            
+            Variables: 
+                -self: the SimGrid object instance
+        """
+        
+        cm = 'coolwarm'
         fig, axs = plt.subplots(1, 1)
         pcm = axs.pcolormesh(self.temp_grid,
-                            cmap=cm[2])
+                            cmap=cm)
         fig.colorbar(pcm, ax=axs)
         axs.axis("off")
         plt.title("EcoSystem Temperture Distribution")
         plt.show()
         
+    # MEATHOD: displayGrid ---------------------------------------------
+    def displayLight(self):
+        """ Description: displays constant grid color maps
+            
+            Variables: 
+                -self: the SimGrid object instance
+        """
+        
+        cm = 'YlOrBr_r'
         fig, axs = plt.subplots(1, 1)
-        pcm = axs.pcolormesh(self.scent_grid,
-                            cmap=cm[3])
+        pcm = axs.pcolormesh(self.light_grid,
+                            cmap=cm)
         fig.colorbar(pcm, ax=axs)
         axs.axis("off")
-        plt.title("EcoSystem Scent Distribution")
+        plt.title("EcoSystem Light Distribution")
         plt.show()
+
+    
+    # MEATHOD: displayGrid ---------------------------------------------
+    def displayWater(self):
+        """ Description: displays constant grid color maps
+            
+            Variables: 
+                -self: the SimGrid object instance
+        """
+        
+        cm = 'Blues'
+        fig, axs = plt.subplots(1, 1)
+        pcm = axs.pcolormesh(self.water_grid,
+                            cmap=cm)
+        fig.colorbar(pcm, ax=axs)
+        axs.axis("off")
+        plt.title("EcoSystem Water Distribution")
+        plt.show()
+    
+    # MEATHOD: displayGrid ---------------------------------------------
+    def displayGrids(self):
+        """ Description: displays constant grid color maps
+            
+            Variables: 
+                -self: the SimGrid object instance
+        """
+        self.displayLight()
+        self.displayWater()
+        self.displayTemp()
+        self.displayScent()
+        self.displayFrame()
+        
+    
+    # MEATHOD: checkCell -----------------------------------------------    
+    def displayResults(self):
+        """ Description: displays constant grid color maps
+            
+            Variables: 
+                -self: the SimGrid object instance
+        """
+        print("--Simulation Config--")
+        print("")
+        print("Grid Length:", eco.length)
+        print("Grid Width:", eco.width)
+        print("Number of Days:", NUM_DAYS)
+        print("Time Units Per Day:", 24)
+        print("Total Time Units:", 24 * NUM_DAYS)
+        print("")
+        print("--Simulation Results--")
+        print("")
+        print("Natrual Deaths:")
+        print("   -Plants:", eco.plantsDied)
+        print("   -Herbivores:", eco.herbiDied)
+        print("   -Carnivores:", eco.carniDied)
+        print("")
+        print("Eaten:")
+        print("   -Plants:", eco.plantsEaten)
+        print("   -Animals:", eco.animalsEaten)
+        print("") 
     
     # MEATHOD: checkCell -----------------------------------------------
     def randomWalk(self, Fauna):
@@ -830,7 +898,7 @@ class EcoSystem:
             self.runAWeek()
         self.spawnRabbits()
         
-#=======================================================================   
+#======================================================================= 
 # Analysis Functions --------------------------------------------------
 def anRabToPlant(perBurrow, numBurrows):
     #Parameters passed
