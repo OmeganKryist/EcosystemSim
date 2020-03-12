@@ -42,6 +42,7 @@
 # PROGRAM IMPORTS _____________________________________________________________
 import Ecosystem as sim
 import Variables as const
+import matplotlib.pyplot as plt
 
 # ANALYSIS FUNCTIONS __________________________________________________________
 # FUNCTION: anRabToPlant ------------------------------------------------------
@@ -395,20 +396,32 @@ def anPlantStatsToAnimals(energy, water):
     const.FLORA_ENERGY_PERCENT = hold      # restore value
     const.FLORA_WATER_PERCENT = hold2
     
-# SIMULATION TESTS ____________________________________________________________
+# SIMULATION TEST _____________________________________________________________
 # FUNCTION: testSim -----------------------------------------------------------
 def testSim():
+    # just runs the simulation with set parameters to make sure the sim works
     eco = sim.EcoSystem()
     for i in range(1):
         eco.frame += 1
+        
         eco.runAMonth()
         eco.displayGrids()
     eco.displayResults()
-
+    
 # PROGRAM SCRIPT ______________________________________________________________
 # Driver code for program
+ 
+value1 = []
+value2 = []
 
-testSim()
+for k in range(1):
+    anRabToPlant()
+    
+fig = plt.plot([1,2,3,4],[1,2,3,4])
+plt.xlabel("banana")
+plt.ylabel("banana")
+plt.title("banana v. banana")
+plt.show()
 
 #==============================================================================
 # END FILE
