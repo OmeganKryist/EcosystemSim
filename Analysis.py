@@ -2,12 +2,33 @@
 #==============================================================================
 # GENERAL DOCUMENTATION _______________________________________________________
 """ 
-
+    Ecosystem Analysis
+    This file contains functions that modify the constants of the Ecosystem
+    simulation. By changing the parameters of a function, the model will be
+    modified. We can observe the results of changing the constants here.
+    
+    Functions:
+        anRabToPlant - Changes amount of rabbits
+        anLakeToRab - Changes size of lake
+        anDissipationtoRab - Changes scent dissipation rate
+        anFoxToRab - Changes amount of foxes
+        anPondToRab - Changes amount and size of ponds
+        anFoxStepToRab - Changes extra amount of steps foxes get over rabbits
+        anEnergyToAnimals - Changes energy costs for animals throughout a day
+        anHungerToAnimals - Changes threshold where animals get hungry or starve
+        anThirstToAnimals - Changes threshold where animals get thirsty or dessicate
+        anPlantChanceToAnimals - Changes amount of plants spawned in initialization
+        anPlantStatsToAnimals - Changes energy and water values of plants
+        
+    Output:
+        Results of the simulation in text and visualized in grid form.
+    
     See code documentation for specifics on code functionality
 """
 
 # ADDITIONAL DOCUMENTATION ____________________________________________________
-
+#
+#Authors: Christian Raheml, William Taing, Morgan Du Bois
 # Modification History:
 # - 3 Mar 2020: File Created
 
