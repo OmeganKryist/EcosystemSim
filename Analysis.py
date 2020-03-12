@@ -128,29 +128,131 @@ def anFoxToRab(fox):
     
     const.NUM_FOXES = hold # restore value
  
-def anPondToRabbit(ponds, pondSpread):
-    #Parameters passed
-    hold = const.NUM_PONDS
-    NUM_PONDS = ponds # must be less than 9
-    hold = const.POND_SPREAD
-    POND_SPREAD = pondSpread
+# FUNCTION: anPondToRab --------------------------------------------------------   
+def anPondToRab(ponds, pondSpread):
+    hold = const.NUM_PONDS      # grab value for restoring value
+    const.NUM_PONDS = ponds     
+    hold2 = const.POND_SPREAD
+    const.POND_SPREAD = pondSpread
     
     endRabbits = []
     
     print("Ponds: ", ponds)
     print("Pond Spread:", pondSpread)
-    print("Rabbits:", NUM_BURROWS * RABBITS_PER_BURROW)
+    print("Rabbits:", const.NUM_BURROWS * const.RABBITS_PER_BURROW)
     
-    for j in range(NUM_SIMS):
-        eco = EcoSystem()           #Initialize Ecosystem
-        for i in range(NUM_DAYS):
+    for j in range(const.NUM_SIMS):
+        eco = sim.EcoSystem()           #Initialize Ecosystem
+        for i in range(const.NUM_DAYS):
             eco.runADay()
         endRabbits.append(len(eco.herbivore_list))
         
     avgEnd = sum(endRabbits) / len(endRabbits)
-    print("# Simulations:", NUM_SIMS)
+    print("# Simulations:", const.NUM_SIMS)
     print("Average rabbits survived:", avgEnd, "\n")
     
+    const.NUM_PONDS = hold      # restore value
+    const.POND_SPREAD = hold2
+ 
+# FUNCTION: anFoxStepToRab -------------------------------------------------------- 
+def anFoxStepToRab(steps):
+    hold = const.EXTRA_FOX_STEPS        # grab value for restoring value
+    const.EXTRA_FOX_STEPS = steps
+    
+    
+    endRabbits = []
+    
+    print("Extra Fox Steps (Per 1 Rabbit Step): ", steps)
+    print("Rabbits:", const.NUM_BURROWS * const.RABBITS_PER_BURROW)
+    
+    for j in range(const.NUM_SIMS):
+        eco = sim.EcoSystem()           #Initialize Ecosystem
+        for i in range(const.NUM_DAYS):
+            eco.runADay()
+        endRabbits.append(len(eco.herbivore_list))
+        
+    avgEnd = sum(endRabbits) / len(endRabbits)
+    print("# Simulations:", const.NUM_SIMS)
+    print("Average rabbits survived:", avgEnd, "\n")
+    
+    const.EXTRA_FOX_STEPS = hold
+    
+# FUNCTION: anEnergyToAnimals -------------------------------------------------------- 
+def anEnergyToAnimals(enMove, enWait, waMove, waWait):
+    """
+        enMove = Energy Cost Moving
+        enWait = Energy cost waiting
+        enMove = Energy cost moving in water
+        enWait = Energy cost waiting in water
+    """
+    hold = const.ENERGY_MOVE_FACTOR         # grab value for restoring value
+    const.ENERGY_MOVE_FACTOR = enMove
+    hold2 = const.ENERGY_WAIT_FACTOR
+    const.ENERGY_WAIT_FACTOR = enWait
+    hold3 = const.ENERGY_MOVE_FACTOR
+    const.WATER_MOVE_FACTOR = waMove
+    hold4 = const.ENERGY_WAIT_FACTOR
+    const.WATER_WAIT_FACTOR = waWait
+
+    
+    endRabbits = []
+    endFoxes = []
+    
+    print("Move Energy Cost Factor: ", enMove)
+    print("Wait Energy Cost Factor: ", enWait)
+    print("Water Move Energy Cost Factor: ", waMove)
+    print("Water Wait Energy Cost Factor: ", waWait)
+    print("Rabbits:", const.NUM_BURROWS * const.RABBITS_PER_BURROW)
+    print("Foxes:", const.NUM_FOXES)
+    
+    for j in range(const.NUM_SIMS):
+        eco = sim.EcoSystem()           #Initialize Ecosystem
+        for i in range(const.NUM_DAYS):
+            eco.runADay()
+        endRabbits.append(len(eco.herbivore_list))
+        endFoxes.append(len(eco.carnivore_list))
+        
+    avgEndR = sum(endRabbits) / len(endRabbits)
+    avgEndF = sum(endFoxes) / len(endFoxes)
+    print("# Simulations:", const.NUM_SIMS)
+    print("Average rabbits survived:", avgEndR, "\n")
+    print("Average foxes survived:", avgEndF, "\n") 
+    
+    const.ENERGY_MOVE_FACTOR = hold         # restore value
+    const.ENERGY_WAIT_FACTOR = hold2
+    const.WATER_MOVE_FACTOR = hold3
+    const.WATER_WAIT_FACTOR = hold4
+ 
+# FUNCTION: anHungerToAnimals --------------------------------------------------------
+def anHungerToAnimals(hunger, starve):
+    hold = const.HUNGRY_PERCENT         # grab value for restoring value
+    const.HUNGRY_PERCENT = hunger
+    hold2 = const.STARVE_PERCENT
+    const.STARVE_PERCENT = starve
+    
+    endRabbits = []
+    endFoxes = []
+    
+    print("Energy Hungry Percentage: ", hunger)
+    print("Energy Starvation Percentage: ", starve)
+    print("Rabbits:", const.NUM_BURROWS * const.RABBITS_PER_BURROW)
+    print("Foxes:", const.NUM_FOXES)
+    
+    for j in range(const.NUM_SIMS):
+        eco = sim.EcoSystem()           #Initialize Ecosystem
+        for i in range(const.NUM_DAYS):
+            eco.runADay()
+        endRabbits.append(len(eco.herbivore_list))
+        endFoxes.append(len(eco.carnivore_list))
+        
+    avgEndR = sum(endRabbits) / len(endRabbits)
+    avgEndF = sum(endFoxes) / len(endFoxes)
+    print("# Simulations:", const.NUM_SIMS)
+    print("Average rabbits survived:", avgEndR, "\n")
+    print("Average foxes survived:", avgEndF, "\n") 
+    
+    const.HUNGRY_PERCENT = hold      # restore value
+    const.STARVE_PERCENT = hold2
     
 # SIMULATION TESTS ____________________________________________________________
 # FUNCTION: testSim -----------------------------------------------------------
