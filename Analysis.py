@@ -177,7 +177,6 @@ def anFoxStepToRab(steps):
     
     const.EXTRA_FOX_STEPS = hold
     
-# FUNCTION: anEnergyToAnimals -------------------------------------------------------- 
 def anEnergyToAnimals(enMove, enWait, waMove, waWait):
     """
         enMove = Energy Cost Moving
@@ -187,11 +186,11 @@ def anEnergyToAnimals(enMove, enWait, waMove, waWait):
     """
     hold = const.ENERGY_MOVE_FACTOR         # grab value for restoring value
     const.ENERGY_MOVE_FACTOR = enMove
-    hold2 = const.ENERGY_WAIT_FACTOR
+    hold2 = const.ENERGY_WAIT_REDUCE
     const.ENERGY_WAIT_FACTOR = enWait
-    hold3 = const.ENERGY_MOVE_FACTOR
+    hold3 = const.WATER_MOVE_FACTOR
     const.WATER_MOVE_FACTOR = waMove
-    hold4 = const.ENERGY_WAIT_FACTOR
+    hold4 = const.WATER_WAIT_REDUCE
     const.WATER_WAIT_FACTOR = waWait
 
     
@@ -199,9 +198,9 @@ def anEnergyToAnimals(enMove, enWait, waMove, waWait):
     endFoxes = []
     
     print("Move Energy Cost Factor: ", enMove)
-    print("Wait Energy Cost Factor: ", enWait)
+    print("Wait Energy Reduction: ", enWait)
     print("Water Move Energy Cost Factor: ", waMove)
-    print("Water Wait Energy Cost Factor: ", waWait)
+    print("Water Wait Energy Reduction: ", waWait)
     print("Rabbits:", const.NUM_BURROWS * const.RABBITS_PER_BURROW)
     print("Foxes:", const.NUM_FOXES)
     
@@ -215,13 +214,13 @@ def anEnergyToAnimals(enMove, enWait, waMove, waWait):
     avgEndR = sum(endRabbits) / len(endRabbits)
     avgEndF = sum(endFoxes) / len(endFoxes)
     print("# Simulations:", const.NUM_SIMS)
-    print("Average rabbits survived:", avgEndR, "\n")
+    print("Average rabbits survived:", avgEndR)
     print("Average foxes survived:", avgEndF, "\n") 
     
     const.ENERGY_MOVE_FACTOR = hold         # restore value
-    const.ENERGY_WAIT_FACTOR = hold2
+    const.ENERGY_WAIT_REDUCE = hold2
     const.WATER_MOVE_FACTOR = hold3
-    const.WATER_WAIT_FACTOR = hold4
+    const.WATER_WAIT_REDUCE = hold4
  
 # FUNCTION: anHungerToAnimals --------------------------------------------------------
 def anHungerToAnimals(hunger, starve):
