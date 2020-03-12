@@ -1,13 +1,15 @@
 # START FILE
 #==============================================================================
 # GENERAL DOCUMENTATION _______________________________________________________
-""" 
-
+""" This file contains Flora objects used in the ecosystem simulation
+    Flora contain water and energy which are updated depending on the environment.
+    They return water and energy when they are eaten by fauna.
+    Current Fauna: Grass
     See code documentation for specifics on code functionality
 """
 
 # ADDITIONAL DOCUMENTATION ____________________________________________________
-
+#Authors: Christian Rahmel, William Taing, Morgan Du Bois
 # Modification History:
 # - 3 Mar 2020: File Created
 
