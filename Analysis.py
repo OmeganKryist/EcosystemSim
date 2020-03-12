@@ -108,7 +108,7 @@ def anFoxToRab(fox):
     
     lastDay = 0
     for j in range(const.NUM_SIMS):
-        lastDay = 10
+        lastDay = NUM_DAYS
         eco = sim.EcoSystem()
         for i in range(const.NUM_DAYS):
             eco.runADay()  
