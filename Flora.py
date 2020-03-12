@@ -19,19 +19,8 @@
 
 #=======================================================================
 # PROGRAM IMPORTS ------------------------------------------------------
+import Variables as const
 import numpy as nu
-
-# PROGRAM CONSTANTS ----------------------------------------------------
-# User Modifiable
-
-ENERGY_LOSS = 0.1
-WATER_LOSS = 0.05
-
-#Time segments per day                                                      
-DT = 24
-
-# PROGRAM SCRIPT -------------------------------------------------------
-# Driver code for program
 
 #=======================================================================
 # CLASS: Flora ---------------------------------------------------------
@@ -84,8 +73,8 @@ class Flora:
         self.energy = nu.random.uniform(self.INIT_ENERGY_MIN*self.size, self.INIT_ENERGY_MAX*self.size)
         self.water = nu.random.uniform(self.INIT_WATER_MIN*self.size, self.INIT_WATER_MAX*self.size)
         
-        self.energy_per_unit = self.unit_energy_cost * ENERGY_LOSS
-        self.water_per_unit = self.unit_water_cost * WATER_LOSS
+        self.energy_per_unit = self.unit_energy_cost * const.FLORA_ENERGY_PERCENT
+        self.water_per_unit = self.unit_water_cost * const.FLORA_WATER_PERCENT
         
         self.position = [y, x]
         self.alive = True
@@ -205,4 +194,3 @@ class Grass(Flora):
     
 #=======================================================================
 # END FILE
-
