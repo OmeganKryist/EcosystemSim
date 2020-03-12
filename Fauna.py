@@ -164,9 +164,9 @@ class Fauna:
             -y: y position
         """
         if(tempValue < self.temp):
-            self.temp = max(self.temp + tempValue * TEMP_TRANSFER, tempValue)
+            self.temp = max(self.temp - (abs(tempValue) * TEMP_TRANSFER), tempValue)
         elif(tempValue > self.temp):
-            self.temp = min(self.temp + tempValue * TEMP_TRANSFER, tempValue)
+            self.temp = min(self.temp + (abs(tempValue) * TEMP_TRANSFER), tempValue)
         
         self.energy -= self.move_energy_cost
         self.water -= self.move_water_cost
@@ -203,10 +203,8 @@ class Fauna:
                 self.alive = False
             elif(self.temp <= self.froze):
                 self.alive = False
-                print('f')
             elif(self.temp >= self.boiled):
                 self.alive = False
-                print('b')
         return self.alive
       
     def isHerbivore(self):
