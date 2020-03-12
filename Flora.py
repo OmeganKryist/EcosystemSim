@@ -1,12 +1,12 @@
 # START FILE
-#=======================================================================
-# GENERAL DOCUMENTATION ------------------------------------------------
+#==============================================================================
+# GENERAL DOCUMENTATION _______________________________________________________
 """ 
 
     See code documentation for specifics on code functionality
 """
 
-# ADDITIONAL DOCUMENTATION ---------------------------------------------
+# ADDITIONAL DOCUMENTATION ____________________________________________________
 
 # Modification History:
 # - 3 Mar 2020: File Created
@@ -17,13 +17,13 @@
 #  or through some other IDE like visual studio or spyder
 # - Documentation style inspired by CSS 458 professor Johnny Lin
 
-#=======================================================================
-# PROGRAM IMPORTS ------------------------------------------------------
+#==============================================================================
+# PROGRAM IMPORTS _____________________________________________________________
 import Variables as const
 import numpy as nu
 
-#=======================================================================
-# CLASS: Flora ---------------------------------------------------------
+#==============================================================================
+# CLASS: Flora ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 class Flora:
     """ Description:
     
@@ -34,7 +34,6 @@ class Flora:
         -position: the flora's physical position in the simulation grid
         -alive: a boolean for checking if the animal is alive
     """
-
     INIT_ENERGY_MIN = None         # initialization minimum for energy
     INIT_ENERGY_MAX = None       # initialization range for energy
     INIT_WATER_MIN = None          # initialization minimum for water
@@ -60,7 +59,7 @@ class Flora:
     position = None
     alive = None
     
-    # MEATHOD: init ----------------------------------------------------
+    # MEATHOD: init -----------------------------------------------------------
     def __init__(self, y, x):
         """ Description: Class constructor
     
@@ -70,16 +69,20 @@ class Flora:
             -y: y position
         """
         self.size = nu.random.uniform(self.INIT_SIZE_MIN, self.INIT_SIZE_MAX)
-        self.energy = nu.random.uniform(self.INIT_ENERGY_MIN*self.size, self.INIT_ENERGY_MAX*self.size)
-        self.water = nu.random.uniform(self.INIT_WATER_MIN*self.size, self.INIT_WATER_MAX*self.size)
+        self.energy = nu.random.uniform(self.INIT_ENERGY_MIN*self.size,\
+                                        self.INIT_ENERGY_MAX*self.size)
+        self.water = nu.random.uniform(self.INIT_WATER_MIN*self.size,\
+                                       self.INIT_WATER_MAX*self.size)
         
-        self.energy_per_unit = self.unit_energy_cost * const.FLORA_ENERGY_PERCENT
-        self.water_per_unit = self.unit_water_cost * const.FLORA_WATER_PERCENT
+        self.energy_per_unit = self.unit_energy_cost\
+                                * const.FLORA_ENERGY_PERCENT
+        self.water_per_unit = self.unit_water_cost\
+                                * const.FLORA_WATER_PERCENT
         
         self.position = [y, x]
         self.alive = True
 
-    # MEATHOD: photosynth ----------------------------------------------
+    # MEATHOD: photosynth -----------------------------------------------------
     def photosynth(self, amount):
         """ Description: updates the flora's water value
     
@@ -89,10 +92,11 @@ class Flora:
                      assumed to be positive
         """
         self.energy += max(amount * self.size, self.photo_amount * self.size)
-        maxEnergy = (self.unit_extra_energy + self.unit_energy_cost) * self.size
+        maxEnergy = (self.unit_extra_energy + self.unit_energy_cost)\
+                    * self.size
         self.energy = min(self.energy, maxEnergy)
 
-    # MEATHOD: drink ---------------------------------------------------
+    # MEATHOD: drink ----------------------------------------------------------
     def drink(self, amount):
         """ Description: updates the flora's water value
     
@@ -105,7 +109,7 @@ class Flora:
         maxWater = (self.unit_extra_water + self.unit_water_cost) * self.size
         self.water = min(self.water, maxWater)
 
-    # MEATHOD: growth --------------------------------------------------
+    # MEATHOD: growth ---------------------------------------------------------
     def growth(self):
         """ Description: updates the flora's size
     
@@ -113,7 +117,8 @@ class Flora:
             -self: instance of class
         """
         for i in range(int(self.size)):
-            if(self.energy >= self.unit_energy_cost and self.water >= self.unit_water_cost):
+            if(self.energy >= self.unit_energy_cost and\
+               self.water >= self.unit_water_cost):
                 self.energy = max(self.energy - self.unit_energy_cost, 0)
                 self.water = max(self.water - self.unit_water_cost, 0)
             else:
@@ -123,10 +128,11 @@ class Flora:
                     self.alive = False
         
         # if both energy and water are positive
-        if(self.energy >= self.unit_energy_cost and self.water >= self.unit_water_cost):
+        if(self.energy >= self.unit_energy_cost and\
+           self.water >= self.unit_water_cost):
             self.size = min(self.max_units, self.size + 1)
 
-    # MEATHOD: healthCheck ---------------------------------------------
+    # MEATHOD: healthCheck ----------------------------------------------------
     def healthCheck(self):
         """ Description: updates the alive status if needed
     
@@ -140,6 +146,7 @@ class Flora:
                 self.alive = False
         return self.alive
     
+    # MEATHOD: consumed -------------------------------------------------------
     def consumed(self, units):
         # If animal can eat the whole plant, reduce plant size to 0 and return
         # all the energy it would have given.
@@ -156,21 +163,21 @@ class Flora:
             self.size -= units
             energyValue = units * self.energy_per_unit
             waterValue = units * self.energy_per_unit
-            self.energy = min(self.energy, (self.unit_extra_energy + self.unit_energy_cost) * self.size)
-            self.water = min(self.water, (self.unit_extra_water + self.unit_water_cost) * self.size)
+            self.energy = min(self.energy,\
+                              (self.unit_extra_energy + self.unit_energy_cost)\
+                              * self.size)
+            self.water = min(self.water,\
+                             (self.unit_extra_water + self.unit_water_cost)\
+                             * self.size)
             
         return [energyValue, waterValue]
 
-#=======================================================================
-# CLASS: Grass ---------------------------------------------------------
+# CLASS: Grass ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 class Grass(Flora):
     """
-    Constant definitions are currently based off bluegrass as rabbits primarily eat
-    grass. Bluegrass is common in our state.
+    Constant definitions are currently based off bluegrass as rabbits primarily
+    eat grass. Bluegrass is common in our state.
     
-    If we want to consider weeds, weeds in Washington state can be found here: 
-    https://s3.wp.wsu.edu/uploads/sites/2072/2013/10/InvasiveWeedsEastWAEM005Epdf.pdf
-    If we choose to add a weed, meadow hawkweed is a top contender.
     """
     #Assuming 1 grid of grass at max growth can feed about 2 rabbits.
     #An average rabbit needs about 105 calories daily
@@ -192,5 +199,5 @@ class Grass(Flora):
     unit_extra_water = 500
     drink_amount = 1000
     
-#=======================================================================
+#==============================================================================
 # END FILE
