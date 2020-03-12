@@ -22,13 +22,13 @@ import numpy as nu
 # PROGRAM CONSTANTS ------------------------------------------------------
 # User Modifiable
 
-ENERGY_LOSS = 0.1
-WATER_LOSS = 0.05
+ENERGY_LOSS = 0.8
+WATER_LOSS = 0.1
 
-HUNGRY_PERCENT = 0.8
-STARVE_PERCENT = 0.4
+HUNGRY_PERCENT = 0.9
+STARVE_PERCENT = 0.5
 
-THIRSTY_PERCENT = 0.6
+THIRSTY_PERCENT = 0.4
 DESICCATE_PERCENT = 0.2
 
 COLD_OFFSET = -10
@@ -37,12 +37,14 @@ FROZE_OFFSET = -20
 HOT_OFFSET = 10
 BOILED_OFFSET = 20
 
-ENERGY_MOVE_FACTOR = 8
+ENERGY_MOVE_FACTOR = 6
 ENERGY_WAIT_REDUCE = 2
-WATER_MOVE_FACTOR = 2
-WATER_WAIT_REDUCE = 4
+WATER_MOVE_FACTOR = 8
+WATER_WAIT_REDUCE = 2
 
 TEMP_TRANSFER = 0.2
+
+EXTRA_FOX_STEPS = 3
 
 #Time segments per day                                                      
 DT = 24
@@ -122,9 +124,9 @@ class Fauna:
         self.starve = self.max_energy * STARVE_PERCENT
         self.desiccate = self.max_water * DESICCATE_PERCENT
         
-        self.move_energy_cost = (self.max_energy / ENERGY_MOVE_FACTOR) / DT
+        self.move_energy_cost = ((self.max_energy / ENERGY_MOVE_FACTOR) / DT) / EXTRA_FOX_STEPS
         self.wait_energy_cost = self.move_energy_cost / ENERGY_WAIT_REDUCE 
-        self.move_water_cost = (self.max_water / WATER_MOVE_FACTOR) / DT
+        self.move_water_cost = ((self.max_water / WATER_MOVE_FACTOR) / DT) / EXTRA_FOX_STEPS
         self.wait_water_cost = self.move_water_cost / WATER_WAIT_REDUCE 
         
         self.position = [y, x]
@@ -185,7 +187,7 @@ class Fauna:
     def consumed(self):
         self.alive = False # it's been eaten
         # return array of energy and water values to add to predators
-        return [self.energyValue, self.waterValue]
+        return [self.energy_value, self.water_value]
 
     # MEATHOD: healthCheck ---------------------------------------------
     def healthCheck(self):
@@ -265,18 +267,53 @@ class Fox(Carnivore, Herbivore):
     
     """
     
-    INIT_ENERGY_MIN = 1000       # initialization minimum for energy
-    INIT_ENERGY_MAX = 1500       # initialization range for energy
-    INIT_WATER_MIN = 900         # initialization minimum for water
-    INIT_WATER_MAX = 1000       # initialization range for water
+    INIT_ENERGY_MIN = 3500       # initialization minimum for energy
+    INIT_ENERGY_MAX = 4000       # initialization range for energy
+    INIT_WATER_MIN = 1250         # initialization minimum for water
+    INIT_WATER_MAX = 1500       # initialization range for water
     
-    max_energy = 2000
-    eat_amount = 200
+    max_energy = 4000
+    eat_amount = 800
     
-    max_water = 1000
-    drink_amount = 500
+    max_water = 1500
+    drink_amount = 750
     
     natural_temp = 10
 
+    # MEATHOD: init ----------------------------------------------------
+    def __init__(self, y, x):
+        """ Description: Class constructor
+    
+            Variables: 
+            -self: instance of class
+            -x: x position
+            -y: y position
+        """
+        
+        self.energy = nu.random.uniform(self.INIT_ENERGY_MIN, self.INIT_ENERGY_MAX)
+        self.water = nu.random.uniform(self.INIT_WATER_MIN, self.INIT_WATER_MAX)
+        
+        self.temp = self.natural_temp
+        self.cold = self.natural_temp + COLD_OFFSET
+        self.froze = self.natural_temp + FROZE_OFFSET
+        self.hot = self.natural_temp + HOT_OFFSET
+        self.boiled = self.natural_temp + BOILED_OFFSET
+        
+        self.energy_value = self.max_energy * ENERGY_LOSS
+        self.water_value = self.max_water * WATER_LOSS
+        
+        self.hungry = self.max_energy * HUNGRY_PERCENT
+        self.thirsty = self.max_water * THIRSTY_PERCENT
+        
+        self.starve = self.max_energy * STARVE_PERCENT
+        self.desiccate = self.max_water * DESICCATE_PERCENT
+        
+        self.move_energy_cost = ((self.max_energy / ENERGY_MOVE_FACTOR) / DT) / EXTRA_FOX_STEPS
+        self.wait_energy_cost = self.move_energy_cost / ENERGY_WAIT_REDUCE 
+        self.move_water_cost = ((self.max_water / WATER_MOVE_FACTOR) / DT) / EXTRA_FOX_STEPS
+        self.wait_water_cost = self.move_water_cost / WATER_WAIT_REDUCE 
+        
+        self.position = [y, x]
+        self.alive = True
 #=======================================================================
 # END FILE
