@@ -30,8 +30,8 @@ import math
 GRID_X = 50                     # var meaning
 GRID_Y = 50
 
-NUM_DAYS = 10
 NUM_SIMS = 10
+NUM_DAYS = 7
 
 # effects lighting
 MAX_CLOUDS = 10
@@ -43,7 +43,7 @@ RAIN_CHANCE = 0.8
 LAKE_SPREAD = 4
 HAS_LAKE = True # bool
 POND_SPREAD = 1
-NUM_PONDS = 4
+NUM_PONDS = 0
 
 # effects temp
 WATER_TEMP = -2
@@ -52,17 +52,19 @@ NATRUAL_TEMP = 10
 MAX_TEMP = 32
 MIN_TEMP = -32
 
-DISSIPATION_RATE = 0.8
+DISSIPATION_RATE = 0.9
+DISSIPATION_SPREAD = 0.8
+SCENT_SPREAD = 1
 
 PLANT_CHANCE = 0.9
 PLANT_REPOP_CHANCE = 0
 ENERGY_ABSORB_FACTOR = 1000
 WATER_ABSORB_FACTOR = 1000
-PLANT_UNITS_TO_EAT = 4
+PLANT_UNITS_TO_EAT = 2
 
 RABBITS_PER_BURROW = 5 # must be less than 9
 MAX_RABBITS = 100
-NUM_BURROWS = 3
+NUM_BURROWS = 5
 
 NUM_FOXES = 3
 
@@ -484,40 +486,60 @@ class EcoSystem:
     # METHOD: carnivoreEat -----------------------------------------------
     def carnivoreEat(self, Fauna):
         #MoveY and moveX renamed to locY and locX - short for location
-        locX = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
-        locY = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
-        
-        locX = Fauna.position[1] + locX
-        locY = Fauna.position[0] + locY
-        
-        #Check Borders
-        valid = nu.where(nu.logical_not(nu.logical_or( \
-        nu.logical_or(locY >= self.length, locY < 0),\
-        nu.logical_or(locX >= self.width, locY < 0))))
-        
         #Boolean flag to let us know if the carnivore has eaten
         eatCheck = False
-        #Check if there is a neighboring herbivore
-        for i in range(len(valid)):
-            #For readability-currentX and currentY are locations we are checking
-            curX = valid[0][i]
-            curY = valid[0][i]
-            #If a herbivore is spotted
-            if self.herbivore_grid[curY, curX] == 1:
-                #Search for herbivore object in list
-                for iHerb in self.herbivore_list:
-                    #Location match found
-                    if iHerb.position[0] == curY and iHerb.position[1] == curX:
-                        #Trade energy values
-                        nutrition = iHerb.consumed()
-                        Fauna.eat(nutrition[0])
-                        Fauna.drink(nutrition[1])
-                        #Remove herbivore and record its death
-                        self.herbivore_list.remove(iHerb)
-                        self.animalsEaten += 1
-                        eatCheck = True
-        #return a true or false depending on action - can do something about it
-        #later
+        
+        curY = Fauna.position[0]
+        curX = Fauna.position[1]
+        
+        if self.herbivore_grid[curY, curX] == 1:
+            #Search for herbivore object in list
+            for iHerb in self.herbivore_list:
+                #Location match found
+                if iHerb.position[0] == curY and iHerb.position[1] == curX:
+                    #Trade energy values
+                    nutrition = iHerb.consumed()
+                    Fauna.eat(nutrition[0])
+                    Fauna.drink(nutrition[1])
+                    #Remove herbivore and record its death
+                    self.herbivore_list.remove(iHerb)
+                    self.animalsEaten += 1
+                    eatCheck = True
+        
+        if(not eatCheck):
+            locX = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
+            locY = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
+            
+            locX = Fauna.position[1] + locX
+            locY = Fauna.position[0] + locY
+            
+            #Check Borders
+            valid = nu.where(nu.logical_not(nu.logical_or( \
+            nu.logical_or(locY >= self.length, locY < 0),\
+            nu.logical_or(locX >= self.width, locY < 0))))
+            
+            
+            #Check if there is a neighboring herbivore
+            for i in range(len(valid)):
+                #For readability-currentX and currentY are locations we are checking
+                curX = valid[0][i]
+                curY = valid[0][i]
+                #If a herbivore is spotted
+                if self.herbivore_grid[curY, curX] == 1:
+                    #Search for herbivore object in list
+                    for iHerb in self.herbivore_list:
+                        #Location match found
+                        if iHerb.position[0] == curY and iHerb.position[1] == curX:
+                            #Trade energy values
+                            nutrition = iHerb.consumed()
+                            Fauna.eat(nutrition[0])
+                            Fauna.drink(nutrition[1])
+                            #Remove herbivore and record its death
+                            self.herbivore_list.remove(iHerb)
+                            self.animalsEaten += 1
+                            eatCheck = True
+            #return a true or false depending on action - can do something about it
+            #later
              
         return eatCheck
     
@@ -555,8 +577,17 @@ class EcoSystem:
         return
     
     def updateScent(self):
-        herb_scent = nu.fmax(self.herbivore_grid, self.scent_grid * DISSIPATION_RATE)
-        carn_scent = nu.fmax(self.carnivore_grid, self.scent_grid * DISSIPATION_RATE * -1)
+        spreadScent = nu.zeros((self.length + (SCENT_SPREAD * 2), self.width + (SCENT_SPREAD * 2)))
+        spreadScent[SCENT_SPREAD:-(SCENT_SPREAD), SCENT_SPREAD:-(SCENT_SPREAD)] = self.scent_grid
+        for y in range(SCENT_SPREAD, self.length + SCENT_SPREAD):
+            for x in range(SCENT_SPREAD, self.width + SCENT_SPREAD):        
+                spreadScent[y-SCENT_SPREAD:y+SCENT_SPREAD, x-SCENT_SPREAD] = spreadScent[y,x] * DISSIPATION_SPREAD
+                spreadScent[y-SCENT_SPREAD:y+SCENT_SPREAD, x+SCENT_SPREAD] = spreadScent[y,x] * DISSIPATION_SPREAD
+                spreadScent[y-SCENT_SPREAD, x] = spreadScent[y,x] * DISSIPATION_SPREAD
+                spreadScent[y+SCENT_SPREAD, x] = spreadScent[y,x] * DISSIPATION_SPREAD
+                
+        herb_scent = nu.fmax(self.herbivore_grid, self.scent_grid * DISSIPATION_RATE, spreadScent[SCENT_SPREAD:-(SCENT_SPREAD), SCENT_SPREAD:-(SCENT_SPREAD)])
+        carn_scent = nu.fmax(self.carnivore_grid, self.scent_grid * DISSIPATION_RATE * -1, spreadScent[SCENT_SPREAD:-(SCENT_SPREAD), SCENT_SPREAD:-(SCENT_SPREAD)]*-1)
         self.scent_grid = herb_scent - carn_scent
                    
     # MEATHOD: checkCell -----------------------------------------------
@@ -760,8 +791,8 @@ class EcoSystem:
         #animals
         
         for i in range(NUM_FOXES):
-            x = 35
-            y = 30
+            x = int(nu.random.uniform(0,self.width))
+            y = int(nu.random.uniform(0,self.length))
             newFox = fa.Fox(y,x)
             self.carnivore_list.append(newFox)
             self.carnivore_grid[y, x] = 1
@@ -789,18 +820,6 @@ class EcoSystem:
         self.checkPlantGrowth()
         self.checkStarved()
         
-# FUNCTION: FUNC -------------------------------------------------------
-def func():
-    """ Description:
-            
-        
-        Variables: 
-        -var: 
-        
-        Output: 
-    """
-    return 2
-
 #=======================================================================   
 # Analysis Functions --------------------------------------------------
 def anRabToPlant(perBurrow, numBurrows):
@@ -891,7 +910,7 @@ def anFoxToRab(fox):
     print("Average rabbits at end:", avgEnd)
     print("Average day eliminated:", avgDay, "\n")
 
-
+#=======================================================================   
 # PROGRAM SCRIPT ------------------------------------------------------
 # Driver code for program
 
