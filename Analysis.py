@@ -176,7 +176,8 @@ def anFoxStepToRab(steps):
     print("Average rabbits survived:", avgEnd, "\n")
     
     const.EXTRA_FOX_STEPS = hold
-    
+ 
+# FUNCTION: anEnergyToAnimals -------------------------------------------------
 def anEnergyToAnimals(enMove, enWait, waMove, waWait):
     """
         enMove = Energy Cost Moving
@@ -222,7 +223,7 @@ def anEnergyToAnimals(enMove, enWait, waMove, waWait):
     const.WATER_MOVE_FACTOR = hold3
     const.WATER_WAIT_REDUCE = hold4
  
-# FUNCTION: anHungerToAnimals --------------------------------------------------------
+# FUNCTION: anHungerToAnimals -------------------------------------------------
 def anHungerToAnimals(hunger, starve):
     hold = const.HUNGRY_PERCENT         # grab value for restoring value
     const.HUNGRY_PERCENT = hunger
@@ -253,7 +254,7 @@ def anHungerToAnimals(hunger, starve):
     const.HUNGRY_PERCENT = hold      # restore value
     const.STARVE_PERCENT = hold2
     
-# FUNCTION: anThirstToAnimals --------------------------------------------------------    
+# FUNCTION: anThirstToAnimals -------------------------------------------------    
 def anThirstToAnimals(thirst, dessicate):
     hold = const.THIRSTY_PERCENT         # grab value for restoring value
     const.THIRSTY_PERCENT = thirst
@@ -284,7 +285,7 @@ def anThirstToAnimals(thirst, dessicate):
     const.THIRSTY_PERCENT = hold      # restore value
     const.DESICCATE_PERCENT = hold2
     
-# FUNCTION: anPlantChanceToAnimals --------------------------------------------------------    
+# FUNCTION: anPlantChanceToAnimals --------------------------------------------    
 def anPlantChanceToAnimals(plantChance):
     hold = const.PLANT_CHANCE         # grab value for restoring value
     const.PLANT_CHANCE = plantChance
@@ -315,7 +316,7 @@ def anPlantChanceToAnimals(plantChance):
     
     const.PLANT_CHANCE = hold      # restore value
     
-# FUNCTION: anPlantChanceToAnimals --------------------------------------------------------    
+# FUNCTION: anPlantChanceToAnimals --------------------------------------------  
 def anPlantRepopToAnimals(plantRepop):
     hold = const.PLANT_REPOP_CHANCE         # grab value for restoring value
     const.PLANT_REPOP_CHANCE = plantRepop
@@ -342,7 +343,7 @@ def anPlantRepopToAnimals(plantRepop):
     
     const.PLANT_REPOP_CHANCE = hold      # restore value
     
-# FUNCTION: anPlantStatsToAnimals --------------------------------------------------------    
+# FUNCTION: anPlantStatsToAnimals ---------------------------------------------  
 def anPlantStatsToAnimals(energy, water):
     hold = const.FLORA_ENERGY_PERCENT         # grab value for restoring value
     const.FLORA_ENERGY_PERCENT = energy
