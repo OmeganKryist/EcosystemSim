@@ -989,6 +989,29 @@ def anFoxToRab(fox):
     
     print("Average rabbits at end:", avgEnd)
     print("Average day eliminated:", avgDay, "\n")
+    
+def anPondToRabbit(ponds, pondSpread):
+    #Parameters passed
+    global NUM_PONDS
+    NUM_PONDS = ponds # must be less than 9
+    global POND_SPREAD
+    POND_SPREAD = pondSpread
+    
+    endRabbits = []
+    
+    print("Ponds: ", ponds)
+    print("Pond Spread:", pondSpread)
+    print("Rabbits:", NUM_BURROWS * RABBITS_PER_BURROW)
+    
+    for j in range(NUM_SIMS):
+        eco = EcoSystem()           #Initialize Ecosystem
+        for i in range(NUM_DAYS):
+            eco.runADay()
+        endRabbits.append(len(eco.herbivore_list))
+        
+    avgEnd = sum(endRabbits) / len(endRabbits)
+    print("# Simulations:", NUM_SIMS)
+    print("Average rabbits survived:", avgEnd, "\n")
 
 #=======================================================================   
 # PROGRAM SCRIPT ------------------------------------------------------
