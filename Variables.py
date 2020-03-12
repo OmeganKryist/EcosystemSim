@@ -1,12 +1,12 @@
 # START FILE
-#=======================================================================
-# GENERAL DOCUMENTATION ------------------------------------------------
+#==============================================================================
+# GENERAL DOCUMENTATION _______________________________________________________
 """ 
 
     See code documentation for specifics on code functionality
 """
 
-# ADDITIONAL DOCUMENTATION ---------------------------------------------
+# ADDITIONAL DOCUMENTATION ____________________________________________________
 
 # Modification History:
 # - 3 Mar 2020: File Created
@@ -17,11 +17,11 @@
 #  or through some other IDE like visual studio or spyder
 # - Documentation style inspired by CSS 458 professor Johnny Lin
 
-#=======================================================================
-# PROGRAM IMPORTS ------------------------------------------------------
+#==============================================================================
+# PROGRAM IMPORTS _____________________________________________________________
 import Ecosystem as sim
 
-# PROGRAM CONSTANTS ----------------------------------------------------
+# PROGRAM CONSTANTS ___________________________________________________________
 # User modifiable
 
 # ECOSYSTEM
@@ -102,10 +102,10 @@ EXTRA_FOX_STEPS = 3
 FLORA_ENERGY_PERCENT = 0.1
 FLORA_WATER_PERCENT = 0.05
 
-# PROGRAM GLOBALS ------------------------------------------------------
+# PROGRAM GLOBALS _____________________________________________________________
 # Not User Modifiable
 
 var = 0                     # var meaning
 
-#======================================================================
+#==============================================================================
 # END FILE
