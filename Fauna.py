@@ -17,39 +17,8 @@
 
 #=======================================================================
 # PROGRAM IMPORTS ------------------------------------------------------
+import Variables as const
 import numpy as nu
-
-# PROGRAM CONSTANTS ------------------------------------------------------
-# User Modifiable
-
-ENERGY_LOSS = 0.3
-WATER_LOSS = 0.1
-
-HUNGRY_PERCENT = 0.9
-STARVE_PERCENT = 0.5
-
-THIRSTY_PERCENT = 0.4
-DESICCATE_PERCENT = 0.2
-
-COLD_OFFSET = -10
-FROZE_OFFSET = -20
-
-HOT_OFFSET = 10
-BOILED_OFFSET = 20
-
-ENERGY_MOVE_FACTOR = 6
-ENERGY_WAIT_REDUCE = 2
-WATER_MOVE_FACTOR = 8
-WATER_WAIT_REDUCE = 2
-
-TEMP_TRANSFER = 0.2
-
-EXTRA_FOX_STEPS = 3
-
-#Time segments per day                                                      
-DT = 24
-
-
 
 #=======================================================================
 # CLASS: Fauna ---------------------------------------------------------
@@ -110,24 +79,24 @@ class Fauna:
         self.water = nu.random.uniform(self.INIT_WATER_MIN, self.INIT_WATER_MAX)
         
         self.temp = self.natural_temp
-        self.cold = self.natural_temp + COLD_OFFSET
-        self.froze = self.natural_temp + FROZE_OFFSET
-        self.hot = self.natural_temp + HOT_OFFSET
-        self.boiled = self.natural_temp + BOILED_OFFSET
+        self.cold = self.natural_temp + const.COLD_OFFSET
+        self.froze = self.natural_temp + const.FROZE_OFFSET
+        self.hot = self.natural_temp + const.HOT_OFFSET
+        self.boiled = self.natural_temp + const.BOILED_OFFSET
         
-        self.energy_value = self.max_energy * ENERGY_LOSS
-        self.water_value = self.max_water * WATER_LOSS
+        self.energy_value = self.max_energy * const.FAUNA_ENERGY_PERCENT
+        self.water_value = self.max_water * const.FAUNA_WATER_PERCENT
         
-        self.hungry = self.max_energy * HUNGRY_PERCENT
-        self.thirsty = self.max_water * THIRSTY_PERCENT
+        self.hungry = self.max_energy * const.HUNGRY_PERCENT
+        self.thirsty = self.max_water * const.THIRSTY_PERCENT
         
-        self.starve = self.max_energy * STARVE_PERCENT
-        self.desiccate = self.max_water * DESICCATE_PERCENT
+        self.starve = self.max_energy * const.STARVE_PERCENT
+        self.desiccate = self.max_water * const.DESICCATE_PERCENT
         
-        self.move_energy_cost = ((self.max_energy / ENERGY_MOVE_FACTOR) / DT) / EXTRA_FOX_STEPS
-        self.wait_energy_cost = self.move_energy_cost / ENERGY_WAIT_REDUCE 
-        self.move_water_cost = ((self.max_water / WATER_MOVE_FACTOR) / DT) / EXTRA_FOX_STEPS
-        self.wait_water_cost = self.move_water_cost / WATER_WAIT_REDUCE 
+        self.move_energy_cost = ((self.max_energy / const.ENERGY_MOVE_FACTOR) / const.HOURS_PER_DAY)
+        self.wait_energy_cost = self.move_energy_cost / const.ENERGY_WAIT_REDUCE 
+        self.move_water_cost = ((self.max_water / const.WATER_MOVE_FACTOR) / const.HOURS_PER_DAY)
+        self.wait_water_cost = self.move_water_cost / const.WATER_WAIT_REDUCE 
         
         self.position = [y, x]
         self.alive = True
@@ -166,9 +135,9 @@ class Fauna:
             -y: y position
         """
         if(tempValue < self.temp):
-            self.temp = max(self.temp - (abs(tempValue) * TEMP_TRANSFER), tempValue)
+            self.temp = max(self.temp - (abs(tempValue) * const.TEMP_TRANSFER), tempValue)
         elif(tempValue > self.temp):
-            self.temp = min(self.temp + (abs(tempValue) * TEMP_TRANSFER), tempValue)
+            self.temp = min(self.temp + (abs(tempValue) * const.TEMP_TRANSFER), tempValue)
         
         self.energy -= self.move_energy_cost
         self.water -= self.move_water_cost
@@ -294,24 +263,24 @@ class Fox(Carnivore, Herbivore):
         self.water = nu.random.uniform(self.INIT_WATER_MIN, self.INIT_WATER_MAX)
         
         self.temp = self.natural_temp
-        self.cold = self.natural_temp + COLD_OFFSET
-        self.froze = self.natural_temp + FROZE_OFFSET
-        self.hot = self.natural_temp + HOT_OFFSET
-        self.boiled = self.natural_temp + BOILED_OFFSET
+        self.cold = self.natural_temp + const.COLD_OFFSET
+        self.froze = self.natural_temp + const.FROZE_OFFSET
+        self.hot = self.natural_temp + const.HOT_OFFSET
+        self.boiled = self.natural_temp + const.BOILED_OFFSET
         
-        self.energy_value = self.max_energy * ENERGY_LOSS
-        self.water_value = self.max_water * WATER_LOSS
+        self.energy_value = self.max_energy * const.FAUNA_ENERGY_PERCENT
+        self.water_value = self.max_water * const.FAUNA_WATER_PERCENT
         
-        self.hungry = self.max_energy * HUNGRY_PERCENT
-        self.thirsty = self.max_water * THIRSTY_PERCENT
+        self.hungry = self.max_energy * const.HUNGRY_PERCENT
+        self.thirsty = self.max_water * const.THIRSTY_PERCENT
         
-        self.starve = self.max_energy * STARVE_PERCENT
-        self.desiccate = self.max_water * DESICCATE_PERCENT
+        self.starve = self.max_energy * const.STARVE_PERCENT
+        self.desiccate = self.max_water * const.DESICCATE_PERCENT
         
-        self.move_energy_cost = ((self.max_energy / ENERGY_MOVE_FACTOR) / DT) / EXTRA_FOX_STEPS
-        self.wait_energy_cost = self.move_energy_cost / ENERGY_WAIT_REDUCE 
-        self.move_water_cost = ((self.max_water / WATER_MOVE_FACTOR) / DT) / EXTRA_FOX_STEPS
-        self.wait_water_cost = self.move_water_cost / WATER_WAIT_REDUCE 
+        self.move_energy_cost = ((self.max_energy / const.ENERGY_MOVE_FACTOR) / const.HOURS_PER_DAY) / const.EXTRA_FOX_STEPS
+        self.wait_energy_cost = self.move_energy_cost / const.ENERGY_WAIT_REDUCE 
+        self.move_water_cost = ((self.max_water / const.WATER_MOVE_FACTOR) / const.HOURS_PER_DAY) / const.EXTRA_FOX_STEPS
+        self.wait_water_cost = self.move_water_cost / const.WATER_WAIT_REDUCE 
         
         self.position = [y, x]
         self.alive = True
