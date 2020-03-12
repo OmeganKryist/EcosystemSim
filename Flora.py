@@ -21,11 +21,14 @@
 # PROGRAM IMPORTS ------------------------------------------------------
 import numpy as nu
 
-# PROGRAM GLOBALS ------------------------------------------------------
-# Not User Modifiable
+# PROGRAM CONSTANTS ----------------------------------------------------
+# User Modifiable
+
+ENERGY_LOSS = 0.9
+WATER_LOSS = 0.5
 
 #Time segments per day                                                      
-dt = 24
+DT = 24
 
 # PROGRAM SCRIPT -------------------------------------------------------
 # Driver code for program
@@ -77,10 +80,9 @@ class Flora:
             -x: x position
             -y: y position
         """
-        
-        self.energy = nu.random.uniform(self.INIT_ENERGY_MIN, self.INIT_ENERGY_MAX)
-        self.water = nu.random.uniform(self.INIT_WATER_MIN, self.INIT_WATER_MAX)
         self.size = nu.random.uniform(self.INIT_SIZE_MIN, self.INIT_SIZE_MAX)
+        self.energy = nu.random.uniform(self.INIT_ENERGY_MIN*self.size, self.INIT_ENERGY_MAX*self.size)
+        self.water = nu.random.uniform(self.INIT_WATER_MIN*self.size, self.INIT_WATER_MAX*self.size)
         
         self.position = [y, x]
         self.alive = True
@@ -94,7 +96,7 @@ class Flora:
             -amount: variable change to water value
                      assumed to be positive
         """
-        self.energy += max(amount, self.photo_amount)
+        self.energy += max(amount, self.photo_amount * self.size)
         maxEnergy = (self.unit_extra_energy + self.unit_energy_cost) * self.size
         self.energy = min(self.energy, maxEnergy)
 
@@ -107,7 +109,7 @@ class Flora:
             -amount: variable change to water value
                      assumed to be positive
         """
-        self.water = max(amount, self.drink_amount)
+        self.water = max(amount, self.drink_amount * self.size)
         maxWater = (self.unit_extra_water + self.unit_water_cost) * self.size
         self.water = min(self.water, maxWater)
 
@@ -179,24 +181,24 @@ class Grass(Flora):
     #Assuming 1 grid of grass at max growth can feed about 2 rabbits.
     #An average rabbit needs about 105 calories daily
 
-    INIT_ENERGY_MIN = 10         # initialization minimum for energy
-    INIT_ENERGY_MAX = 50       # initialization range for energy
-    INIT_WATER_MIN = 10          # initialization minimum for water
-    INIT_WATER_MAX = 50        # initialization range for water
-    INIT_SIZE_MIN = 1
-    INIT_SIZE_MAX = 3
-    
-    unit_extra_energy = 20
-    unit_energy_cost = 10
-    energy_per_unit = 105
-    photo_amount = 20
-    
-    unit_extra_water = 20
-    unit_water_cost = 10
-    water_per_unit = 20
-    drink_amount = 10
+    INIT_ENERGY_MIN = 500         # initialization minimum for energy
+    INIT_ENERGY_MAX = 1000       # initialization range for energy
+    INIT_WATER_MIN = 500         # initialization minimum for water
+    INIT_WATER_MAX = 1000        # initialization range for water
+    INIT_SIZE_MIN = 3
+    INIT_SIZE_MAX = 5
     
     max_units = 5
-
+    
+    unit_energy_cost = 500
+    unit_extra_energy = 500
+    energy_per_unit = unit_energy_cost * ENERGY_LOSS
+    photo_amount = 1000
+    
+    unit_water_cost = 500
+    unit_extra_water = 500
+    water_per_unit = unit_water_cost * WATER_LOSS
+    drink_amount = 1000
+    
 #=======================================================================
 # END FILE
