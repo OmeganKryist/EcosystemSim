@@ -54,11 +54,10 @@ MIN_TEMP = -32
 DISSIPATION_RATE = 0.8
 
 PLANT_CHANCE = 0.9
-PLANT_REPOP_CHANCE = 0.1
-WATER_ABSORB_FACTOR = 10
-ENERGY_ABSORB_FACTOR = 10
-
-PLANT_UNITS_TO_EAT = 1
+PLANT_REPOP_CHANCE = 0
+ENERGY_ABSORB_FACTOR = 1000
+WATER_ABSORB_FACTOR = 1000
+PLANT_UNITS_TO_EAT = 4
 
 RABBITS_PER_BURROW = 5 # must be less than 9
 MAX_RABBITS = 100
@@ -369,7 +368,7 @@ class EcoSystem:
         Fauna.move(moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]])
         
         return 0
-        
+    
     # METHOD: findWater -------------------------------------------------
     def findWater(self, Fauna):
         if(Fauna.water > Fauna.thirsty):
@@ -415,11 +414,10 @@ class EcoSystem:
             self.herbivore_grid[Fauna.position[0] + addY, Fauna.position[1] + addX] = 1
             Fauna.move(Fauna.position[0] + addY, Fauna.position[1] + addX)
         
-        Fauna.drink(2)
+        Fauna.drink(Fauna.drink_amount)
         
         return 0
-                
-        
+    
     def goWater(self, Fauna):
         #I do not know how to implement this function (See walk section)
         
@@ -819,7 +817,7 @@ for i in range(NUM_DAYS):
 
 print("--Simulation Config--")
 print("")
-print("Grid Length:", eco.lenght)
+print("Grid Length:", eco.length)
 print("Grid Width:", eco.width)
 print("Number of Days:", NUM_DAYS)
 print("Time Units Per Day:", 24)
