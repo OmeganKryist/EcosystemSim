@@ -1,12 +1,12 @@
 # START FILE
-#=======================================================================
-# GENERAL DOCUMENTATION ------------------------------------------------
+#==============================================================================
+# GENERAL DOCUMENTATION _______________________________________________________
 """ 
 
     See code documentation for specifics on code functionality
 """
 
-# ADDITIONAL DOCUMENTATION ---------------------------------------------
+# ADDITIONAL DOCUMENTATION ____________________________________________________
 
 # Modification History:
 # - 3 Mar 2020: File Created
@@ -17,13 +17,13 @@
 #  or through some other IDE like visual studio or spyder
 # - Documentation style inspired by CSS 458 professor Johnny Lin
 
-#=======================================================================
-# PROGRAM IMPORTS ------------------------------------------------------
+#==============================================================================
+# PROGRAM IMPORTS _____________________________________________________________
 import Ecosystem as sim
 import Variables as const
 
-#======================================================================
-# Analysis Functions --------------------------------------------------
+# ANALYSIS FUNCTIONS __________________________________________________________
+# FUNCTION: anRabToPlant ------------------------------------------------------
 def anRabToPlant(perBurrow, numBurrows):
     # grab values for restoring values
     hold1 = const.RABBITS_PER_BURROW
@@ -57,7 +57,8 @@ def anRabToPlant(perBurrow, numBurrows):
     # restore values
     const.RABBITS_PER_BURROW = hold1
     const.NUM_BURROWS = hold2
-    
+
+# FUNCTION: anLakeToRab -------------------------------------------------------    
 def anLakeToRab(spread):
     hold = const.LAKE_SPREAD # grab value for restoring value
     
@@ -75,7 +76,8 @@ def anLakeToRab(spread):
     print("Average rabbits at end:", avgEnd)
     
     const.LAKE_SPREAD = hold # restore value
-    
+
+# FUNCTION: anDissipationtoRab ------------------------------------------------    
 def anDissipationtoRab(dis):
     hold = const.DISSIPATION_RATE # grab value for restoring value
     
@@ -94,7 +96,8 @@ def anDissipationtoRab(dis):
     print("Average rabbits at end:", avgEnd, "\n")
     
     const.DISSIPATION_RATE = hold # restore value
-    
+
+# FUNCTION: anFoxToRab --------------------------------------------------------    
 def anFoxToRab(fox):
     hold = const.NUM_FOXES # grab value for restoring value
     
@@ -124,8 +127,9 @@ def anFoxToRab(fox):
     print("Average day eliminated:", avgDay, "\n")
     
     const.NUM_FOXES = hold # restore value
-    
-# SIMULATION TEST -------------------------------------------------------------
+ 
+# SIMULATION TESTS ____________________________________________________________
+# FUNCTION: testSim -----------------------------------------------------------
 def testSim():
     eco = sim.EcoSystem()
     for i in range(1):
@@ -134,11 +138,10 @@ def testSim():
         eco.displayGrids()
     eco.displayResults()
 
-#=======================================================================   
-# PROGRAM SCRIPT ------------------------------------------------------
+# PROGRAM SCRIPT ______________________________________________________________
 # Driver code for program
 
 testSim()
 
-#======================================================================
+#==============================================================================
 # END FILE
