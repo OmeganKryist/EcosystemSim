@@ -27,13 +27,22 @@ WATER_LOSS = 0.05
 
 HUNGRY_PERCENT = 0.8
 STARVE_PERCENT = 0.4
+
 THIRSTY_PERCENT = 0.6
 DESICCATE_PERCENT = 0.2
+
+COLD_OFFSET = -10
+FROZE_OFFSET = -20
+
+HOT_OFFSET = 10
+BOILED_OFFSET = 20
 
 ENERGY_MOVE_FACTOR = 8
 ENERGY_WAIT_REDUCE = 2
 WATER_MOVE_FACTOR = 2
 WATER_WAIT_REDUCE = 4
+
+TEMP_TRANSFER = 0.2
 
 #Time segments per day                                                      
 DT = 24
@@ -76,6 +85,12 @@ class Fauna:
     drink_amount = None
     desiccate = None
     
+    temp = None
+    cold = None
+    hot = None
+    froze = None
+    boiled = None
+    
     position = None
     alive = None
 
@@ -91,6 +106,12 @@ class Fauna:
         
         self.energy = nu.random.uniform(self.INIT_ENERGY_MIN, self.INIT_ENERGY_MAX)
         self.water = nu.random.uniform(self.INIT_WATER_MIN, self.INIT_WATER_MAX)
+        
+        self.temp = self.natural_temp
+        self.cold = self.natural_temp + COLD_OFFSET
+        self.froze = self.natural_temp + FROZE_OFFSET
+        self.hot = self.natural_temp + HOT_OFFSET
+        self.boiled = self.natural_temp + BOILED_OFFSET
         
         self.energy_value = self.max_energy * ENERGY_LOSS
         self.water_value = self.max_water * WATER_LOSS
@@ -133,7 +154,7 @@ class Fauna:
         self.water += min(amount, self.drink_amount)
 
     # MEATHOD: move ----------------------------------------------------
-    def move(self, y, x):
+    def move(self, y, x, tempValue):
         """ Description: updates the fauna's position
                          deducts the move cost
     
@@ -142,6 +163,11 @@ class Fauna:
             -x: x position
             -y: y position
         """
+        if(tempValue < self.temp):
+            self.temp = max(self.temp + tempValue * TEMP_TRANSFER, tempValue)
+        elif(tempValue > self.temp):
+            self.temp = min(self.temp + tempValue * TEMP_TRANSFER, tempValue)
+        
         self.energy -= self.move_energy_cost
         self.water -= self.move_water_cost
         self.position = [y, x]
@@ -173,8 +199,14 @@ class Fauna:
         if(self.alive):
             if(self.energy < self.starve):
                 self.alive = False
-            if(self.water < self.desiccate):
+            elif(self.water < self.desiccate):
                 self.alive = False
+            elif(self.temp <= self.froze):
+                self.alive = False
+                print('f')
+            elif(self.temp >= self.boiled):
+                self.alive = False
+                print('b')
         return self.alive
       
     def isHerbivore(self):
@@ -216,6 +248,8 @@ class Rabbit(Herbivore):
     
     max_water = 1000
     drink_amount = 500
+    
+    natural_temp = 5
 
 # CLASS: Carnivore -----------------------------------------------------
 class Carnivore(Fauna):
@@ -243,6 +277,8 @@ class Fox(Carnivore, Herbivore):
     
     max_water = 1000
     drink_amount = 500
+    
+    natural_temp = 10
 
 #=======================================================================
 # END FILE
