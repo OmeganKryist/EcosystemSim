@@ -57,7 +57,7 @@ DISSIPATION_SPREAD = 0.8
 SCENT_SPREAD = 1
 
 PLANT_CHANCE = 0.9
-PLANT_REPOP_CHANCE = 0
+PLANT_REPOP_CHANCE = 0.1
 ENERGY_ABSORB_FACTOR = 1000
 WATER_ABSORB_FACTOR = 1000
 PLANT_UNITS_TO_EAT = 2
@@ -814,11 +814,21 @@ class EcoSystem:
             self.plantsAbsorb()
         
         # do at the end of each day
-        self.makePlants(PLANT_REPOP_CHANCE)
         self.wheatherCheck()
         self.updateTemp()
         self.checkPlantGrowth()
         self.checkStarved()
+        
+    # MEATHOD: runAFewFrames -------------------------------------------
+    def runAWeek(self):
+        for i in range(7):
+            self.runADay()
+        self.makePlants(PLANT_REPOP_CHANCE)
+    
+    def runAMonth(self):
+        for i in range(4):
+            self.runAWeek()
+        self.spawnRabbits()
         
 #=======================================================================   
 # Analysis Functions --------------------------------------------------
