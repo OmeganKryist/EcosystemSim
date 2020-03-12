@@ -128,6 +128,30 @@ def anFoxToRab(fox):
     
     const.NUM_FOXES = hold # restore value
  
+def anPondToRabbit(ponds, pondSpread):
+    #Parameters passed
+    hold = const.NUM_PONDS
+    NUM_PONDS = ponds # must be less than 9
+    hold = const.POND_SPREAD
+    POND_SPREAD = pondSpread
+    
+    endRabbits = []
+    
+    print("Ponds: ", ponds)
+    print("Pond Spread:", pondSpread)
+    print("Rabbits:", NUM_BURROWS * RABBITS_PER_BURROW)
+    
+    for j in range(NUM_SIMS):
+        eco = EcoSystem()           #Initialize Ecosystem
+        for i in range(NUM_DAYS):
+            eco.runADay()
+        endRabbits.append(len(eco.herbivore_list))
+        
+    avgEnd = sum(endRabbits) / len(endRabbits)
+    print("# Simulations:", NUM_SIMS)
+    print("Average rabbits survived:", avgEnd, "\n")
+    
+    
 # SIMULATION TESTS ____________________________________________________________
 # FUNCTION: testSim -----------------------------------------------------------
 def testSim():
