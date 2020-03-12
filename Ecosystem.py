@@ -17,65 +17,13 @@
 
 #=======================================================================
 # PROGRAM IMPORTS ------------------------------------------------------
-import numpy as nu
-import matplotlib.pyplot as plt
+import Variables as const
 import Fauna as fa
 import Flora as fo
+import numpy as nu
+import matplotlib.pyplot as plt
 import random
 import math
-
-# PROGRAM CONSTANTS ----------------------------------------------------
-# User modifiable
-
-GRID_X = 50                     # var meaning
-GRID_Y = 50
-
-NUM_SIMS = 10
-NUM_MONTHS = 2
-NUM_WEEKS = 4
-NUM_DAYS = 7
-
-# effects lighting
-MAX_CLOUDS = 10
-CLOUD_CHANCE = 0.6
-OVERCAST_CHANCE = 0.2
-RAIN_CHANCE = 0.8
-
-# effects water
-LAKE_SPREAD = 4
-HAS_LAKE = True # bool
-POND_SPREAD = 1
-NUM_PONDS = 0
-
-# effects temp
-WATER_TEMP = -2
-LIGHT_TEMP = 2
-NATRUAL_TEMP = 10
-MAX_TEMP = 32
-MIN_TEMP = -32
-
-DISSIPATION_RATE = 0.9
-DISSIPATION_SPREAD = 0.8
-SCENT_SPREAD = 1
-
-PLANT_CHANCE = 0.9
-PLANT_REPOP_CHANCE = 0.1
-ENERGY_ABSORB_FACTOR = 1000
-WATER_ABSORB_FACTOR = 1000
-PLANT_UNITS_TO_EAT = 2
-
-RABBITS_PER_BURROW = 5 # must be less than 9
-MAX_RABBITS = 100
-NUM_BURROWS = 5
-
-NUM_FOXES = 3
-
-MOVE_CHANCE = 0.5
-
-# PROGRAM GLOBALS ------------------------------------------------------
-# Not User Modifiable
-
-var = 0                     # var meaning
 
 #=======================================================================
 # CLASS: Ecosystem -----------------------------------------------------
@@ -114,8 +62,8 @@ class EcoSystem:
         self.water_grid = nu.ones((self.length, self.width))/4
         self.scent_grid = nu.zeros((self.length, self.width))
         self.temp_grid = nu.zeros((self.length+1, self.width))
-        self.temp_grid[-1,0] = MIN_TEMP
-        self.temp_grid[-1,-1] = MAX_TEMP
+        self.temp_grid[-1,0] = const.MIN_TEMP
+        self.temp_grid[-1,-1] = const.MAX_TEMP
 
         # These grids are booleans(0/1) for when animals are at a location
         self.plant_grid = nu.zeros((self.length, self.width))
@@ -139,7 +87,7 @@ class EcoSystem:
         self.initWater()
         self.updateTemp()
         self.initRabbits()
-        self.makePlants(PLANT_CHANCE)
+        self.makePlants(const.PLANT_CHANCE)
         self.initFoxes()
         self.updateScent()
         
@@ -270,25 +218,26 @@ class EcoSystem:
             Variables: 
                 -self: the SimGrid object instance
         """
+        print("")
         print("--Simulation Config--")
         print("")
-        print("Grid Length:", eco.length)
-        print("Grid Width:", eco.width)
-        print("Number of Days:", NUM_DAYS)
-        print("Time Units Per Day:", 24)
-        print("Total Time Units:", 24 * NUM_DAYS)
+        print("Grid Length:", self.length)
+        print("Grid Width:", self.width)
+        print("Number of Days:", 0)
+        print("Time Units Per Day:", 0)
+        print("Total Time Units:", 0)
         print("")
         print("--Simulation Results--")
         print("")
         print("Natrual Deaths:")
-        print("   -Plants:", eco.plantsDied)
-        print("   -Herbivores:", eco.herbiDied)
-        print("   -Carnivores:", eco.carniDied)
+        print("   -Plants:", self.plantsDied)
+        print("   -Herbivores:", self.herbiDied)
+        print("   -Carnivores:", self.carniDied)
         print("")
         print("Eaten:")
-        print("   -Plants:", eco.plantsEaten)
-        print("   -Animals:", eco.animalsEaten)
-        print("") 
+        print("   -Plants:", self.plantsEaten)
+        print("   -Animals:", self.animalsEaten)
+        print("")
     
     # MEATHOD: checkCell -----------------------------------------------
     def randomWalk(self, Fauna):
@@ -307,7 +256,7 @@ class EcoSystem:
         #Use function for when goWater works
         #if Fauna.THIRSTY >= Fauna.water:
         #    self.goWater(Fauna)
-        if(nu.random.uniform(0,1) > MOVE_CHANCE):
+        if(nu.random.uniform(0,1) > const.MOVE_CHANCE):
             #Moore Neighborhood walk
             #Directions in x-axis
             moveX = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
@@ -540,7 +489,7 @@ class EcoSystem:
                 #If a plant is found
                 if self.plant_list[j].position[0] == Fauna.position[0] and self.plant_list[j].position[1] == Fauna.position[1]:
                     #Eat the max amount if the herbivore is able
-                    nutrition = self.plant_list[j].consumed(PLANT_UNITS_TO_EAT)
+                    nutrition = self.plant_list[j].consumed(const.PLANT_UNITS_TO_EAT)
                     Fauna.eat(nutrition[0])
                     Fauna.drink(nutrition[1])
                     #If the plant dies, remove from grid and list
@@ -616,9 +565,9 @@ class EcoSystem:
     def plantsAbsorb(self):
         for iPlant in self.plant_list:
             lighting = self.light_grid[iPlant.position[0], iPlant.position[1]]
-            iPlant.photosynth(lighting * ENERGY_ABSORB_FACTOR)
+            iPlant.photosynth(lighting * const.ENERGY_ABSORB_FACTOR)
             water = self.water_grid[iPlant.position[0], iPlant.position[1]]
-            iPlant.drink(water * WATER_ABSORB_FACTOR)
+            iPlant.drink(water * const.WATER_ABSORB_FACTOR)
             
     def checkPlantGrowth(self):
         for iPlant in self.plant_list:
@@ -647,17 +596,17 @@ class EcoSystem:
         return
     
     def updateScent(self):
-        spreadScent = nu.zeros((self.length + (SCENT_SPREAD * 2), self.width + (SCENT_SPREAD * 2)))
-        spreadScent[SCENT_SPREAD:-(SCENT_SPREAD), SCENT_SPREAD:-(SCENT_SPREAD)] = self.scent_grid
-        for y in range(SCENT_SPREAD, self.length + SCENT_SPREAD):
-            for x in range(SCENT_SPREAD, self.width + SCENT_SPREAD):        
-                spreadScent[y-SCENT_SPREAD:y+SCENT_SPREAD, x-SCENT_SPREAD] = spreadScent[y,x] * DISSIPATION_SPREAD
-                spreadScent[y-SCENT_SPREAD:y+SCENT_SPREAD, x+SCENT_SPREAD] = spreadScent[y,x] * DISSIPATION_SPREAD
-                spreadScent[y-SCENT_SPREAD, x] = spreadScent[y,x] * DISSIPATION_SPREAD
-                spreadScent[y+SCENT_SPREAD, x] = spreadScent[y,x] * DISSIPATION_SPREAD
+        spreadScent = nu.zeros((self.length + (const.SCENT_SPREAD * 2), self.width + (const.SCENT_SPREAD * 2)))
+        spreadScent[const.SCENT_SPREAD:-(const.SCENT_SPREAD), const.SCENT_SPREAD:-(const.SCENT_SPREAD)] = self.scent_grid
+        for y in range(const.SCENT_SPREAD, self.length + const.SCENT_SPREAD):
+            for x in range(const.SCENT_SPREAD, self.width + const.SCENT_SPREAD):        
+                spreadScent[y-const.SCENT_SPREAD:y+const.SCENT_SPREAD, x-const.SCENT_SPREAD] = spreadScent[y,x] * const.DISSIPATION_SPREAD
+                spreadScent[y-const.SCENT_SPREAD:y+const.SCENT_SPREAD, x+const.SCENT_SPREAD] = spreadScent[y,x] * const.DISSIPATION_SPREAD
+                spreadScent[y-const.SCENT_SPREAD, x] = spreadScent[y,x] * const.DISSIPATION_SPREAD
+                spreadScent[y+const.SCENT_SPREAD, x] = spreadScent[y,x] * const.DISSIPATION_SPREAD
                 
-        herb_scent = nu.fmax(self.herbivore_grid, self.scent_grid * DISSIPATION_RATE, spreadScent[SCENT_SPREAD:-(SCENT_SPREAD), SCENT_SPREAD:-(SCENT_SPREAD)])
-        carn_scent = nu.fmax(self.carnivore_grid, self.scent_grid * DISSIPATION_RATE * -1, spreadScent[SCENT_SPREAD:-(SCENT_SPREAD), SCENT_SPREAD:-(SCENT_SPREAD)]*-1)
+        herb_scent = nu.fmax(self.herbivore_grid, self.scent_grid * const.DISSIPATION_RATE, spreadScent[const.SCENT_SPREAD:-(const.SCENT_SPREAD), const.SCENT_SPREAD:-(const.SCENT_SPREAD)])
+        carn_scent = nu.fmax(self.carnivore_grid, self.scent_grid * const.DISSIPATION_RATE * -1, spreadScent[const.SCENT_SPREAD:-(const.SCENT_SPREAD), const.SCENT_SPREAD:-(const.SCENT_SPREAD)]*-1)
         self.scent_grid = herb_scent - carn_scent
                    
     # MEATHOD: checkCell -----------------------------------------------
@@ -678,7 +627,7 @@ class EcoSystem:
         nu.random.shuffle(x)
         nu.random.shuffle(y)
         
-        ponds = NUM_PONDS
+        ponds = const.NUM_PONDS
         
         if(ponds > len(x)):
             ponds = len(x)  # ensures that we don't try to make more
@@ -689,10 +638,10 @@ class EcoSystem:
             x2 = int(nu.random.uniform(0,2)) + x[i]
             y1 = int(nu.random.uniform(-2,0)) + y[i]
             y2 = int(nu.random.uniform(0,2)) + y[i]
-            self.makeWaterBody(x1, y1, x2, y2, POND_SPREAD)
+            self.makeWaterBody(x1, y1, x2, y2, const.POND_SPREAD)
             
-        if(HAS_LAKE):
-            self.makeWaterBody(24, 24, 26, 26, LAKE_SPREAD)
+        if(const.HAS_LAKE):
+            self.makeWaterBody(24, 24, 26, 26, const.LAKE_SPREAD)
         
     def makeWaterBody(self, x1, y1, x2, y2, spread):
         """ Description:
@@ -749,19 +698,25 @@ class EcoSystem:
         
             Output: plant_list and plant_grid is populated with Grass objects.
         """
+        check = False
         if(self.rained):
-            self.water_grid -= 0.2
-            self.rained = False
-        elif(nu.random.uniform(0,1) < OVERCAST_CHANCE):
+            check = True
+        
+        if(nu.random.uniform(0,1) < const.OVERCAST_CHANCE):
             self.light_grid *= 0.3
-            if(nu.random.uniform(0,1) < RAIN_CHANCE):
+            if(nu.random.uniform(0,1) < const.RAIN_CHANCE):
                 self.water_grid += 0.2
                 self.rained = True
+                check = False
         else:
             self.light_grid = nu.ones((self.length, self.width))
-            for i in range(MAX_CLOUDS):
-                if(nu.random.uniform(0,1) < CLOUD_CHANCE):
+            for i in range(const.MAX_CLOUDS):
+                if(nu.random.uniform(0,1) < const.CLOUD_CHANCE):
                     self.makeCloud()
+                    
+        if(check):
+            self.water_grid -= 0.2
+            self.rained = False
     
     # MEATHOD: checkCell -----------------------------------------------
     def makeCloud(self):
@@ -786,9 +741,9 @@ class EcoSystem:
         
             Output: plant_list and plant_grid is populated with Grass objects.
         """
-        self.temp_grid[:-1,:] = NATRUAL_TEMP
-        self.temp_grid[:-1,:] += self.water_grid * WATER_TEMP
-        self.temp_grid[:-1,:] += self.light_grid * LIGHT_TEMP
+        self.temp_grid[:-1,:] = const.NATRUAL_TEMP
+        self.temp_grid[:-1,:] += self.water_grid * const.WATER_TEMP
+        self.temp_grid[:-1,:] += self.light_grid * const.LIGHT_TEMP
     
     # MEATHOD: checkCell -----------------------------------------------
     def makePlants(self, chance):
@@ -821,7 +776,7 @@ class EcoSystem:
         #their predators
         
         i = 0
-        while(i < NUM_BURROWS):
+        while(i < const.NUM_BURROWS):
             x = int(nu.random.uniform(2,self.width - 2))
             y = int(nu.random.uniform(2,self.length - 2))
             if(self.water_grid[y,x] < 0.75 and self.burrow_grid[y,x] < 1):
@@ -844,8 +799,8 @@ class EcoSystem:
                     nu.random.shuffle(placeX)
                     nu.random.shuffle(placeY)
                     
-                    for j in range(RABBITS_PER_BURROW):
-                        if(len(self.herbivore_list) >= MAX_RABBITS):
+                    for j in range(const.RABBITS_PER_BURROW):
+                        if(len(self.herbivore_list) >= const.MAX_RABBITS):
                             return
                         
                         locX = x + placeX[j]
@@ -860,7 +815,7 @@ class EcoSystem:
         #This fox spawn is hardcoded so we could keep them away from vulnerable
         #animals
         
-        for i in range(NUM_FOXES):
+        for i in range(const.NUM_FOXES):
             x = int(nu.random.uniform(0,self.width))
             y = int(nu.random.uniform(0,self.length))
             newFox = fa.Fox(y,x)
@@ -869,13 +824,13 @@ class EcoSystem:
      
     # MEATHOD: runAFewFrames -------------------------------------------
     def runADay(self):
-        for i in range(24):
+        for i in range(const.HOURS_PER_DAY):
             for j in range(len(self.herbivore_list)):
                 if(self.findWater(self.herbivore_list[j])):
                     if(self.forage(self.herbivore_list[j])):
                         self.randomWalk(self.herbivore_list[j])
             for j in range(len(self.carnivore_list)):
-                for k in range(fa.EXTRA_FOX_STEPS):
+                for k in range(const.EXTRA_FOX_STEPS):
                     if(self.findWater(self.carnivore_list[j])):
                         if(self.track(self.carnivore_list[j])):
                             self.randomWalk(self.carnivore_list[j])
@@ -891,144 +846,14 @@ class EcoSystem:
         
     # MEATHOD: runAFewFrames -------------------------------------------
     def runAWeek(self):
-        for i in range(7):
+        for i in range(const.DAYS_PER_WEEK):
             self.runADay()
-        self.makePlants(PLANT_REPOP_CHANCE)
+        self.makePlants(const.PLANT_REPOP_CHANCE)
     
     def runAMonth(self):
-        for i in range(4):
+        for i in range(const.WEEKS_PER_MONTH):
             self.runAWeek()
         self.spawnRabbits()
-        
-#======================================================================= 
-# Analysis Functions --------------------------------------------------
-def anRabToPlant(perBurrow, numBurrows):
-    #Parameters passed
-    global RABBITS_PER_BURROW
-    RABBITS_PER_BURROW = perBurrow # must be less than 9
-    global NUM_BURROWS
-    NUM_BURROWS = numBurrows
-    
-    beginningPlants = []
-    endPlants = []
-    
-    print("Rabbits per Burrow: ", perBurrow)
-    print("Burrows:", numBurrows)
-    print("TotalRabbits:", perBurrow * numBurrows)
-    
-    for j in range(NUM_SIMS):
-        eco = EcoSystem()           #Initialize Ecosystem
-        beginningPlants.append(len(eco.plant_list))
-        for i in range(NUM_DAYS):
-            eco.runADay()
-        endPlants.append(len(eco.plant_list))
-        
-    avgBeginning = sum(beginningPlants) / len(beginningPlants)
-    avgEnd = sum(endPlants) / len(endPlants)
-    print("# Simulations:", NUM_SIMS)
-    print("Average plants at beginning:", avgBeginning)
-    print("Average plants at end:", avgEnd)
-    print("Average plant difference:", avgBeginning - avgEnd, "\n")
-    
-def anLakeToRab(spread):
-    global LAKE_SPREAD
-    LAKE_SPREAD = spread
-    print("Lake Spread:", spread)
-    endRabbits = []
-    for j in range(NUM_SIMS):
-        eco = EcoSystem()
-        for i in range(NUM_DAYS):
-            eco.runADay()  
-        endRabbits.append(len(eco.herbivore_list))
-        
-    avgEnd = sum(endRabbits) / len(endRabbits)
-    print("# Simulations:", NUM_SIMS)
-    print("Average rabbits at end:", avgEnd)
-    
-def anDissipationtoRab(dis):
-    global DISSIPATION_RATE
-    DISSIPATION_RATE = dis
-    
-    print("Dissipation Rate:", dis)
-    endRabbits = []
-    
-    for j in range(NUM_SIMS):
-        eco = EcoSystem()
-        for i in range(NUM_DAYS):
-            eco.runADay()  
-        endRabbits.append(len(eco.herbivore_list))
-    
-    avgEnd = sum(endRabbits) / len(endRabbits)
-    print("# Simulations:", NUM_SIMS)
-    print("Average rabbits at end:", avgEnd, "\n")
-    
-def anFoxToRab(fox):
-    global NUM_FOXES
-    NUM_FOXES = fox
-    
-    print("Foxes:", fox)
-    endRabbits = []
-    dayExtinct = []
-    
-    lastDay = 0
-    for j in range(NUM_SIMS):
-        lastDay = 10
-        eco = EcoSystem()
-        for i in range(NUM_DAYS):
-            eco.runADay()  
-            #Check if all rabbits are dead
-            if len(eco.herbivore_list) == 0:
-                if i < lastDay:
-                    lastDay = i
-        dayExtinct.append(lastDay)
-        endRabbits.append(len(eco.herbivore_list))
-        
-    avgEnd = sum(endRabbits) / len(endRabbits)
-    avgDay = sum(dayExtinct) / len(dayExtinct)
-    print("# Simulations:", NUM_SIMS)
-    
-    print("Average rabbits at end:", avgEnd)
-    print("Average day eliminated:", avgDay, "\n")
-    
-def anPondToRabbit(ponds, pondSpread):
-    #Parameters passed
-    global NUM_PONDS
-    NUM_PONDS = ponds # must be less than 9
-    global POND_SPREAD
-    POND_SPREAD = pondSpread
-    
-    endRabbits = []
-    
-    print("Ponds: ", ponds)
-    print("Pond Spread:", pondSpread)
-    print("Rabbits:", NUM_BURROWS * RABBITS_PER_BURROW)
-    
-    for j in range(NUM_SIMS):
-        eco = EcoSystem()           #Initialize Ecosystem
-        for i in range(NUM_DAYS):
-            eco.runADay()
-        endRabbits.append(len(eco.herbivore_list))
-        
-    avgEnd = sum(endRabbits) / len(endRabbits)
-    print("# Simulations:", NUM_SIMS)
-    print("Average rabbits survived:", avgEnd, "\n")
-
-#=======================================================================   
-# PROGRAM SCRIPT ------------------------------------------------------
-# Driver code for program
-
-eco = EcoSystem()
-
-initPlants = len(eco.plant_list)
-initRabs = len(eco.herbivore_list)
-initFoxes = len(eco.carnivore_list)
-
-for i in range(NUM_MONTHS):
-    eco.frame += 1
-    eco.runAMonth()
-    eco.displayGrids()
-
-eco.displayResults()
 
 #=======================================================================
 # END FILE
