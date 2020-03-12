@@ -1,11 +1,23 @@
 # START FILE
 #==============================================================================
 # GENERAL DOCUMENTATION _______________________________________________________
-""" 
+""" Simulates an ecosystem filled with flora and fauna
+    Flora - Grass
+    Fauna - Rabbits, Foxes
+    
+    Grass is generated over time by chance.
+    Rabbits eat grass when hungry.
+    Foxes are expected to eat rabbits and grass when hungry.
+    Fauna can get hungry and are expected to search for water from ponds or lakes
+    when thirsty.
+    The simulation also monitors temperature and scent left by animals for other animals
+    to track.
+    
+    This file also contains functions for vizualizing the simulation.
 """
 
 # ADDITIONAL DOCUMENTATION ____________________________________________________
-
+#Authors: Christian Rahmel, William Taing, Morgan Du Bois
 # Modification History:
 # - 3 Mar 2020: File Created
 
