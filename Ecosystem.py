@@ -1,10 +1,10 @@
 # START FILE
-#=======================================================================
-# GENERAL DOCUMENTATION ------------------------------------------------
+#==============================================================================
+# GENERAL DOCUMENTATION -------------------------------------------------------
 """ 
 """
 
-# ADDITIONAL DOCUMENTATION ---------------------------------------------
+# ADDITIONAL DOCUMENTATION ----------------------------------------------------
 
 # Modification History:
 # - 3 Mar 2020: File Created
@@ -15,8 +15,8 @@
 #  or through some other IDE like visual studio or spyder
 # - Documentation style inspired by CSS 458 professor Johnny Lin
 
-#=======================================================================
-# PROGRAM IMPORTS ------------------------------------------------------
+#==============================================================================
+# PROGRAM IMPORTS _____________________________________________________________
 import Variables as const
 import Fauna as fa
 import Flora as fo
@@ -25,8 +25,8 @@ import matplotlib.pyplot as plt
 import random
 import math
 
-#=======================================================================
-# CLASS: Ecosystem -----------------------------------------------------
+#==============================================================================
+# CLASS: Ecosystem ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 class EcoSystem:
     """ Description:
     
@@ -40,7 +40,7 @@ class EcoSystem:
     width = None
     
     
-    # MEATHOD: INIT ----------------------------------------------------
+    # MEATHOD: INIT -----------------------------------------------------------
     def __init__(self):
         """ Description: Class constructor
             
@@ -93,7 +93,7 @@ class EcoSystem:
         
         self.displayGrids()
         
-    # MEATHOD: displayGrid ---------------------------------------------
+    # MEATHOD: displayGrid ----------------------------------------------------
     def displayFrame(self):
         """ Description: displays a frame from the simulation
             
@@ -128,7 +128,7 @@ class EcoSystem:
         axs.imshow(simFrame)
         plt.pause(0.5)
 
-    # MEATHOD: displayGrid ---------------------------------------------
+    # MEATHOD: displayGrid ----------------------------------------------------
     def displayScent(self):
         """ Description: displays constant grid color maps
             
@@ -145,7 +145,7 @@ class EcoSystem:
         plt.title("EcoSystem Scent Distribution")
         plt.show()
         
-    # MEATHOD: displayGrid ---------------------------------------------
+    # MEATHOD: displayGrid ----------------------------------------------------
     def displayTemp(self):
         """ Description: displays constant grid color maps
             
@@ -162,7 +162,7 @@ class EcoSystem:
         plt.title("EcoSystem Temperture Distribution")
         plt.show()
         
-    # MEATHOD: displayGrid ---------------------------------------------
+    # MEATHOD: displayGrid ----------------------------------------------------
     def displayLight(self):
         """ Description: displays constant grid color maps
             
@@ -180,7 +180,7 @@ class EcoSystem:
         plt.show()
 
     
-    # MEATHOD: displayGrid ---------------------------------------------
+    # MEATHOD: displayGrid ----------------------------------------------------
     def displayWater(self):
         """ Description: displays constant grid color maps
             
@@ -197,7 +197,7 @@ class EcoSystem:
         plt.title("EcoSystem Water Distribution")
         plt.show()
     
-    # MEATHOD: displayGrid ---------------------------------------------
+    # MEATHOD: displayGrid ----------------------------------------------------
     def displayGrids(self):
         """ Description: displays constant grid color maps
             
@@ -211,7 +211,7 @@ class EcoSystem:
         self.displayFrame()
         
     
-    # MEATHOD: checkCell -----------------------------------------------    
+    # MEATHOD: checkCell ------------------------------------------------------  
     def displayResults(self):
         """ Description: displays constant grid color maps
             
@@ -239,7 +239,7 @@ class EcoSystem:
         print("   -Animals:", self.animalsEaten)
         print("")
     
-    # MEATHOD: checkCell -----------------------------------------------
+    # MEATHOD: checkCell ------------------------------------------------------
     def randomWalk(self, Fauna):
         """ Description:
             Pass an animal and it will walk within the borders of the grid.
@@ -280,15 +280,19 @@ class EcoSystem:
             if(Fauna.isCarnivore()):
                 self.carnivore_grid[Fauna.position[0], Fauna.position[1]] = 0
                 self.carnivore_grid[moveY[valid[0][0]], moveX[valid[0][0]]] = 1
-                Fauna.move(moveY[valid[0][0]], moveX[valid[0][0]], self.temp_grid[moveY[valid[0][0]], moveX[valid[0][0]]])
+                Fauna.move(moveY[valid[0][0]], moveX[valid[0][0]],\
+                           self.temp_grid[moveY[valid[0][0]],\
+                                          moveX[valid[0][0]]])
             elif(Fauna.isHerbivore()):
                 self.herbivore_grid[Fauna.position[0], Fauna.position[1]] = 0
                 self.herbivore_grid[moveY[valid[0][0]], moveX[valid[0][0]]] = 1
-                Fauna.move(moveY[valid[0][0]], moveX[valid[0][0]], self.temp_grid[moveY[valid[0][0]], moveX[valid[0][0]]])
+                Fauna.move(moveY[valid[0][0]], moveX[valid[0][0]],\
+                           self.temp_grid[moveY[valid[0][0]],\
+                                          moveX[valid[0][0]]])
         else:
             Fauna.wait()
         
-    # METHOD: track ----------------------------------------------------
+    # METHOD: track -----------------------------------------------------------
     def track(self, Fauna):
         #Checks to see if Carnivore should look for food
         if (Fauna.energy > Fauna.hungry):
@@ -303,7 +307,9 @@ class EcoSystem:
         moveY = Fauna.position[0] + moveY
         
         #Check Borders
-        valid = nu.where(nu.logical_not(nu.logical_or(nu.logical_or(moveY >= self.length, moveY < 0),nu.logical_or(moveX >= self.width, moveX < 0))))
+        valid = nu.where(nu.logical_not(nu.logical_or(nu.logical_or(\
+                moveY >= self.length, moveY < 0),\
+                nu.logical_or(moveX >= self.width, moveX < 0))))
         
         scent = nu.zeros(nu.size(valid[0]))
         
@@ -332,12 +338,15 @@ class EcoSystem:
                     currentIndex = 0
         
         self.carnivore_grid[Fauna.position[0], Fauna.position[1]] = 0
-        self.carnivore_grid[moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]]] = 1
-        Fauna.move(moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]], self.temp_grid[moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]]])
+        self.carnivore_grid[moveY[valid[0][indexToUse]],\
+                            moveX[valid[0][indexToUse]]] = 1
+        Fauna.move(moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]],\
+                   self.temp_grid[moveY[valid[0][indexToUse]],\
+                                  moveX[valid[0][indexToUse]]])
         
         return 0
         
-    # METHOD: forage ----------------------------------------------------
+    # METHOD: forage ----------------------------------------------------------
     def forage(self, Fauna):
         #Checks to see if Herbivore should look for food
         if (Fauna.energy > Fauna.hungry):
@@ -352,12 +361,15 @@ class EcoSystem:
         moveY = Fauna.position[0] + moveY
         
         #Check Borders
-        valid = nu.where(nu.logical_not(nu.logical_or(nu.logical_or(moveY >= self.length, moveY < 0),nu.logical_or(moveX >= self.width, moveX < 0))))
+        valid = nu.where(nu.logical_not(nu.logical_or(nu.logical_or(\
+                moveY >= self.length, moveY < 0),\
+                nu.logical_or(moveX >= self.width, moveX < 0))))
         
         possibleFood = nu.zeros(nu.size(valid[0]))
         
         for i in range(len(valid[0])):
-            possibleFood[i] = self.plant_grid[moveY[valid[0][i]]][moveX[valid[0][i]]]
+            possibleFood[i] = self.plant_grid[moveY[valid[0][i]]]\
+                                                [moveX[valid[0][i]]]
         
         foundFood = -1
         for i in range(len(possibleFood)):
@@ -386,12 +398,15 @@ class EcoSystem:
                     currentIndex = 0
         
         self.herbivore_grid[Fauna.position[0], Fauna.position[1]] = 0
-        self.herbivore_grid[moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]]] = 1
-        Fauna.move(moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]], self.temp_grid[moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]]])
+        self.herbivore_grid[moveY[valid[0][indexToUse]],\
+                            moveX[valid[0][indexToUse]]] = 1
+        Fauna.move(moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]],\
+                   self.temp_grid[moveY[valid[0][indexToUse]],\
+                                  moveX[valid[0][indexToUse]]])
         
         return 0
     
-    # METHOD: findWater -------------------------------------------------
+    # METHOD: findWater -------------------------------------------------------
     def findWater(self, Fauna):
         if(Fauna.water > Fauna.thirsty):
             return 1
@@ -427,45 +442,25 @@ class EcoSystem:
         
         if(Fauna.isCarnivore()):
             self.carnivore_grid[Fauna.position[0], Fauna.position[1]] = 0
-            self.carnivore_grid[Fauna.position[0] + addY, Fauna.position[1] + addX] = 1
-            Fauna.move(Fauna.position[0] + addY, Fauna.position[1] + addX, self.temp_grid[Fauna.position[0] + addY, Fauna.position[1] + addX])
+            self.carnivore_grid[Fauna.position[0] + addY,\
+                                Fauna.position[1] + addX] = 1
+            Fauna.move(Fauna.position[0] + addY, Fauna.position[1] + addX,\
+                       self.temp_grid[Fauna.position[0] + addY,\
+                                      Fauna.position[1] + addX])
         
         elif(Fauna.isHerbivore()):
             self.herbivore_grid[Fauna.position[0], Fauna.position[1]] = 0
-            self.herbivore_grid[Fauna.position[0] + addY, Fauna.position[1] + addX] = 1
-            Fauna.move(Fauna.position[0] + addY, Fauna.position[1] + addX, self.temp_grid[Fauna.position[0] + addY, Fauna.position[1] + addX])
+            self.herbivore_grid[Fauna.position[0] + addY,\
+                                Fauna.position[1] + addX] = 1
+            Fauna.move(Fauna.position[0] + addY, Fauna.position[1] + addX,\
+                       self.temp_grid[Fauna.position[0] + addY,\
+                                      Fauna.position[1] + addX])
         
         Fauna.drink(Fauna.drink_amount)
         
         return 0
     
-    def goWater(self, Fauna):
-        #I do not know how to implement this function (See walk section)
-        
-        #Init Moore Neighborhood arrays (same as randomWalk)
-        moveX = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
-        moveY = nu.array([1, 1, 1, 0, 0, -1, -1, -1])
-        
-        moveX = Fauna.position[1] + moveX
-        moveY = Fauna.position[0] + moveY
-        
-        #Check Borders
-        valid = nu.where(nu.logical_not(nu.logical_or( \
-        nu.logical_or(moveY >= self.length, moveY < 0),\
-        nu.logical_or(moveX >= self.width, moveX < 0))))
-        
-        
-        #Checks nearby spaces within border and drinks if there is water
-        for i in range(len(valid[0])):
-            if (self.water_grid[moveY[valid[0][i]],moveX[valid[0][i]]] > 0):
-                Fauna.drink(Fauna.drink_amount)
-                return
-        
-        #Walk Section: Choose to walk instead
-        #I do not know how to implement this part
-        return
-    
-    # METHOD: animalsEat -----------------------------------------------
+    # METHOD: animalsEat ------------------------------------------------------
     def animalsEat(self):
         for i in range(len(self.herbivore_list)):
             #Skip animal if not hungry
@@ -482,19 +477,23 @@ class EcoSystem:
                 else:
                     #Carnivores do not seem to eat plants when this is used
                     self.eatPlant(iCarn)
-                    
+             
+    # MEATHOD: checkCell ------------------------------------------------------
     def eatPlant(self, Fauna):
         j = 0
         while(j < len(self.plant_list)):
                 #If a plant is found
-                if self.plant_list[j].position[0] == Fauna.position[0] and self.plant_list[j].position[1] == Fauna.position[1]:
+                if self.plant_list[j].position[0] == Fauna.position[0] and\
+                self.plant_list[j].position[1] == Fauna.position[1]:
                     #Eat the max amount if the herbivore is able
-                    nutrition = self.plant_list[j].consumed(const.PLANT_UNITS_TO_EAT)
+                    nutrition = \
+                        self.plant_list[j].consumed(const.PLANT_UNITS_TO_EAT)
                     Fauna.eat(nutrition[0])
                     Fauna.drink(nutrition[1])
                     #If the plant dies, remove from grid and list
                     if (not self.plant_list[j].healthCheck()):
-                        self.plant_grid[Fauna.position[0], Fauna.position[1]] = 0
+                        self.plant_grid[Fauna.position[0],\
+                                        Fauna.position[1]] = 0
                         self.plant_list.remove(self.plant_list[j])
                         self.plantsEaten += 1
                     j = len(self.plant_list)
@@ -502,7 +501,7 @@ class EcoSystem:
                     j += 1
         return
     
-    # METHOD: carnivoreEat -----------------------------------------------
+    # METHOD: carnivoreEat ----------------------------------------------------
     def carnivoreEat(self, Fauna):
         #MoveY and moveX renamed to locY and locX - short for location
         #Boolean flag to let us know if the carnivore has eaten
@@ -532,15 +531,16 @@ class EcoSystem:
             locX = Fauna.position[1] + locX
             locY = Fauna.position[0] + locY
             
-            #Check Borders
-            valid = nu.where(nu.logical_not(nu.logical_or( \
+            # Check Borders
+            valid = nu.where(nu.logical_not(nu.logical_or(\
             nu.logical_or(locY >= self.length, locY < 0),\
             nu.logical_or(locX >= self.width, locY < 0))))
             
             
-            #Check if there is a neighboring herbivore
+            # Check if there is a neighboring herbivore
             for i in range(len(valid)):
-                #For readability-currentX and currentY are locations we are checking
+                # For readability-currentX and currentY are locations we 
+                # are checking
                 curX = valid[0][i]
                 curY = valid[0][i]
                 #If a herbivore is spotted
@@ -548,7 +548,8 @@ class EcoSystem:
                     #Search for herbivore object in list
                     for iHerb in self.herbivore_list:
                         #Location match found
-                        if iHerb.position[0] == curY and iHerb.position[1] == curX:
+                        if iHerb.position[0] == curY and\
+                        iHerb.position[1] == curX:
                             #Trade energy values
                             nutrition = iHerb.consumed()
                             Fauna.eat(nutrition[0])
@@ -557,22 +558,24 @@ class EcoSystem:
                             self.herbivore_list.remove(iHerb)
                             self.animalsEaten += 1
                             eatCheck = True
-            #return a true or false depending on action - can do something about it
-            #later
-             
+            #return a true or false depending on action - can do something 
+            # about it later
         return eatCheck
     
+    # MEATHOD: checkCell ------------------------------------------------------
     def plantsAbsorb(self):
         for iPlant in self.plant_list:
             lighting = self.light_grid[iPlant.position[0], iPlant.position[1]]
             iPlant.photosynth(lighting * const.ENERGY_ABSORB_FACTOR)
             water = self.water_grid[iPlant.position[0], iPlant.position[1]]
             iPlant.drink(water * const.WATER_ABSORB_FACTOR)
-            
+    
+    # MEATHOD: checkCell ------------------------------------------------------        
     def checkPlantGrowth(self):
         for iPlant in self.plant_list:
             iPlant.growth()
     
+    # MEATHOD: checkCell ------------------------------------------------------
     def checkStarved(self):
         """Removes animals and plants that are no longer alive
         """
@@ -595,21 +598,41 @@ class EcoSystem:
                 self.plantsDied += 1
         return
     
+    # MEATHOD: checkCell ------------------------------------------------------
     def updateScent(self):
-        spreadScent = nu.zeros((self.length + (const.SCENT_SPREAD * 2), self.width + (const.SCENT_SPREAD * 2)))
-        spreadScent[const.SCENT_SPREAD:-(const.SCENT_SPREAD), const.SCENT_SPREAD:-(const.SCENT_SPREAD)] = self.scent_grid
+        spreadScent = nu.zeros((self.length + (const.SCENT_SPREAD * 2),\
+                                self.width + (const.SCENT_SPREAD * 2)))
+        spreadScent[const.SCENT_SPREAD:-(const.SCENT_SPREAD),\
+                    const.SCENT_SPREAD:-(const.SCENT_SPREAD)] = self.scent_grid
         for y in range(const.SCENT_SPREAD, self.length + const.SCENT_SPREAD):
-            for x in range(const.SCENT_SPREAD, self.width + const.SCENT_SPREAD):        
-                spreadScent[y-const.SCENT_SPREAD:y+const.SCENT_SPREAD, x-const.SCENT_SPREAD] = spreadScent[y,x] * const.DISSIPATION_SPREAD
-                spreadScent[y-const.SCENT_SPREAD:y+const.SCENT_SPREAD, x+const.SCENT_SPREAD] = spreadScent[y,x] * const.DISSIPATION_SPREAD
-                spreadScent[y-const.SCENT_SPREAD, x] = spreadScent[y,x] * const.DISSIPATION_SPREAD
-                spreadScent[y+const.SCENT_SPREAD, x] = spreadScent[y,x] * const.DISSIPATION_SPREAD
+            for x in range(const.SCENT_SPREAD,\
+                           self.width + const.SCENT_SPREAD):        
+                spreadScent[y-const.SCENT_SPREAD:y+const.SCENT_SPREAD,\
+                            x-const.SCENT_SPREAD] =\
+                            spreadScent[y,x] * const.DISSIPATION_SPREAD
+                spreadScent[y-const.SCENT_SPREAD:y+const.SCENT_SPREAD,\
+                            x+const.SCENT_SPREAD] =\
+                            spreadScent[y,x] * const.DISSIPATION_SPREAD
+                spreadScent[y-const.SCENT_SPREAD, x] =\
+                spreadScent[y,x] * const.DISSIPATION_SPREAD
+                spreadScent[y+const.SCENT_SPREAD, x] =\
+                spreadScent[y,x] * const.DISSIPATION_SPREAD
                 
-        herb_scent = nu.fmax(self.herbivore_grid, self.scent_grid * const.DISSIPATION_RATE, spreadScent[const.SCENT_SPREAD:-(const.SCENT_SPREAD), const.SCENT_SPREAD:-(const.SCENT_SPREAD)])
-        carn_scent = nu.fmax(self.carnivore_grid, self.scent_grid * const.DISSIPATION_RATE * -1, spreadScent[const.SCENT_SPREAD:-(const.SCENT_SPREAD), const.SCENT_SPREAD:-(const.SCENT_SPREAD)]*-1)
+        herb_scent = nu.fmax(self.herbivore_grid,\
+                             self.scent_grid * const.DISSIPATION_RATE,\
+                             spreadScent[const.SCENT_SPREAD:\
+                                         -(const.SCENT_SPREAD),\
+                                         const.SCENT_SPREAD:\
+                                         -(const.SCENT_SPREAD)])
+        carn_scent = nu.fmax(self.carnivore_grid,\
+                             self.scent_grid * const.DISSIPATION_RATE * -1,\
+                             spreadScent[const.SCENT_SPREAD:\
+                                         -(const.SCENT_SPREAD),\
+                                         const.SCENT_SPREAD:\
+                                         -(const.SCENT_SPREAD)]*-1)
         self.scent_grid = herb_scent - carn_scent
                    
-    # MEATHOD: checkCell -----------------------------------------------
+    # MEATHOD: checkCell ------------------------------------------------------
     def initWater(self):
         """ Description:
             
@@ -642,7 +665,8 @@ class EcoSystem:
             
         if(const.HAS_LAKE):
             self.makeWaterBody(24, 24, 26, 26, const.LAKE_SPREAD)
-        
+    
+    # MEATHOD: checkCell ------------------------------------------------------    
     def makeWaterBody(self, x1, y1, x2, y2, spread):
         """ Description:
             
@@ -662,7 +686,8 @@ class EcoSystem:
         x = ax
         y = ay
         while (x < bx or y < by):
-            self.water_grid[y-spread*3:y+spread*3, x-spread*3:x+spread*3] = 0.5  
+            self.water_grid[y-spread*3:y+spread*3,\
+                            x-spread*3:x+spread*3] = 0.5  
             if(x < bx):
                 x += 1
             if(y < by):
@@ -671,7 +696,8 @@ class EcoSystem:
         x = ax
         y = ay
         while (x < bx or y < by):         
-            self.water_grid[y-spread*2:y+spread*2, x-spread*2:x+spread*2] = 0.75
+            self.water_grid[y-spread*2:y+spread*2,\
+                            x-spread*2:x+spread*2] = 0.75
             if(x < bx):
                 x += 1
             if(y < by):
@@ -686,7 +712,7 @@ class EcoSystem:
             if(y < by):
                 y += 1
     
-    # MEATHOD: checkCell -----------------------------------------------
+    # MEATHOD: checkCell ------------------------------------------------------
     def wheatherCheck(self):
         """ Description:
             
@@ -718,7 +744,7 @@ class EcoSystem:
             self.water_grid -= 0.2
             self.rained = False
     
-    # MEATHOD: checkCell -----------------------------------------------
+    # MEATHOD: checkCell ------------------------------------------------------
     def makeCloud(self):
         x = int(nu.random.uniform(0,1) * 50)
         y = int(nu.random.uniform(0,1) * 50)
@@ -727,9 +753,10 @@ class EcoSystem:
         spreadX = int(nu.random.uniform(3,15))
         spreadY = int(nu.random.uniform(3,15))
         
-        self.light_grid[y-spreadY:y+spreadY, x-spreadX:x+spreadX] *= 1-thickness
+        self.light_grid[y-spreadY:y+spreadY, x-spreadX:x+spreadX] *=\
+            1-thickness
         
-    # MEATHOD: checkCell -----------------------------------------------
+    # MEATHOD: checkCell ------------------------------------------------------
     def updateTemp(self):
         """ Description:
             
@@ -745,7 +772,7 @@ class EcoSystem:
         self.temp_grid[:-1,:] += self.water_grid * const.WATER_TEMP
         self.temp_grid[:-1,:] += self.light_grid * const.LIGHT_TEMP
     
-    # MEATHOD: checkCell -----------------------------------------------
+    # MEATHOD: checkCell ------------------------------------------------------
     def makePlants(self, chance):
         """ Description:
             
@@ -763,14 +790,15 @@ class EcoSystem:
             for x in range(self.width):
                 #Test for growth
                 if nu.random.uniform(0,1) <= chance:
-                    if(self.water_grid[y,x] < 0.75 and self.plant_grid[y,x] < 1 and self.burrow_grid[y,x] < 1):
+                    if(self.water_grid[y,x] < 0.75 and\
+                       self.plant_grid[y,x] < 1 and self.burrow_grid[y,x] < 1):
                         #Make a grass plant
                         newPlant = fo.Grass(y,x)
                         self.plant_grid[y,x] = 1
                         self.plant_list.append(newPlant)
         #Grid and list should now be initialized
         
-    # MEATHOD: checkCell -----------------------------------------------
+    # MEATHOD: checkCell ------------------------------------------------------
     def initRabbits(self):
         #This rabbit spawn is hardcoded so we could keep them away from
         #their predators
@@ -785,7 +813,7 @@ class EcoSystem:
             
         self.spawnRabbits()
     
-    # MEATHOD: checkCell -----------------------------------------------
+    # MEATHOD: checkCell ------------------------------------------------------
     def spawnRabbits(self):
         #This rabbit spawn is hardcoded so we could keep them away from
         #their predators
@@ -810,7 +838,8 @@ class EcoSystem:
                         #Spawns around the burrow
                         self.herbivore_list.append(newRab)
                         self.herbivore_grid[locY, locX] = 1
-            
+    
+    # MEATHOD: checkCell ------------------------------------------------------        
     def initFoxes(self):
         #This fox spawn is hardcoded so we could keep them away from vulnerable
         #animals
@@ -822,7 +851,7 @@ class EcoSystem:
             self.carnivore_list.append(newFox)
             self.carnivore_grid[y, x] = 1
      
-    # MEATHOD: runAFewFrames -------------------------------------------
+    # MEATHOD: runAFewFrames --------------------------------------------------
     def runADay(self):
         for i in range(const.HOURS_PER_DAY):
             for j in range(len(self.herbivore_list)):
@@ -844,16 +873,17 @@ class EcoSystem:
         self.checkPlantGrowth()
         self.checkStarved()
         
-    # MEATHOD: runAFewFrames -------------------------------------------
+    # MEATHOD: runAFewFrames --------------------------------------------------
     def runAWeek(self):
         for i in range(const.DAYS_PER_WEEK):
             self.runADay()
         self.makePlants(const.PLANT_REPOP_CHANCE)
     
+    # MEATHOD: checkCell ------------------------------------------------------
     def runAMonth(self):
         for i in range(const.WEEKS_PER_MONTH):
             self.runAWeek()
         self.spawnRabbits()
 
-#=======================================================================
+#==============================================================================
 # END FILE
