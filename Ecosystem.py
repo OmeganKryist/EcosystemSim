@@ -1005,26 +1005,7 @@ for i in range(NUM_MONTHS):
     eco.runAMonth()
     eco.displayGrids()
 
-print("--Simulation Config--")
-print("")
-print("Grid Length:", eco.length)
-print("Grid Width:", eco.width)
-print("Number of Days:", NUM_DAYS)
-print("Time Units Per Day:", 24)
-print("Total Time Units:", 24 * NUM_DAYS)
-# todo add in some values from eco for displaying
-print("")
-print("--Simulation Results--")
-print("")
-print("Natrual Deaths:")
-print("   -Plants:", eco.plantsDied)
-print("   -Herbivores:", eco.herbiDied)
-print("   -Carnivores:", eco.carniDied)
-print("")
-print("Eaten:")
-print("   -Plants:", eco.plantsEaten)
-print("   -Animals:", eco.animalsEaten)
-print("")
+eco.displayResults()
 
 #=======================================================================
 # END FILE
