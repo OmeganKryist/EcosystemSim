@@ -24,8 +24,8 @@ import numpy as nu
 # PROGRAM CONSTANTS ----------------------------------------------------
 # User Modifiable
 
-ENERGY_LOSS = 0.9
-WATER_LOSS = 0.5
+ENERGY_LOSS = 0.1
+WATER_LOSS = 0.05
 
 #Time segments per day                                                      
 DT = 24
@@ -84,6 +84,9 @@ class Flora:
         self.energy = nu.random.uniform(self.INIT_ENERGY_MIN*self.size, self.INIT_ENERGY_MAX*self.size)
         self.water = nu.random.uniform(self.INIT_WATER_MIN*self.size, self.INIT_WATER_MAX*self.size)
         
+        self.energy_per_unit = self.unit_energy_cost * ENERGY_LOSS
+        self.water_per_unit = self.unit_water_cost * WATER_LOSS
+        
         self.position = [y, x]
         self.alive = True
 
@@ -121,12 +124,14 @@ class Flora:
             -self: instance of class
         """
         for i in range(int(self.size)):
-        
             if(self.energy >= self.unit_energy_cost and self.water >= self.unit_water_cost):
                 self.energy = max(self.energy - self.unit_energy_cost, 0)
                 self.water = max(self.water - self.unit_water_cost, 0)
-            elif():
+            else:
                 self.size -= max(0, self.size - 1)
+                print('a')
+                if(self.size == 0):
+                    self.alive = False
         
         # if both energy and water are positive
         if(self.energy >= self.unit_energy_cost and self.water >= self.unit_water_cost):
@@ -185,19 +190,17 @@ class Grass(Flora):
     INIT_ENERGY_MAX = 1000       # initialization range for energy
     INIT_WATER_MIN = 500         # initialization minimum for water
     INIT_WATER_MAX = 1000        # initialization range for water
-    INIT_SIZE_MIN = 3
-    INIT_SIZE_MAX = 5
+    INIT_SIZE_MIN = 1
+    INIT_SIZE_MAX = 3
     
     max_units = 5
     
     unit_energy_cost = 500
     unit_extra_energy = 500
-    energy_per_unit = unit_energy_cost * ENERGY_LOSS
     photo_amount = 1000
     
     unit_water_cost = 500
     unit_extra_water = 500
-    water_per_unit = unit_water_cost * WATER_LOSS
     drink_amount = 1000
     
 #=======================================================================
