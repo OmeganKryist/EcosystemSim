@@ -21,6 +21,8 @@ import numpy as nu
 import matplotlib.pyplot as plt
 import Fauna as fa
 import Flora as fo
+import random
+import math
 
 # PROGRAM CONSTANTS ----------------------------------------------------
 # User modifiable
@@ -367,6 +369,56 @@ class EcoSystem:
         Fauna.move(moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]])
         
         return 0
+        
+    # METHOD: findWater -------------------------------------------------
+    def findWater(self, Fauna):
+        if(Fauna.water > Fauna.thirsty):
+            return 1
+        
+        valuesY = []
+        valuesX = []
+        
+        for i in range(self.length):
+            for k in range(self.width):
+                if (self.water_grid[i][k] >= 1):
+                    valuesY.append(i)
+                    valuesX.append(k)
+                    
+        distances  = nu.zeros(len(valuesY))
+        
+        
+        for i in range(len(valuesY)):
+            distances[i] = math.sqrt(math.pow((valuesX[i]-Fauna.position[1]),\
+            2) + math.pow((valuesY[i]-Fauna.position[0]), 2))
+                    
+        closest_water = distances.argmin()
+        
+        addX = 0
+        addY = 0
+        
+        if(valuesY[closest_water] - Fauna.position[0] > 0):
+            addY = 1
+        elif(valuesY[closest_water] - Fauna.position[0] < 0):
+            addY = -1
+        if(valuesX[closest_water] - Fauna.position[1] > 0):
+            addX = 1
+        elif(valuesX[closest_water] - Fauna.position[1] < 0):
+            addX = -1
+        
+        if(Fauna.isCarnivore()):
+            self.carnivore_grid[Fauna.position[0], Fauna.position[1]] = 0
+            self.carnivore_grid[Fauna.position[0] + addY, Fauna.position[1] + addX] = 1
+            Fauna.move(Fauna.position[0] + addY, Fauna.position[1] + addX)
+        
+        elif(Fauna.isHerbivore()):
+            self.herbivore_grid[Fauna.position[0], Fauna.position[1]] = 0
+            self.herbivore_grid[Fauna.position[0] + addY, Fauna.position[1] + addX] = 1
+            Fauna.move(Fauna.position[0] + addY, Fauna.position[1] + addX)
+        
+        Fauna.drink(2)
+        
+        return 0
+                
         
     def goWater(self, Fauna):
         #I do not know how to implement this function (See walk section)
@@ -719,11 +771,13 @@ class EcoSystem:
     def runADay(self):
         for i in range(24):
             for j in range(len(self.herbivore_list)):
-                if(self.forage(self.herbivore_list[j])):
-                    self.randomWalk(self.herbivore_list[j])
+                if(self.findWater(self.herbivore_list[j])):
+                    if(self.forage(self.herbivore_list[j])):
+                        self.randomWalk(self.herbivore_list[j])
             for j in range(len(self.carnivore_list)):
-                if(self.track(self.carnivore_list[j])):
-                    self.randomWalk(self.carnivore_list[j])
+                if(self.findWater(self.carnivore_list[j])):
+                    if(self.track(self.carnivore_list[j])):
+                        self.randomWalk(self.carnivore_list[j])
             self.animalsEat()
             self.updateScent()
             self.plantsAbsorb()
