@@ -45,7 +45,7 @@ POND_SPREAD = 1
 NUM_PONDS = 4
 
 # effects temp
-WATER_TEMP = -10
+WATER_TEMP = -2
 LIGHT_TEMP = 6
 NATRUAL_TEMP = 4
 MAX_TEMP = 32
@@ -258,11 +258,11 @@ class EcoSystem:
             if(Fauna.isCarnivore()):
                 self.carnivore_grid[Fauna.position[0], Fauna.position[1]] = 0
                 self.carnivore_grid[moveY[valid[0][0]], moveX[valid[0][0]]] = 1
-                Fauna.move(moveY[valid[0][0]], moveX[valid[0][0]])
+                Fauna.move(moveY[valid[0][0]], moveX[valid[0][0]], self.temp_grid[moveY[valid[0][0]], moveX[valid[0][0]]])
             elif(Fauna.isHerbivore()):
                 self.herbivore_grid[Fauna.position[0], Fauna.position[1]] = 0
                 self.herbivore_grid[moveY[valid[0][0]], moveX[valid[0][0]]] = 1
-                Fauna.move(moveY[valid[0][0]], moveX[valid[0][0]])
+                Fauna.move(moveY[valid[0][0]], moveX[valid[0][0]], self.temp_grid[moveY[valid[0][0]], moveX[valid[0][0]]])
         else:
             Fauna.wait()
         
@@ -311,7 +311,7 @@ class EcoSystem:
         
         self.carnivore_grid[Fauna.position[0], Fauna.position[1]] = 0
         self.carnivore_grid[moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]]] = 1
-        Fauna.move(moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]])
+        Fauna.move(moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]], self.temp_grid[moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]]])
         
         return 0
         
@@ -365,7 +365,7 @@ class EcoSystem:
         
         self.herbivore_grid[Fauna.position[0], Fauna.position[1]] = 0
         self.herbivore_grid[moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]]] = 1
-        Fauna.move(moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]])
+        Fauna.move(moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]], self.temp_grid[moveY[valid[0][indexToUse]], moveX[valid[0][indexToUse]]])
         
         return 0
     
@@ -384,7 +384,6 @@ class EcoSystem:
                     valuesX.append(k)
                     
         distances  = nu.zeros(len(valuesY))
-        
         
         for i in range(len(valuesY)):
             distances[i] = math.sqrt(math.pow((valuesX[i]-Fauna.position[1]),\
@@ -407,12 +406,12 @@ class EcoSystem:
         if(Fauna.isCarnivore()):
             self.carnivore_grid[Fauna.position[0], Fauna.position[1]] = 0
             self.carnivore_grid[Fauna.position[0] + addY, Fauna.position[1] + addX] = 1
-            Fauna.move(Fauna.position[0] + addY, Fauna.position[1] + addX)
+            Fauna.move(Fauna.position[0] + addY, Fauna.position[1] + addX, self.temp_grid[Fauna.position[0] + addY, Fauna.position[1] + addX])
         
         elif(Fauna.isHerbivore()):
             self.herbivore_grid[Fauna.position[0], Fauna.position[1]] = 0
             self.herbivore_grid[Fauna.position[0] + addY, Fauna.position[1] + addX] = 1
-            Fauna.move(Fauna.position[0] + addY, Fauna.position[1] + addX)
+            Fauna.move(Fauna.position[0] + addY, Fauna.position[1] + addX, self.temp_grid[Fauna.position[0] + addY, Fauna.position[1] + addX])
         
         Fauna.drink(Fauna.drink_amount)
         
@@ -437,7 +436,7 @@ class EcoSystem:
         #Checks nearby spaces within border and drinks if there is water
         for i in range(len(valid[0])):
             if (self.water_grid[moveY[valid[0][i]],moveX[valid[0][i]]] > 0):
-                Fauna.drink(2)
+                Fauna.drink(Fauna.drink_amount)
                 return
         
         #Walk Section: Choose to walk instead
