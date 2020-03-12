@@ -46,8 +46,8 @@ NUM_PONDS = 4
 
 # effects temp
 WATER_TEMP = -2
-LIGHT_TEMP = 6
-NATRUAL_TEMP = 4
+LIGHT_TEMP = 2
+NATRUAL_TEMP = 10
 MAX_TEMP = 32
 MIN_TEMP = -32
 
@@ -516,7 +516,8 @@ class EcoSystem:
                         self.animalsEaten += 1
                         eatCheck = True
         #return a true or false depending on action - can do something about it
-        #later                
+        #later
+             
         return eatCheck
     
     def plantsAbsorb(self):
@@ -772,9 +773,10 @@ class EcoSystem:
                     if(self.forage(self.herbivore_list[j])):
                         self.randomWalk(self.herbivore_list[j])
             for j in range(len(self.carnivore_list)):
-                if(self.findWater(self.carnivore_list[j])):
-                    if(self.track(self.carnivore_list[j])):
-                        self.randomWalk(self.carnivore_list[j])
+                for k in range(fa.EXTRA_FOX_STEPS):
+                    if(self.findWater(self.carnivore_list[j])):
+                        if(self.track(self.carnivore_list[j])):
+                            self.randomWalk(self.carnivore_list[j])
             self.animalsEat()
             self.updateScent()
             self.plantsAbsorb()
