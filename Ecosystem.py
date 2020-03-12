@@ -31,6 +31,8 @@ GRID_X = 50                     # var meaning
 GRID_Y = 50
 
 NUM_SIMS = 10
+NUM_MONTHS = 2
+NUM_WEEKS = 4
 NUM_DAYS = 7
 
 # effects lighting
@@ -998,11 +1000,10 @@ initPlants = len(eco.plant_list)
 initRabs = len(eco.herbivore_list)
 initFoxes = len(eco.carnivore_list)
 
-for i in range(NUM_DAYS):
+for i in range(NUM_MONTHS):
     eco.frame += 1
-    eco.runADay()
-    eco.displayFrame()
-    #eco.displayGrid()
+    eco.runAMonth()
+    eco.displayGrids()
 
 print("--Simulation Config--")
 print("")
