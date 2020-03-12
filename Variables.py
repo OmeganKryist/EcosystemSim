@@ -1,8 +1,11 @@
 # START FILE
 #==============================================================================
 # GENERAL DOCUMENTATION _______________________________________________________
-""" 
-
+""" This file contains constants used in the ecosystem simulation.
+    The current values associated with the variables are the default values
+    that the simulation uses.
+    These variables can be modified safely and returned to their default values
+    after use when used in the Analysis.py file.
     See code documentation for specifics on code functionality
 """
 
@@ -10,7 +13,7 @@
 
 # Modification History:
 # - 3 Mar 2020: File Created
-
+#Authors: Christian Rahmel, William Taing, Morgan Du Bois
 # Notes:
 # - Written for Python 3.7
 # - To test simply run the file in the canopy distribution of python
