@@ -2,7 +2,12 @@
 #==============================================================================
 # GENERAL DOCUMENTATION _______________________________________________________
 """ 
-
+    Description: This file contains constants used in the ecosystem simulation.
+    The current values associated with the variables are the default values
+    that the simulation uses.
+    These variables can be modified safely and returned to their default values
+    after use when used in the Analysis.py file.
+    
     See code documentation for specifics on code functionality
 """
 
