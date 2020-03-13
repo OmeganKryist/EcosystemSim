@@ -69,7 +69,7 @@ class EcoSystem:
         
         # These grids track constant values accross the grid
         self.light_grid = nu.ones((self.length, self.width))
-        self.water_grid = nu.ones((self.length, self.width))/4
+        self.water_grid = nu.ones((self.length, self.width))*const.MIN_MOISTURE
         self.scent_grid = nu.zeros((self.length, self.width))
         self.temp_grid = nu.zeros((self.length+1, self.width))
         self.temp_grid[-1,0] = const.MIN_TEMP
@@ -107,7 +107,7 @@ class EcoSystem:
         self.updateScent()
         
         # inital display
-        self.displayGrids()
+        #self.displayGrids()
         
     # MEATHOD: displayFrame ---------------------------------------------------
     def displayFrame(self):
@@ -498,7 +498,7 @@ class EcoSystem:
             self.herbiMove[2] += 1
         
         Fauna.drink(Fauna.drink_amount)
-        self.timesDrink += 1
+        self.timesDrunk += 1
         return 0
     
     # METHOD: animalsEat ------------------------------------------------------
@@ -785,6 +785,7 @@ class EcoSystem:
                 #Test for growth
                 if nu.random.uniform(0,1) <= chance:
                     if(self.water_grid[y,x] < 0.75 and\
+                       self.water_grid[y,x] > 0 and\
                        self.plant_grid[y,x] < 1 and self.burrow_grid[y,x] < 1):
                         #Make a grass plant
                         newPlant = fo.Grass(y,x)
@@ -883,7 +884,7 @@ class EcoSystem:
 # FUNCTION: testSim -----------------------------------------------------------
 def testSim():
     # just runs the simulation with set parameters to make sure the sim works
-    eco = sim.EcoSystem()
+    eco = EcoSystem()
     for i in range(1):
         eco.frame += 1
         
@@ -893,7 +894,7 @@ def testSim():
     
 def showSim():
     # just runs the simulation with set parameters to make sure the sim works
-    eco = sim.EcoSystem()
+    eco = EcoSystem()
     for i in range(10):
         eco.frame += 1
         eco.runADay()
@@ -901,8 +902,8 @@ def showSim():
 
 # PROGRAM SCRIPT ______________________________________________________________
 # Driver code for program
-testSim()
-showSim() 
+#testSim()
+#showSim() 
 
 #==============================================================================
 # END FILE
