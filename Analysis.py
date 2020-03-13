@@ -270,7 +270,7 @@ def anWaterCostToDessicate():
             eco = sim.EcoSystem()
             for i in range(const.NUM_WEEKS):
                 eco.runAWeek()
-            numDessicate.append(eco.animalDeaths[1])
+            numDessicate.append(eco.animalDeath[1])
         
         output.append(sum(numDessicate) / len(numDessicate))
     
@@ -301,7 +301,7 @@ def anEnergyCostToStarve():
             eco = sim.EcoSystem()
             for i in range(const.NUM_WEEKS):
                 eco.runAWeek()
-            numStarve.append(eco.animalDeaths[0])
+            numStarve.append(eco.animalDeath[0])
         
         output.append(sum(numStarve) / len(numStarve))
     
@@ -329,7 +329,7 @@ def anHungerToStarve():
             eco = sim.EcoSystem()
             for i in range(const.NUM_WEEKS):
                 eco.runAWeek()
-            numStarve.append(eco.animalDeaths[0])
+            numStarve.append(eco.animalDeath[0])
         
         output.append(sum(numStarve) / len(numStarve))
     
@@ -357,7 +357,7 @@ def anThirstToDessicate():
             eco = sim.EcoSystem()
             for i in range(const.NUM_WEEKS):
                 eco.runAWeek()
-            numDessicate.append(eco.animalDeaths[1])
+            numDessicate.append(eco.animalDeath[1])
         
         output.append(sum(numDessicate) / len(numDessicate))
     
@@ -425,7 +425,7 @@ def anPlantUnitsToDeaths():
                 eco.runAWeek()
             deadHerbi.append(eco.herbiDied)
             deadCarni.append(eco.carniDied)
-            deadPlants.append(eco.plantsDied)
+            deadPlants.append(eco.plantsEaten)
         
         output1.append(sum(deadHerbi) / len(deadHerbi))
         output2.append(sum(deadCarni) / len(deadCarni))
@@ -469,8 +469,8 @@ def anPlantWaterToNumDrinks():
     
     plt.plot(floraWater, output)
     plt.xlabel("Plant Water Consumed Percent")
-    plt.ylabel("Plants Dead")
-    plt.title("Plant Water Percent v. Plant Deaths")
+    plt.ylabel("Times Fauna Drunk")
+    plt.title("Plant Water Percent v. Times Drunk")
     plt.show()
     
     const.FLORA_WATER_PERCENT = hold      # restore value
@@ -482,6 +482,25 @@ def anPlantWaterToNumDrinks():
 # Driver code for program
 print("# Simulations:", const.NUM_SIMS)
 print("# Days Per Sim:", const.NUM_WEEKS * const.DAYS_PER_WEEK)
-      
+
+#anRabToPlant()             # DONE
+#anFoxToRabAndPlant()       # DONE
+#anFoxStepToRab()           # DONE    
+#anDissipationtoRab()       # DONE
+
+#anLakeToAnimals()          # DONE
+anPondsToAnimals()          # DONE
+
+anEnergyCostToStarve()
+anHungerToStarve()
+
+anWaterCostToDessicate()    
+anThirstToDessicate()       
+
+anPlantChanceToAnimals()    
+anPlantUnitsToDeaths()     # DONE
+#anPlantWaterToNumDrinks()  # DONE
+
+  
 #==============================================================================
 # END FILE
