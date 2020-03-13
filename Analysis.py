@@ -306,25 +306,35 @@ def anWaterCostToDessicate():
     hold = const.WATER_MOVE_FACTOR      # grab value for restoring value
 
     waterMove = [2,4,6,8,10]
-    output = []
+    output1 = []
+    output2 = []
     
     for k in range(len(waterMove)):
         const.WATER_MOVE_FACTOR = waterMove[k]
         
         numDessicate = []
+        drinks = []
         
         for j in range(const.NUM_SIMS):
             eco = sim.EcoSystem()
             for i in range(const.NUM_WEEKS):
                 eco.runAWeek()
             numDessicate.append(eco.animalsDeath[1])
+            drinks.append(eco.timesDrunk)
         
-        output.append(sum(numDessicate) / len(numDessicate))
+        output1.append(sum(numDessicate) / len(numDessicate))
+        output2.append(sum(drinks) / len(drinks))
     
-    plt.plot(waterMove, output)
+    plt.plot(waterMove, output1)
     plt.xlabel("Water Move Cost Factor")
     plt.ylabel("Animals Dessicated")
     plt.title("Water Move Cost v. Animal Dessicated")
+    plt.show()
+    
+    plt.plot(waterMove, output2)
+    plt.xlabel("Water Move Cost Factor")
+    plt.ylabel("Times Fauna Drunk")
+    plt.title("Water Move Cost v. Times Drunk")
     plt.show()
     
     const.WATER_MOVE_FACTOR = hold # restore value
@@ -571,22 +581,23 @@ def anPlantWaterToNumDrinks():
 print("# Simulations:", const.NUM_SIMS)
 print("# Days Per Sim:", const.NUM_WEEKS * const.DAYS_PER_WEEK)
 
+# uncomment to re run the analysis
 #anRabToPlant()             # DONE
 #anFoxToRabAndPlant()       # DONE
 #anFoxStepToRab()           # DONE    
 #anDissipationtoRab()       # DONE
 
 #anLakeToAnimals()          # DONE
-#anPondsToAnimals()          # DONE
+#anPondsToAnimals()         # DONE
 
-anEnergyCostToStarve()
-anHungerToStarve()
+#anEnergyCostToStarve()     # DONE
+#anHungerToStarve()         # DONE
 
-anWaterCostToDessicate()    
-anThirstToDessicate()       
+#anWaterCostToDessicate()   # DONE
+#anThirstToDessicate()      # DONE
 
-anPlantChanceToAnimals()    
-anPlantUnitsToDeaths()     # DONE
+#anPlantChanceToAnimals()   # DONE
+#anPlantUnitsToDeaths()     # DONE
 #anPlantWaterToNumDrinks()  # DONE
 
   
