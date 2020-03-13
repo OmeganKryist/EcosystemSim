@@ -270,7 +270,7 @@ def anWaterCostToDessicate():
             eco = sim.EcoSystem()
             for i in range(const.NUM_WEEKS):
                 eco.runAWeek()
-            numDessicate.append(eco.animalDeath[1])
+            numDessicate.append(eco.animalsDeath[1])
         
         output.append(sum(numDessicate) / len(numDessicate))
     
@@ -301,7 +301,7 @@ def anEnergyCostToStarve():
             eco = sim.EcoSystem()
             for i in range(const.NUM_WEEKS):
                 eco.runAWeek()
-            numStarve.append(eco.animalDeath[0])
+            numStarve.append(eco.animalsDeath[0])
         
         output.append(sum(numStarve) / len(numStarve))
     
@@ -329,7 +329,7 @@ def anHungerToStarve():
             eco = sim.EcoSystem()
             for i in range(const.NUM_WEEKS):
                 eco.runAWeek()
-            numStarve.append(eco.animalDeath[0])
+            numStarve.append(eco.animalsDeath[0])
         
         output.append(sum(numStarve) / len(numStarve))
     
@@ -357,7 +357,7 @@ def anThirstToDessicate():
             eco = sim.EcoSystem()
             for i in range(const.NUM_WEEKS):
                 eco.runAWeek()
-            numDessicate.append(eco.animalDeath[1])
+            numDessicate.append(eco.animalsDeath[1])
         
         output.append(sum(numDessicate) / len(numDessicate))
     
@@ -489,7 +489,7 @@ print("# Days Per Sim:", const.NUM_WEEKS * const.DAYS_PER_WEEK)
 #anDissipationtoRab()       # DONE
 
 #anLakeToAnimals()          # DONE
-anPondsToAnimals()          # DONE
+#anPondsToAnimals()          # DONE
 
 anEnergyCostToStarve()
 anHungerToStarve()
