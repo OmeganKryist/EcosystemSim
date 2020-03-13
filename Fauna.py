@@ -210,16 +210,23 @@ class Fauna:
             Output: a boolean value indicating the life of the fauna
         """
         #Compare current fauna condition to the thresholds
+        num = -1
+
         if(self.alive):
-            if(self.energy < self.starve):      #Energy too low
+            if(self.energy < self.starve):
                 self.alive = False
-            elif(self.water < self.desiccate):  #Water too low
+                num = 0
+            elif(self.water < self.desiccate):
                 self.alive = False
-            elif(self.temp <= self.froze):      #Temp too low
+                num = 1
+            elif(self.temp <= self.froze):
                 self.alive = False
-            elif(self.temp >= self.boiled):     #Temp too high
+                num = 2
+            elif(self.temp >= self.boiled):
                 self.alive = False
-        return self.alive
+                num = 3
+
+        return [self.alive, num]
     
     # MEATHOD: isHerbivore ----------------------------------------------------
     def isHerbivore(self):

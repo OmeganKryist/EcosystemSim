@@ -655,6 +655,7 @@ class EcoSystem:
                     #Remove herbivore and record its death
                     self.herbivore_list.remove(iHerb)
                     self.animalsDeath[4] += 1
+                    self.herbiDied += 1
                     eatCheck = True
         
         if(not eatCheck):
@@ -690,6 +691,7 @@ class EcoSystem:
                             #Remove herbivore and record its death
                             self.herbivore_list.remove(iHerb)
                             self.animalsDeath[4] += 1
+                            self.herbiDied += 1
                             eatCheck = True
             #return a true or false depending on action - can do something 
             # about it later
@@ -1122,7 +1124,6 @@ def testSim():
                          
             Variables:
             None
-
             Output:
                 Creates an ecosystem object and run a simulation on it.
                 Parameters of ecosystem will change depending on variables.
@@ -1155,7 +1156,7 @@ def showSim():
 
 # PROGRAM SCRIPT ______________________________________________________________
 # Driver code for program
-#testSim()
+testSim()
 #showSim() 
 
 #==============================================================================
