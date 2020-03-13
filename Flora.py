@@ -27,7 +27,8 @@ import numpy as nu
 #==============================================================================
 # CLASS: Flora ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 class Flora:
-    """ Description:
+    """ Description: The flora class is a plant and remains in one place during
+                     the simulation. Fauna can eat flora to gain energy. 
     
         Variables: 
         -energy: the flora's energy level
@@ -40,26 +41,26 @@ class Flora:
     INIT_ENERGY_MAX = None       # initialization range for energy
     INIT_WATER_MIN = None          # initialization minimum for water
     INIT_WATER_MAX = None        # initialization range for water
-    INIT_SIZE_MIN = None
-    INIT_SIZE_MAX = None
+    INIT_SIZE_MIN = None         # initialization minimum for size
+    INIT_SIZE_MAX = None         # initialization range for size
     
-    energy = None
+    energy = None                # current energy amount
     unit_extra_energy = None
     unit_energy_cost = None
     energy_per_unit = None
     photo_amount = None
     
-    water = None
+    water = None                 # current water amount
     unit_extra_water = None
     unit_water_cost = None
     water_per_unit = None
     drink_amount = None
     
-    size = None
-    max_units = None
+    size = None                 # current size
+    max_units = None            # maximum units per object
     
-    position = None
-    alive = None
+    position = None             # location of flora
+    alive = None                # alive flag
     
     # MEATHOD: init -----------------------------------------------------------
     def __init__(self, y, x):
@@ -69,7 +70,10 @@ class Flora:
             -self: instance of class
             -x: x position
             -y: y position
+            
+            Postconditions: Flora object is created
         """
+        #Initialize size, energy and water through uniform distribution
         self.size = nu.random.uniform(self.INIT_SIZE_MIN, self.INIT_SIZE_MAX)
         self.energy = nu.random.uniform(self.INIT_ENERGY_MIN*self.size,\
                                         self.INIT_ENERGY_MAX*self.size)
@@ -80,18 +84,19 @@ class Flora:
                                 * const.FLORA_ENERGY_PERCENT
         self.water_per_unit = self.unit_water_cost\
                                 * const.FLORA_WATER_PERCENT
-        
+        #position of plant
         self.position = [y, x]
-        self.alive = True
+        self.alive = True       #set plant to alive
 
     # MEATHOD: photosynth -----------------------------------------------------
     def photosynth(self, amount):
-        """ Description: updates the flora's water value
+        """ Description: updates the flora's energy value
     
             Variables: 
             -self: instance of class
             -amount: variable change to water value
                      assumed to be positive
+                     
         """
         self.energy += max(amount * self.size, self.photo_amount * self.size)
         maxEnergy = (self.unit_extra_energy + self.unit_energy_cost)\
@@ -106,6 +111,7 @@ class Flora:
             -self: instance of class
             -amount: variable change to water value
                      assumed to be positive
+                    
         """
         self.water = max(amount * self.size, self.drink_amount * self.size)
         maxWater = (self.unit_extra_water + self.unit_water_cost) * self.size
@@ -118,6 +124,7 @@ class Flora:
             Variables: 
             -self: instance of class
         """
+        #Consumes energy to increase size
         for i in range(int(self.size)):
             if(self.energy >= self.unit_energy_cost and\
                self.water >= self.unit_water_cost):
@@ -150,6 +157,14 @@ class Flora:
     
     # MEATHOD: consumed -------------------------------------------------------
     def consumed(self, units):
+        """ Description: Provides energy and water to fauna that eats the flora
+        
+            Variables:
+            -self: instance of class
+            units:
+            
+            Postconditions: returns energy and water values from being eaten
+        """
         # If animal can eat the whole plant, reduce plant size to 0 and return
         # all the energy it would have given.
         # variable energy is not plant energy, it is energy for the animal.
@@ -176,22 +191,21 @@ class Flora:
 
 # CLASS: Grass ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 class Grass(Flora):
-    """
-    Constant definitions are currently based off bluegrass as rabbits primarily
-    eat grass. Bluegrass is common in our state.
+    """ Description: Grass Plant
+                     Grass will grow in the same place until an animal eats all
+                     of it. Grass provides energy and water to fauna in the
+                     simulation.
     
     """
-    #Assuming 1 grid of grass at max growth can feed about 2 rabbits.
-    #An average rabbit needs about 105 calories daily
-
+    
     INIT_ENERGY_MIN = 500         # initialization minimum for energy
     INIT_ENERGY_MAX = 1000       # initialization range for energy
     INIT_WATER_MIN = 500         # initialization minimum for water
     INIT_WATER_MAX = 1000        # initialization range for water
-    INIT_SIZE_MIN = 1
-    INIT_SIZE_MAX = 3
+    INIT_SIZE_MIN = 1            # initialization minimum for size
+    INIT_SIZE_MAX = 3            # initialization range for size
     
-    max_units = 5
+    max_units = 5                # maximum amount of units per grass object
     
     unit_energy_cost = 500
     unit_extra_energy = 500
