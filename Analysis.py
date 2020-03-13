@@ -47,6 +47,14 @@ import matplotlib.pyplot as plt
 # ANALYSIS FUNCTIONS __________________________________________________________
 # FUNCTION: anRabToPlant ------------------------------------------------------
 def anRabToPlant():
+    """ Description: Runs multiple simulations with amount of rabbits spawned
+                     for every burrow going from 1 through 7. Every variable
+                     will be tested for NUM_SIMS amount of times.
+                     Records effect on plant consumption.
+        
+        Output: Average result of the simulations displayed in a line plot.
+    """
+
     rabbits = [1,2,3,4,5,6,7]
     output = []
     
@@ -78,6 +86,13 @@ def anRabToPlant():
 
 # FUNCTION: anLakeToRab -------------------------------------------------------    
 def anLakeToAnimals():
+    """ Description: Runs multiple simulations. 
+                     Spread of Lake tested from 1 through 7.
+                     Records effect on animal deaths.
+                     Will be tested for NUM_SIMS amount of times.
+        
+        Output: Average result of the simulations displayed in a line plot.
+    """
     lakeSpread = [1,2,3,4,5,6,7]
     output1 = []
     output2 = []
@@ -112,6 +127,13 @@ def anLakeToAnimals():
 
 # FUNCTION: anDissipationtoRab ------------------------------------------------    
 def anDissipationtoRab():
+    """ Description: Runs multiple simulations. 
+                     Dissipation of Scent tested from 0.5 through 0.9.
+                     Records effect on animal consumption.
+                     Will be tested for NUM_SIMS amount of times.
+        
+        Output: Average result of the simulations displayed in a line plot.
+    """
     scentFade = [0.5, 0.6, 0.7, 0.8, 0.9]
     output = []
     
@@ -140,6 +162,13 @@ def anDissipationtoRab():
 
 # FUNCTION: anFoxToRabAndPlant ------------------------------------------------   
 def anFoxToRabAndPlant():
+    """ Description: Runs multiple simulations. 
+                     Amount of foxes in sim tested from 1 through 7.
+                     Records effect on plant and animal consumption.
+                     Will be tested for NUM_SIMS amount of times.
+        
+        Output: Average result of the simulations displayed in a line plot.
+    """
     foxes = [1,2,3,4,5,6,7]
     output1 = []
     output2 = []
@@ -177,6 +206,13 @@ def anFoxToRabAndPlant():
  
 # FUNCTION: anPondsToAnimals --------------------------------------------------   
 def anPondsToAnimals():
+    """ Description: Runs multiple simulations. 
+                     Amount of ponds in sim tested from 0 through 6.
+                     Records effect on plant and animal deaths.
+                     Will be tested for NUM_SIMS amount of times.
+        
+        Output: Average result of the simulations displayed in a line plot.
+    """
     temp = const.MIN_MOISTURE
     const.MIN_MOISTURE = 0
     hold = const.NUM_PONDS # grab value for restoring value
@@ -224,6 +260,13 @@ def anPondsToAnimals():
  
 # FUNCTION: anFoxStepToRab -------------------------------------------------------- 
 def anFoxStepToRab():
+    """ Description: Runs multiple simulations. 
+                     Amount of extra steps given to foxes tested from 1 through 5.
+                     Records effect on animal consumption.
+                     Will be tested for NUM_SIMS amount of times.
+        
+        Output: Average result of the simulations displayed in a line plot.
+    """
     hold = const.EXTRA_FOX_STEPS        # grab value for restoring value
     
     foxsteps = [1,2,3,4,5]
@@ -252,10 +295,14 @@ def anFoxStepToRab():
  
 # FUNCTION: anEnergyToAnimals -------------------------------------------------
 def anWaterCostToDessicate():
-    """
-        enMove = Energy cost moving in water
-        enWait = Energy cost waiting in water
-    """        
+    """ Description: Runs multiple simulations. 
+                     Amount of water consumed per move command tested from
+                     2 through 10.
+                     Records effect on animal deaths by dessication.
+                     Will be tested for NUM_SIMS amount of times.
+        
+        Output: Average result of the simulations displayed in a line plot.
+    """       
     hold = const.WATER_MOVE_FACTOR      # grab value for restoring value
 
     waterMove = [2,4,6,8,10]
@@ -284,9 +331,14 @@ def anWaterCostToDessicate():
 
 # FUNCTION: anEnergyToAnimals -------------------------------------------------
 def anEnergyCostToStarve():
-    """
-        enMove = Energy Cost Moving
-    """
+    """ Description: Runs multiple simulations. 
+                     Amount of energy consumed per move command tested from
+                     2 through 10.
+                     Records effect on animal deaths by starvation.
+                     Will be tested for NUM_SIMS amount of times.
+        
+        Output: Average result of the simulations displayed in a line plot.
+    """       
     hold = const.ENERGY_MOVE_FACTOR         # grab value for restoring value
     
     energyMove = [2,4,6,8,10]
@@ -315,6 +367,13 @@ def anEnergyCostToStarve():
  
 # FUNCTION: anHungerToStarve --------------------------------------------------
 def anHungerToStarve():
+    """ Description: Runs multiple simulations. 
+                     Hunger threshold tested from 0.6 through 0.9.
+                     Records effect on animal deaths by starvation.
+                     Will be tested for NUM_SIMS amount of times.
+        
+        Output: Average result of the simulations displayed in a line plot.
+    """       
     hold = const.HUNGRY_PERCENT         # grab value for restoring value
     
     hunger = [0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9]
@@ -334,7 +393,7 @@ def anHungerToStarve():
         output.append(sum(numStarve) / len(numStarve))
     
     plt.plot(hunger, output)
-    plt.xlabel("Animal Hungry Threashold Percent")
+    plt.xlabel("Animal Hungry Threshold Percent")
     plt.ylabel("Animals Starved")
     plt.title("Hungry Threashold v. Animal Starved")
     plt.show()
@@ -343,6 +402,13 @@ def anHungerToStarve():
     
 # FUNCTION: anThirstToDessicate -----------------------------------------------  
 def anThirstToDessicate():
+    """ Description: Runs multiple simulations. 
+                     Thirst threshold tested from 0.4 through 0.7.
+                     Records effect on animal deaths by dessication.
+                     Will be tested for NUM_SIMS amount of times.
+        
+        Output: Average result of the simulations displayed in a line plot.
+    """    
     hold = const.THIRSTY_PERCENT         # grab value for restoring value
     
     thirst = [0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7]
@@ -371,6 +437,14 @@ def anThirstToDessicate():
     
 # FUNCTION: anPlantChanceToAnimals --------------------------------------------    
 def anPlantChanceToAnimals():
+    """ Description: Runs multiple simulations. 
+                     Chance for plant to spawn in empty grid at end of day
+                     tested from 0.2 through 1.0.
+                     Records effect on animal deaths.
+                     Will be tested for NUM_SIMS amount of times.
+        
+        Output: Average result of the simulations displayed in a line plot.
+    """    
     hold = const.PLANT_CHANCE         # grab value for restoring value
     
     plantChance = [0.2, 0.4, 0.6, 0.8, 1.0]
@@ -405,6 +479,13 @@ def anPlantChanceToAnimals():
     
 # FUNCTION: anPlantChanceToAnimals --------------------------------------------  
 def anPlantUnitsToDeaths():
+    """ Description: Runs multiple simulations. 
+                     Amount of units per plant tested from 1 through 5.
+                     Records effect on plant and animal deaths.
+                     Will be tested for NUM_SIMS amount of times.
+        
+        Output: Average result of the simulations displayed in a line plot.
+    """    
     hold = const.PLANT_UNITS_TO_EAT         # grab value for restoring value
     
     plantUnits = [1, 2, 3, 4, 5]
@@ -449,6 +530,13 @@ def anPlantUnitsToDeaths():
     
 # FUNCTION: anPlantStatsToAnimals ---------------------------------------------  
 def anPlantWaterToNumDrinks():
+    """ Description: Runs multiple simulations. 
+                     Amount of water a plant provides is tested from 1 through 5.
+                     Records effect on amount of times animals drink.
+                     Will be tested for NUM_SIMS amount of times.
+        
+        Output: Average result of the simulations displayed in a line plot.
+    """    
     hold = const.FLORA_WATER_PERCENT         # grab value for restoring value
     
     floraWater = [0.0, 0.025, 0.05, 0.075, 0.1]
