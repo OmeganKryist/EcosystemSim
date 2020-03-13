@@ -1,13 +1,11 @@
 # START FILE
 #==============================================================================
 # GENERAL DOCUMENTATION _______________________________________________________
-""" 
-    Description: This file contains constants used in the ecosystem simulation.
+""" This file contains constants used in the ecosystem simulation.
     The current values associated with the variables are the default values
     that the simulation uses.
     These variables can be modified safely and returned to their default values
     after use when used in the Analysis.py file.
-    
     See code documentation for specifics on code functionality
 """
 
@@ -16,6 +14,7 @@
 # Modification History:
 # - 3 Mar 2020: File Created
 
+# Authors: Christian Rahmel, William Taing, Morgan Du Bois
 # Notes:
 # - Written for Python 3.7
 # - To test simply run the file in the canopy distribution of python
@@ -31,7 +30,7 @@ GRID_X = 50                     # Grid length
 GRID_Y = 50                     # Grid Width
 
 # Sim execution itterations
-NUM_SIMS = 3                    # Number of Sims to run for each 
+NUM_SIMS = 5                    # Number of Sims to run for each 
 NUM_MONTHS = 2                  # Number of Months (if sim is by months)
 NUM_WEEKS = 2                   # Number of Weeks (if sim is by weeks)
 NUM_DAYS = 2                    # Number of Days (if sim is by Days)
@@ -98,7 +97,7 @@ BOILED_OFFSET = 20              # Fauna heat death threshold offset
 
 ENERGY_MOVE_FACTOR = 6          # Scales move cost by max energy divid this
 ENERGY_WAIT_REDUCE = 2          # Energy cost reduction from moving (by divid)
-WATER_MOVE_FACTOR = 8           # Scales move cost by max water divid this
+WATER_MOVE_FACTOR = 4           # Scales move cost by max water divid this
 WATER_WAIT_REDUCE = 2           # Water cost reduction from moving (by divid)
 
 TEMP_TRANSFER = 0.2             # Percent of temp difference to impact fauna
