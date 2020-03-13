@@ -879,5 +879,30 @@ class EcoSystem:
             self.runAWeek()
         self.spawnRabbits()
 
+# SIMULATION TEST _____________________________________________________________
+# FUNCTION: testSim -----------------------------------------------------------
+def testSim():
+    # just runs the simulation with set parameters to make sure the sim works
+    eco = sim.EcoSystem()
+    for i in range(1):
+        eco.frame += 1
+        
+        eco.runAMonth()
+        eco.displayGrids()
+    eco.displayResults()
+    
+def showSim():
+    # just runs the simulation with set parameters to make sure the sim works
+    eco = sim.EcoSystem()
+    for i in range(10):
+        eco.frame += 1
+        eco.runADay()
+        eco.displayFrame()
+
+# PROGRAM SCRIPT ______________________________________________________________
+# Driver code for program
+testSim()
+showSim() 
+
 #==============================================================================
 # END FILE
